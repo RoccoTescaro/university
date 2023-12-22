@@ -1,68 +1,96 @@
-#TODO complete
-
 class problem:
     def __init__(self, initial, goal=None):
         self.s_0 = initial
         self.g = goal
 
-    def actions(self, state): # depends heavily on the problem
+    def actions(self, state): 
+        # depends heavily on the problem
         pass
 
-    def result(self, state, action): # depends heavily on the problem
+    def result(self, state, action):
+        # depends heavily on the problem 
         pass
 
-    def goal_test(self, state):
-        return state == self.g
-
-    def best_first_search():
-        node = node(self.s_0, None, None, 0)
-        frontier = heapq.heapify([node])
-        explored = set()
-        while frontier:
-            node = heapq.heappop(frontier)
-            if self.goal_test(node.state):
-                return node
-            explored.add(node.state)
-            for child in node.expand(self):
-                if child.state not in explored and child not in frontier:
-                    heapq.heappush(frontier, child)
-                elif child in frontier and self.f(child) < self.f(frontier[child]):
-                    del frontier[child]
-                    heapq.heappush(frontier, child)
-        return None
+    def is_goal(self, state):
+        return state == self.g or state in self.g
 
 class node:
-    def __init__(self, state, parent, action, path_cost):
-        self.state = state
-        self.parent = parent
-        self.action = action
-        self.path_cost = path_cost
+    def __init__(self, state, parent=None, action=None, path_cost=0):
+        self.s = state
+        self.p = parent
+        self.a = action
+        self.g = path_cost
 
-    def __repr__(self):
-        return "<Node {}>".format(self.state)
+class priority_queue:
+    def __init__(self, f):
+        self.f = f
+        self.q = []
+    
+    def append(self, node):
+        self.q.append(node)
+        self.q.sort(key=self.f)
 
-    def __lt__(self, node):
-        return self.path_cost < node.path_cost
+    def pop(self):
+        return self.q.pop(0)
 
-    def __eq__(self, other):
-        return isinstance(other, node) and self.state == other.state
+class fifo_queue:
+    def __init__(self):
+        self.q = []
+    
+    def append(self, node):
+        self.q.append(node)
 
-    def __hash__(self):
-        return hash(self.state)
+    def pop(self):
+        return self.q.pop(0)
 
-    def expand(self, problem):
-        return [self.child_node(problem, action) for action in problem.actions(self.state)]
+class lifo_queue:
+    def __init__(self):
+        self.q = []
+    
+    def append(self, node):
+        self.q.append(node)
 
-    def child_node(self, problem, action):
-        next_state = problem.result(self.state, action)
-        return node(next_state, self, action, problem.path_cost(self.path_cost, self.state, action, next_state))
+    def pop(self):
+        return self.q.pop()
 
-    def solution(self):
-        return [node.state for node in self.path()[1:]]
+def tree_search(problem, frontier, depth = -1):
+    frontier.append(node(problem.s_0))
+    while frontier:
+        node = frontier.pop()
+        if problem.is_goal(node.s):
+            return node
+        if depth != -1 and node.g < depth:
+            for action in problem.actions(node.s):
+                # we are considering the path cost to be 1 for all actions -> child.g = parent.g + 1
+                child = node(problem.result(node.s, action), node, action, node.g + 1) 
+                frontier.append(child)
+    return None
 
-    def path(self):
-        node, path_back = self, []
-        while node:
-            path_back.append(node)
-            node = node.parent
-        return list(reversed(path_back))
+def best_first_search(problem, f):
+    frontier = priority_queue(f)
+    return tree_search(problem, frontier)
+
+def breadth_first_search(problem):
+    frontier = fifo_queue()
+    return tree_search(problem, frontier)
+
+def uniform_cost_search(problem):
+    return best_first_search(problem, lambda node: node.g)
+
+# should probably check for cycles
+def depth_first_search(problem): 
+    frontier = lifo_queue()
+    return tree_search(problem, frontier)
+
+def depth_limited_search(problem, depth):
+    frontier = lifo_queue()
+    return tree_search(problem, frontier, depth)
+
+def iterative_deepening_search(problem):
+    depth = 0
+    while True:
+        frontier = lifo_queue()
+        result = depth_limited_search(problem, frontier, depth)
+        if result != None:
+            return result
+        depth += 1

@@ -137,10 +137,10 @@ Chiamiamo $P.$ __$s_0$__ $ \in P.S$ lo __stato iniziale__ da cui l'agente parte.
 Chiamiamo $P.G$ l'insieme (che ha spesso cardinalità 1) degli stati obbiettivo, dei __goals__. E' utile definire una funzione, matematicamente una mappa, booleana $P$.__IS_GOAL__(s) che dato uno stato verifica che questi appartenga a $P.G$. \
 Chiamiamo $P.A$ l'insieme di tutte le possibili azioni intraprendibili dato un qualsiasi stato. \
 Definiamo una funzione $P$.__ACTIONS__(s) che dato uno stato resituisce l'insieme delle possibili azioni che possono essere eseguite in __s__. \
-Definiamo la funzione $P$.__RESULTS__($s_i$, a), detta __funzione di transizione__, la funzione che dato lo stato __$s_i$__ $ \in P.S$ e l'azione __a__ $ \in P.A$ restituisce lo stato __$s_f$__ $ \in P.S$ ottenuto applicando l'azione __a__ allo stato __$s_i$__. \
-Definiamo una funzione $P$.__ACTION_COST__(s, a, s$' = P$.__RESULTS__(s, a)) che restituisce un valore numerico indicativo del costo di esecuzione dell'azione __a__ dato lo stato __s__. \
+Definiamo la funzione $P$.__RESULT__($s_i$, a), detta __funzione di transizione__, la funzione che dato lo stato __$s_i$__ $ \in P.S$ e l'azione __a__ $ \in P.A$ restituisce lo stato __$s_f$__ $ \in P.S$ ottenuto applicando l'azione __a__ allo stato __$s_i$__. \
+Definiamo una funzione $P$.__ACTION_COST__(s, a, s$' = P$.__RESULT__(s, a)) che restituisce un valore numerico indicativo del costo di esecuzione dell'azione __a__ dato lo stato __s__. \
 
-> __Osservazione__: s$' = P$.__RESULTS__(s, a) è completamente omissibile
+> __Osservazione__: s$' = P$.__RESULT__(s, a) è completamente omissibile
 
 Chiamiamo __percorso__ una sequenza di azioni, e __soluzione__ un percorso da __$s_0$__ a __g__ $ \in P.G$. Diciamo che una soluzione è __ottima__ se la somma dei costi dato un percorso è minima ( la minore fra i costi di tutti i percorsi possibili ). \
 
@@ -162,9 +162,9 @@ Chiamiamo un algoritmo ___tree search___ se non evita di riespandere i nodi già
 </figure>
 
 Da qui in avanti se non specificato ci riferiremo a _nodi_ per intendere i _nodi_ dell'albero di ricerca.
-L'insieme di nodi ottenuti dal risultato di $P$.__RESULTS__($s_i$, a), $\forall$ __a__ $\in P$.__ACTIONS__($s_i$) sono detti nodi __figli__ (risultato diretto) o __successori__ (esecuzione ripetuta della funzione) di __$s_i$__, mentre __$s_i$__ è il nodo __genitore__.\    
-Dopo l'esecuzione di _results_ __$s_i$__ si dice __espanso__.\ 
-Un nodo ottenuto dall'esecuzione di _results_ o la radice dell'albero si dice __raggiunto__.\
+L'insieme di nodi ottenuti dal risultato di $P$.__RESULT__($s_i$, a), $\forall$ __a__ $\in P$.__ACTIONS__($s_i$) sono detti nodi __figli__ (risultato diretto) o __successori__ (esecuzione ripetuta della funzione) di __$s_i$__, mentre __$s_i$__ è il nodo __genitore__.\    
+Dopo l'esecuzione di _result_ __$s_i$__ si dice __espanso__.\ 
+Un nodo ottenuto dall'esecuzione di _result_ o la radice dell'albero si dice __raggiunto__.\
 L'insieme di nodi non ancora espansi si dicono __frontiera__ o ___open list___ (la frontiera separa nello spazio degli stati i nodi espansi da quelli non ancora raggiunti).\
 
 ___Best-first search___ : algoritmo di ricerca che espande il nodo che sembra più vicino al goal data una ___evaluation function___ $f$($n$). La frontiera in questo caso è implementata con una ___Priority Queue___. \
@@ -176,78 +176,23 @@ ___Depth-first search___ : algoritmo di ricerca che espande il nodo più profond
 <details>
     <summary><b>CODE</b></summary>
 
-    ```python:algorithms/search_problems.py
-        #TODO complete
-
-        class problem:
-            def __init__(self, initial, goal=None):
-                self.s_0 = initial
-                self.g = goal
-
-            def actions(self, state): # depends heavily on the problem
-                pass
-
-            def result(self, state, action): # depends heavily on the problem
-                pass
-
-            def goal_test(self, state):
-                return state == self.g
-
-            def best_first_search():
-                node = node(self.s_0, None, None, 0)
-                frontier = heapq.heapify([node])
-                explored = set()
-                while frontier:
-                    node = heapq.heappop(frontier)
-                    if self.goal_test(node.state):
-                        return node
-                    explored.add(node.state)
-                    for child in node.expand(self):
-                        if child.state not in explored and child not in frontier:
-                            heapq.heappush(frontier, child)
-                        elif child in frontier and self.f(child) < self.f(frontier[child]):
-                            del frontier[child]
-                            heapq.heappush(frontier, child)
-                return None
-
-        class node:
-            def __init__(self, state, parent, action, path_cost):
-                self.state = state
-                self.parent = parent
-                self.action = action
-                self.path_cost = path_cost
-
-            def __repr__(self):
-                return "<Node {}>".format(self.state)
-
-            def __lt__(self, node):
-                return self.path_cost < node.path_cost
-
-            def __eq__(self, other):
-                return isinstance(other, node) and self.state == other.state
-
-            def __hash__(self):
-                return hash(self.state)
-
-            def expand(self, problem):
-                return [self.child_node(problem, action) for action in problem.actions(self.state)]
-
-            def child_node(self, problem, action):
-                next_state = problem.result(self.state, action)
-                return node(next_state, self, action, problem.path_cost(self.path_cost, self.state, action, next_state))
-
-            def solution(self):
-                return [node.state for node in self.path()[1:]]
-
-            def path(self):
-                node, path_back = self, []
-                while node:
-                    path_back.append(node)
-                    node = node.parent
-                return list(reversed(path_back))
+    ```python
+        def tree_search(problem, frontier, depth = -1):
+        frontier.append(node(problem.s_0))
+        while frontier:
+            node = frontier.pop()
+            if problem.is_goal(node.s):
+                return node
+            if depth != -1 and node.g < depth:
+                for action in problem.actions(node.s):
+                    # we are considering the path cost to be 1 for all actions -> child.g = parent.g + 1
+                    child = node(problem.result(node.s, action), node, action, node.g + 1) 
+                    frontier.append(child)
+        return None
     ```
-</details> 
 
+[See full python implementations for search problems](./algorithms/search_problems.py)
+</details> 
 
 Per misurare le performance di un algoritmo di ricerca si usano quattro parametri:
 - __Completezza__ : l'algoritmo trova sempre una soluzione se esiste.
