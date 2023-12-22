@@ -15,6 +15,7 @@ ___
 - [Rapporto intelligenza artificiale e intelligenza umana](#rapporto-intelligenza-artificiale-e-intelligenza-umana)
 - [Agente e Ambiente](#agente-e-ambiente)
 - [Problemi di Ricerca](#problemi-di-ricerca)
+- [Algoritmi di Ricerca](#algoritmi-di-ricerca)
 ___
 
 #### Introduzione al corso
@@ -128,20 +129,131 @@ Le fasi di risoluzione del problema sono fondamentalmente 4:
 - ricerca, appunto simula le varie azioni fino al raggiungimento dell'obbiettivo. Tale sequenza di azioni è _una_ soluzione.
 - esecuzione
 
-__Formalizzazione problema di ricerca__:
+__Formalizzazione__:
 
-Chiamiamo $P$ il problema di ricerca.
-Chiamiamo $P.S$ l'insieme degli stati in cui l'ambiente può trovarsi.
-Chiamiamo $P.$ __$s_0$__ $ \in P.S$ lo __stato iniziale__ da cui l'agente parte.
-Chiamiamo $P.G$ l'insieme (che ha spesso cardinalità 1) degli stati obbiettivo, dei __goals__. E' utile definire una funzione, matematicamente una mappa, booleana $P$.__IS_GOAL__(s) che dato uno stato verifica che questi appartenga a $P.G$.
-Chiamiamo $P.A$ l'insieme di tutte le possibili azioni intraprendibili dato un qualsiasi stato.
-Definiamo una funzione $P$.__ACTIONS__(s) che dato uno stato resituisce l'insieme delle possibili azioni che possono essere eseguite in __s__.
-Definiamo la funzione $P$.__RESULTS__($s_i$, a), detta __funzione di transizione__, la funzione che dato lo stato __$s_i$__ $ \in P.S$ e l'azione __a__ $ \in P.A$ restituisce lo stato __$s_f$__ $ \in P.S$ ottenuto applicando l'azione __a__ allo stato __$s_i$__.
-Definiamo una funzione $P.$__ACTION_COST__(s, a, s$' = P.$__RESULTS__(s, a)) che restituisce un valore numerico indicativo del costo di esecuzione dell'azione __a__ dato lo stato __s__. 
+Chiamiamo $P$ il __problema di ricerca__. \
+Chiamiamo $P.S$ l'insieme degli __stati__ in cui l'ambiente può trovarsi. \
+Chiamiamo $P.$ __$s_0$__ $ \in P.S$ lo __stato iniziale__ da cui l'agente parte. \
+Chiamiamo $P.G$ l'insieme (che ha spesso cardinalità 1) degli stati obbiettivo, dei __goals__. E' utile definire una funzione, matematicamente una mappa, booleana $P$.__IS_GOAL__(s) che dato uno stato verifica che questi appartenga a $P.G$. \
+Chiamiamo $P.A$ l'insieme di tutte le possibili azioni intraprendibili dato un qualsiasi stato. \
+Definiamo una funzione $P$.__ACTIONS__(s) che dato uno stato resituisce l'insieme delle possibili azioni che possono essere eseguite in __s__. \
+Definiamo la funzione $P$.__RESULTS__($s_i$, a), detta __funzione di transizione__, la funzione che dato lo stato __$s_i$__ $ \in P.S$ e l'azione __a__ $ \in P.A$ restituisce lo stato __$s_f$__ $ \in P.S$ ottenuto applicando l'azione __a__ allo stato __$s_i$__. \
+Definiamo una funzione $P$.__ACTION_COST__(s, a, s$' = P$.__RESULTS__(s, a)) che restituisce un valore numerico indicativo del costo di esecuzione dell'azione __a__ dato lo stato __s__. \
 
-> __Osservazione__: s$' = P.$__RESULTS__(s, a) è completamente omissibile
+> __Osservazione__: s$' = P$.__RESULTS__(s, a) è completamente omissibile
 
-Chiamiamo __percorso__ una sequenza di azioni, e __soluzione__ un percorso da __$s_0$__ a __g__ $ \in P.G$. Diciamo che una soluzione è __ottima__ se la somma dei costi dato un percorso è minima ( la minore fra i costi di tutti i percorsi possibili ).
+Chiamiamo __percorso__ una sequenza di azioni, e __soluzione__ un percorso da __$s_0$__ a __g__ $ \in P.G$. Diciamo che una soluzione è __ottima__ se la somma dei costi dato un percorso è minima ( la minore fra i costi di tutti i percorsi possibili ). \
 
-Lo __spazio delgi stati__ viene usato intercambiabilmente per indicare $P.S$ e il grafo con nodi $P.S$ e archi $P.$__ACTIONS__.
+Lo __spazio delgi stati__ viene usato intercambiabilmente per indicare $P.S$ e il grafo con nodi $P.S$ e archi $P$.__ACTIONS__.\
+___
+
+#### Algoritmi di Ricerca
+
+Chiamiamo __algoritmo di ricerca__ un algoritmo che dato un problema di ricerca restituisce una soluzione o uno stato di _failure_. Ci sono diversi approcci per trovare una soluzione, in questo caso analizzeremo algoritmi che imporranno un __albero di ricerca__ nel grafo dello spazio degli stati che ha radice in __$s_0$__. Rispetto allo spazio delgi stati che da premessa era discreto, l'albero di ricerca può essere potenzialmente infinito anche con uno spazio finito poichè uno stesso stato potrebbe avere percorsi diversi indietro fino allo stato iniziale. L'albero di ricerca è un grafo acicilico (per definizione) ma i percorsi che definisce possono essere ciclici (_loopy paths_). Un ciclo è un caso speciale di percorso ridondante (_redundant path_). Ci sono tre approcci per affrontare questo problema: memorizzare i nodi già visitati ed evitare di riespanderli, ignorare il problema con le dovute analisi (in molti problemi il caso di ripetere un certo percorso è molto improbabile), controllare per i cicli ma non per percorsi ridondanti. <!-- #TODO --> clarify 
+Chiamiamo un algoritmo ___graph search___ se evita di riespandere i nodi già visitati. \
+Chiamiamo un algoritmo ___tree search___ se non evita di riespandere i nodi già visitati. \
+
+<figure style = "display: block; margin-left: auto; margin-right: auto; width: 50%;" >
+    <img src="https://pub.mdpi-res.com/mathematics/mathematics-10-01016/article_deploy/html/images/mathematics-10-01016-g012.png?1648026344"
+         alt="path in the search tree"
+         width="480"
+         height="480" >
+    <figcaption>Se nello stato del problema non fosse rappresentato un counter per il controllo della <i>threefold repetition rule</i> l'albero di ricerca potrebbe diramarsi ripetendo all'inifinito oscillando tra due stati (se le mosse sono reversibili)</figcaption>
+</figure>
+
+Da qui in avanti se non specificato ci riferiremo a _nodi_ per intendere i _nodi_ dell'albero di ricerca.
+L'insieme di nodi ottenuti dal risultato di $P$.__RESULTS__($s_i$, a), $\forall$ __a__ $\in P$.__ACTIONS__($s_i$) sono detti nodi __figli__ (risultato diretto) o __successori__ (esecuzione ripetuta della funzione) di __$s_i$__, mentre __$s_i$__ è il nodo __genitore__.\    
+Dopo l'esecuzione di _results_ __$s_i$__ si dice __espanso__.\ 
+Un nodo ottenuto dall'esecuzione di _results_ o la radice dell'albero si dice __raggiunto__.\
+L'insieme di nodi non ancora espansi si dicono __frontiera__ o ___open list___ (la frontiera separa nello spazio degli stati i nodi espansi da quelli non ancora raggiunti).\
+
+___Best-first search___ : algoritmo di ricerca che espande il nodo che sembra più vicino al goal data una ___evaluation function___ $f$($n$). La frontiera in questo caso è implementata con una ___Priority Queue___. \
+___Breadth-first search___ : algoritmo di ricerca che espande tutti i nodi della frontiera, in ordine di profondità. La frontiera in questo caso è implementata con una ___FIFO Queue___. \
+___Depth-first search___ : algoritmo di ricerca che espande il nodo più profondo della frontiera. La frontiera in questo caso è implementata con una ___LIFO Queue___. \
+
+<!-- #TODO --> add interative deepening search, bidirectional ecc.
+
+<details>
+    <summary><b>CODE</b></summary>
+
+    ```python:algorithms/search_problems.py
+        #TODO complete
+
+        class problem:
+            def __init__(self, initial, goal=None):
+                self.s_0 = initial
+                self.g = goal
+
+            def actions(self, state): # depends heavily on the problem
+                pass
+
+            def result(self, state, action): # depends heavily on the problem
+                pass
+
+            def goal_test(self, state):
+                return state == self.g
+
+            def best_first_search():
+                node = node(self.s_0, None, None, 0)
+                frontier = heapq.heapify([node])
+                explored = set()
+                while frontier:
+                    node = heapq.heappop(frontier)
+                    if self.goal_test(node.state):
+                        return node
+                    explored.add(node.state)
+                    for child in node.expand(self):
+                        if child.state not in explored and child not in frontier:
+                            heapq.heappush(frontier, child)
+                        elif child in frontier and self.f(child) < self.f(frontier[child]):
+                            del frontier[child]
+                            heapq.heappush(frontier, child)
+                return None
+
+        class node:
+            def __init__(self, state, parent, action, path_cost):
+                self.state = state
+                self.parent = parent
+                self.action = action
+                self.path_cost = path_cost
+
+            def __repr__(self):
+                return "<Node {}>".format(self.state)
+
+            def __lt__(self, node):
+                return self.path_cost < node.path_cost
+
+            def __eq__(self, other):
+                return isinstance(other, node) and self.state == other.state
+
+            def __hash__(self):
+                return hash(self.state)
+
+            def expand(self, problem):
+                return [self.child_node(problem, action) for action in problem.actions(self.state)]
+
+            def child_node(self, problem, action):
+                next_state = problem.result(self.state, action)
+                return node(next_state, self, action, problem.path_cost(self.path_cost, self.state, action, next_state))
+
+            def solution(self):
+                return [node.state for node in self.path()[1:]]
+
+            def path(self):
+                node, path_back = self, []
+                while node:
+                    path_back.append(node)
+                    node = node.parent
+                return list(reversed(path_back))
+    ```
+</details> 
+
+
+Per misurare le performance di un algoritmo di ricerca si usano quattro parametri:
+- __Completezza__ : l'algoritmo trova sempre una soluzione se esiste.
+- __Ottimalità__ : l'algoritmo trova sempre la soluzione ottima se esiste.
+- __Complessità spaziale__ : quanti nodi vengono memorizzati in memoria.
+- __Complessità temporale__ : quanti nodi vengono generati e espansi.
+
+Complessità spaziale e temporale sono misurate in termini di __b__ (fattore di branching, numero massimo di nodi figli di un nodo), __d__ (profondità massima dell'albero per la soluzione ottima) e __m__ (il massimo numero di azioni per un qualsiasi percorso), $||P.S||$ e $||(P.S \times P.A)||$ . \
 
