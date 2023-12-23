@@ -53,7 +53,7 @@ class lifo_queue:
     def pop(self):
         return self.q.pop()
 
-def tree_search(problem, frontier, depth = -1):
+def tree_search(problem, frontier, depth = -1): # TODO fix code
     frontier.append(node(problem.s_0))
     while frontier:
         node = frontier.pop()

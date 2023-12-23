@@ -10,10 +10,10 @@ indentation: optional readings
 - [x] cap. 3.3
 
 - lecture 3
-- [ ] cap. 3.4, 3.5-3.5.3, 3.6-3.6.2
+- [x] cap. 3.4, 3.5-3.5.3, 3.6-3.6.2
     - [ ] cap. 3.5.4-3.5.6
-- [ ] [https://citeseerx.ist.psu.edu/viewdoc/summary?doi=10.1.1.91.288]
-- [ ] [https://www.sciencedirect.com/science/article/pii/S0004370201000923?via%3Dihub]
+- [ ] [https://citeseerx.ist.psu.edu/viewdoc/summary?doi=10.1.1.91.288] <!-- doesn't seems to work -->
+- [ ] [https://www.sciencedirect.com/science/article/pii/S0004370201000923?via%3Dihub] <!-- doesn't seems to work -->
     - [ ] [https://www.cse.sc.edu/~mgv/csce580sp15/gradPres/HanssonMayerYung1992.pdf]
 
 - lecture 4
