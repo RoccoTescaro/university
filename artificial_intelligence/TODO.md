@@ -17,5 +17,8 @@ indentation: optional readings
     - [ ] [https://www.cse.sc.edu/~mgv/csce580sp15/gradPres/HanssonMayerYung1992.pdf]
 
 - lecture 4
-- [ ] cap. 
+- [x] cap. 3.6, 4.1
+    - [ ] [https://www.semanticscholar.org/paper/Optimization-by-Simulated-Annealing-Kirkpatrick-Gelatt/dd5061631a4d11fa394f4421700ebf7e78dcbc59]
 
+- lecture 5
+- [ ] cap. 6.1-6.2

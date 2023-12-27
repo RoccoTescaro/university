@@ -18,6 +18,7 @@ ___
 - [Algoritmi di Ricerca](#algoritmi-di-ricerca)
 - [Algoritmi di Ricerca Non Informata](#algoritmi-di-ricerca-non-informata)
 - [Algoritmi di Ricerca Informata](#algoritmi-di-ricerca-informata)
+- [Problemi di Ottimizzazione](#problemi-di-ottimizzazione)
 ___
 
 #### Introduzione al corso
@@ -213,6 +214,8 @@ ___
 [See full python implementations for search problems](./algorithms/search_problems.py)
 </details> 
 
+<br>
+
 ||__Breadth-first__|__Uniform cost__$^3$|__Depth-first__|__Depth-limited__|__Iterative deepening__|__Bidirectional__$^4$|
 |---|---|---|---|---|---|---|
 |__Completezza__|✓$^1$|✓$^{1,2}$|✗|✗|✓$^1$|✓$^1$|
@@ -246,6 +249,8 @@ ___admissible heuristic___ : una funzione euristica $h$($n$) è ammissibile se $
 
 </details>
 
+<br>
+
 ___consistent heutistic___ : una funzione euristica $h$($n$) è consistente se $h$($n$) $\leq$ $P$.__ACTION_COST__($n$, $a$) + $h$($n'$) dove $n'$ = $P$.__RESULT__($n$, $a$) $\forall n, n' \in P.S$.
 
 Tutte le funzioni euristiche consistenti sono ammissibili. Una funzione euristica ammissibile non è necessariamente consistente. Una funzione euristica consistente è detta anche ___monotonic___ (poichè monotona crescente).
@@ -253,6 +258,149 @@ $f(n') = g(n') + h(n') = g(n) + P$.__ACTION_COST__($n$, $a$) + $h(n') \geq g(n) 
 
 ![](https://cs.stanford.edu/people/eroberts/courses/soco/projects/2003-04/intelligent-search/asgraph1.jpg)
 
-Un modo per caratterizzare la qualità di una funzione euristica è l'___effective branching factor___ $b^*$. Se il numero totale di nodi generati è $N$ e la profondità della soluzione ottima è $d$ allora $b^*$ è il fattore di branching che avrebbe un albero di ricerca completo con $N$ nodi e profondità $d$ per contenere $N+1$ nodi. $N+1 = 1 + b^* + (b^*)^2 + ... + (b^*)^d = \frac{(b^*)^{d+1} - 1}{b^* - 1}$. Una funzione euristica è ottima se $b^* = 1$. 
+Un modo per caratterizzare la qualità di una funzione euristica è l'___effective branching factor___ $b^*$. Se il numero totale di nodi generati è $N$ e la profondità della soluzione ottima è $d$ allora $b^*$ è il fattore di branching che avrebbe un albero di ricerca completo con $N$ nodi e profondità $d$ per contenere $N+1$ nodi. $N+1 = 1 + b^* + (b^*)^2 + ... + (b^*)^d = \frac{(b^*)^{d+1} - 1}{b^* - 1}$. 
+Chiamiamo ___prenetance___ $p = \frac{d}{N}$ il grado di prenetazione nell'albero. La prenetance assume valori compresi fra 0 e 1, maggiore è $p$ più è 'efficiente' $h$. 
 Se un euristica $h_1$ è migliore ($\geq$) di un euristica $h_2 \forall n \in P.S$ allora diciamo che $h_1$ __domina__ $h_2$. Un modo di costruire una funzione euristica è di rilassare il problema creando un supergrafo di $P.S$ e definendo una funzione euristica su questo supergrafo.
 Date due euristiche possiamo sempre costruirne una migliore prendendo il massimo dei due valori $h(n) = $ max{$h_1(n), h_2(n), \dots, h_k(n)$}. 
+Un euristica più informata esplora un sottoinsieme dei nodi esplorati da un euristica meno informata.
+
+<details>
+    <summary> <b>Example</b>: Euristica per un percoso di un cavallo </summary>
+
+> __Problema__: data una scacchiera di dimensione $n \times m$ (non necessariamente finita) trovare un percorso per un cavallo che da $s_0$ arrivi a $g$. 
+
+<div style="float:left;margin:0 20px 0 0" markdown="1">
+<img src="./images/knight_moves.png" width="300" />
+</div>
+
+__Euristiche ammissibili__:
+- $h_1(n) = h_{\text{Manhattab Dist.}}(n) / 3$ 
+    Il cavallo si muove di 3 caselle alla volta, quindi il numero di mosse necessarie per arrivare al goal è almeno la distanza di Manhattan diviso 3.
+- $h_2(n) = \begin{cases} \lceil h_1(n) \rceil \text{ se } \lfloor h_1(n) \rfloor \text{mod } 2 = 1 \\ \lfloor h_1(n) \rfloor \text{ se } \text{ se } \lfloor h_1(n) \rfloor \text{mod } 2 = 0 \end{cases}$
+    Possiamo dire che $h_2 = h_1$ arrotondato con parità 'corretta', in questo caso teniamo conto che il cavallo si muove in modo alternato su caselle bianche e nere. 
+- $h_3(n) = \text{max (} \frac{\lceil g_x - s_{0x} \rceil}{2}, \frac{\lceil g_y - s_{0y} \rceil}{2}$)
+    Il cavallo si muove di 2 caselle in una direzione e 1 in un'altra, quindi il numero di mosse necessarie per arrivare al goal è almeno la distanza di Manhattan diviso 2.
+</details>
+
+<br>
+
+Un idea molto simile a quella appena analizzata l'abbiamo vista nel corso di Algoritmi e Strutture dati, ovvero il concetto di ___dynamic programming___, quello che possiamo fare infatti anche con le euristiche, è di definire una funzione euristica $h$($n$) come la soluzione ottima di un sottoproblema di $P$ che ha come stato iniziale $n$. Questo è possibile se il problema $P$ ha la proprietà di ___optimal substructure___, ovvero se la soluzione ottima di un problema è composta dalle soluzioni ottime dei suoi sottoproblemi. Nell'ambito dell'ai è detto ___pattern database___. 
+
+<!-- #TODO --> add landmark heuristic
+
+<div style="float:left;margin:0 20px 0 0" markdown="1">
+<img src="./images/beam_search.jpg" width="300" />
+</div>
+
+<!-- #TODO --> fix image
+
+Un idea per limitare lo spazio di memorida occupata da un algoritmo di ricerca è mettere un limite alla dimensione massima alla coda con priorità (la frontiera). Un nuovo nodo viene inserito nella coda solo se il suo valore di priorità è maggiore del valore di priorità del nodo con valore minore. Questo algoritmo è detto ___Beam search___.
+- Perde l'ottimalità (perchè potrebbe aver 'scartato' una 'scorciatoia')
+- Perde la completezza (perchè potrebbe non trovare una soluzione anche se esiste, non esplorando tutti gli stati)
+___
+
+#### Problemi di Ottimizzazione
+
+Rispetto alla classe di problemi di ricerca in cui eravamo interessati al percorso per arrivare al goal, in questo caso siamo interessati al trovare il goal ottimale. Questo tipo di problemi sono detti ___problemi di ottimizzazione___.
+
+<details>
+    <summary> <b>Example</b>: Problema delle n-regine (solitamente n = 8) </summary>
+
+> __Problema__: dato un scacchiera di dimensione $n \times m$ trovare una disposizione delle min($n$,$m$) regine dello stesso colore tale che nessuna regina possa mangiare (stia minacciando) un'altra regina (solitamente n = m, useremo questa condizione nelle considerazioni successive). Il problema ammette soluzione solo per $n \geq 4$ o $n = 1$ (anche $n = 0$ in teoria potrebbe essere considerato con soluzione).
+
+![](https://www.algotree.org/images/NQueens.svg)
+
+In questo caso utilizzare un algoritmo di ricerca non è efficiente (ragioni matematiche motivate successivamente). Il motivo intuitivo però è come detto precedentemente che non ci interessa il percorso per arrivare al goal ma il goal stesso (ovvero la configurazione delle regine). Ciascuna permutazione di mosse (piazzare una regina) per arrivare a tale configurazione è una soluzione valida e quindi le diramazioni sono molte e non ci interessa esplorarle tutte. E' evidente che non è possibile usare la ricerca bidirezionale in questo caso, perchè non si conosce il goal ottimale.
+
+La risoluzione di questo problema può essere affrontata usando diversi tipi di algoritmi, quelli che non tengono conto del percorso ma solo dei nodi adiacenti sono detti ___local searches___ mentre il problema è detto ___optimization problem___.
+Le local searches hanno il vantaggio notevole di non richiedere molto spazio di memoria ($O(1)$, poichè la frontiera è costante).
+
+</details>
+
+<br>
+
+La funzione che vogliamo ottimizzare è detta ___objective function___ e viene indicata con $f$($n$). Vogliamo quindi trovare il massimo globale di $f$($n$) per $n \in P.S$. Chiamiamo questo processo ___hill climbing___. Se la funzione obiettivo è una funzione di costo vogliamo trovare invece il minimo globale. Chiamiamo questo processo ___gradient descent___.
+
+__Hill Climbing__ : 
+
+![](https://www.tutorialandexample.com/wp-content/uploads/2019/07/State-space-Landscape-of-Hill-climbing-algorithm.png)
+
+Facendo riferimento al problema d'esempio possiamo porre come funzione obiettivo come l'opposto del numero di regine che minacciano un'altra regina. Per muoverci da uno stato all'altro seguiamo lo stato che migliora maggiormente la funzione obiettivo. Quando non ci sono più stati che migliorano la funzione obiettivo siamo arrivati ad un massimo locale è un probabile goal, per questo motivo non è completo, trovato un massimo locale si ferma senza cercare l'effettiva soluzione ottima. Questo algoritmo è a volte detto ___greedy local search___. Altre ragioni che potrebbero portare ad un massimo locale sono la presenza di un ___plateau___ (ovvero un insieme di stati adiacenti che hanno tutti la stessa funzione obiettivo) o un ___ridge___ (ovvero un insieme di stati relativamente vicini, tutti massimi locali).
+
+<details>
+    <summary><b>Code</b>: Hill Climbing</summary>
+
+    ```python
+        def hill_climbing(problem, f):
+            current = node(problem.s_0)
+            while True:
+                neighbors = [node(problem.result(current.s, action)) for action in problem.actions(current.s)]
+                if not neighbors:
+                    return current
+                neighbor = max(neighbors, key = lambda n: f(n))
+                if f(neighbor) <= f(current):
+                    return current
+                current = neighbor
+    ```
+
+<!-- #TODO --> add actual code link (implementation)
+</details> 
+
+<br>
+
+Se $P.S$ è finito l'algoritmo può essere reso completo con imponendo dei _random restartes_ (ovvero ripartire da un nodo casuale) o _random walk_ (ovvero scegliere un nodo casuale ad ogni iterazione). Questi algoritmi sono detti ___stochastic hill climbing___.
+
+__Local Beam Search__ :
+
+Nonostante il nome non è in relazione con la beam search, ma è un algoritmo di ricerca locale che mantiene $k$ stati in memoria (rispetto al singolo stato dell' hill climbing search). L'algoritmo inizia con $k$ stati casuali (in questo fondamentalmente analogo alla random restartes search) con la proprietà che questi $k$ stati possono 'comunicare' fra loro (diverso da random restartes searches, simile ad alcuni algoritmi di ricerca genetica). Ad ogni iterazione l'algoritmo seleziona i $k$ successori migliori fra i $k$ stati attuali. Se uno di questi stati è il goal allora l'algoritmo termina, altrimenti si ripete il processo. Se non ci sono stati migliori se ne prende uno a caso come per lo stochastic hill climbing. Queste scelte sono dette ___side ways moves___ e hanno l'obbiettivo di ovviare al problema dei plateau. Non risolvono il problema dei massimi locali/relativi perchè all'iterazione successiva si ritorna allo stato di massimo locale. Per questo motivo è necessario limiare il numero massimo di side ways moves, perchè finire in un massimo locale causa un loop infinito.
+
+Data la natura dell'algoritmo è facilmente implementabile in parallelo, velocizzando l'esecuzione. 
+
+La local beam search può soffrire la mancanza di diversità fra i $k$ stati rendendo la ricerca una versione poco più lenta di una hillclimbind search $k$ volte più lenta.
+
+__Simulated Annealing__ :
+
+Il principio alla base di questo algoritmo è ispirato dalle tecniche di temperaggio usate in metallurgia. Si diminuisce 'l'entropia termica' passando da una scelta causale a una sempre più pesata verso la scelta migliore (almeno secondo la funzione obiettivo). 
+
+> __Osservazione__: legge di Boltzmann $P(s) = \frac{1}{z}e^{-\frac{E(s)}{kT}}$ dove $P$ è la probabilità di un certo stato, $E$ è l'energia del sistema dato lo stato, $k$ è la costante di Boltzmann, $T$ è la temperatura, $z$ un termine normalizzatore.
+
+<div style="float:right;margin:0 60px 0 20px" markdown="1">
+<img src="./images/simulated_annealing.png" width="500" />
+</div>
+
+$p(s) = e^{\frac{\Delta E}{T}}$
+$\Delta E = f(s') - f(s)$
+$T \rightarrow 0 \implies p(s) \rightarrow 0$ 
+$T \rightarrow \infty \implies p(s) \rightarrow 1$
+
+$T$ segue una fuzione definita dal programmatore che diminuisce nel tempo.
+
+> __Theorem__: Dato un problema $P$ esiste sempre una funzione $T$ abbastanza lenta da fare convergere $s$ alla soluzione ottima del problema (massimo <u>globale</u>).
+
+<details>
+    <summary> <b>Code</b>: Simulated Annealing </summary>
+
+    ```python
+        def simulated_annealing(problem, schedule):
+            current = node(problem.s_0)
+            for t in range(sys.maxsize): # infinite loop
+                T = schedule(t)
+                if T == 0:
+                    return current
+                neighbors = [node(problem.result(current.s, action)) for action in problem.actions(current.s)]
+                if not neighbors:
+                    return current
+                neighbor = random.choice(neighbors)
+                delta_e = f(neighbor) - f(current)
+                if delta_e > 0 or random.uniform(0, 1) < math.exp(delta_e / T):
+                    current = neighbor
+    ```
+
+<!-- #TODO --> add actual code link (implementation)
+
+</details>
+
+<br>
+
+<!-- #TODO --> add genetic algorithms
+___
