@@ -19,6 +19,7 @@ ___
 - [Algoritmi di Ricerca Non Informata](#algoritmi-di-ricerca-non-informata)
 - [Algoritmi di Ricerca Informata](#algoritmi-di-ricerca-informata)
 - [Problemi di Ottimizzazione](#problemi-di-ottimizzazione)
+- [Problemi di Soddisfacimento di Vincoli](#problemi-di-soddisfacimento-di-vincoli)
 ___
 
 #### Introduzione al corso
@@ -196,20 +197,21 @@ ___
 <details>
     <summary><b>Code</b>: Tree search</summary>
 
-    ```python
-        def tree_search(problem, frontier, depth = -1):
-        frontier.append(node(problem.s_0))
-        while frontier:
-            node = frontier.pop()
-            if problem.is_goal(node.s):
-                return node
-            if depth != -1 and node.g < depth:
-                for action in problem.actions(node.s):
-                    # we are considering the path cost to be 1 for all actions -> child.g = parent.g + 1
-                    child = node(problem.result(node.s, action), node, action, node.g + 1) 
-                    frontier.append(child)
-        return None
-    ```
+```python
+
+    def tree_search(problem, frontier, depth = -1):
+    frontier.append(node(problem.s_0))
+    while frontier:
+        node = frontier.pop()
+        if problem.is_goal(node.s):
+            return node
+        if depth != -1 and node.g < depth:
+            for action in problem.actions(node.s):
+                # we are considering the path cost to be 1 for all actions -> child.g = parent.g + 1
+                child = node(problem.result(node.s, action), node, action, node.g + 1) 
+                frontier.append(child)
+    return None
+```
 
 [See full python implementations for search problems](./algorithms/search_problems.py)
 </details> 
@@ -330,18 +332,20 @@ Facendo riferimento al problema d'esempio possiamo porre come funzione obiettivo
 <details>
     <summary><b>Code</b>: Hill Climbing</summary>
 
-    ```python
-        def hill_climbing(problem, f):
-            current = node(problem.s_0)
-            while True:
-                neighbors = [node(problem.result(current.s, action)) for action in problem.actions(current.s)]
-                if not neighbors:
-                    return current
-                neighbor = max(neighbors, key = lambda n: f(n))
-                if f(neighbor) <= f(current):
-                    return current
-                current = neighbor
-    ```
+```python
+
+    def hill_climbing(problem, f):
+        current = node(problem.s_0)
+        while True:
+            neighbors = [node(problem.result(current.s, action)) for action in problem.actions(current.s)]
+            if not neighbors:
+                return current
+            neighbor = max(neighbors, key = lambda n: f(n))
+            if f(neighbor) <= f(current):
+                return current
+            current = neighbor
+
+```
 
 <!-- #TODO --> add actual code link (implementation)
 </details> 
@@ -380,23 +384,25 @@ $T$ segue una fuzione definita dal programmatore che diminuisce nel tempo.
 <details>
     <summary> <b>Code</b>: Simulated Annealing </summary>
 
-    ```python
-        def simulated_annealing(problem, schedule):
-            current = node(problem.s_0)
-            for t in range(sys.maxsize): # infinite loop
-                T = schedule(t)
-                if T == 0:
-                    return current
-                neighbors = [node(problem.result(current.s, action)) for action in problem.actions(current.s)]
-                if not neighbors:
-                    return current
-                neighbor = random.choice(neighbors)
-                delta_e = f(neighbor) - f(current)
-                if delta_e > 0 or random.uniform(0, 1) < math.exp(delta_e / T):
-                    current = neighbor
-    ```
+```python
 
-<!-- #TODO --> add actual code link (implementation)
+    def simulated_annealing(problem, schedule):
+        current = node(problem.s_0)
+        for t in range(sys.maxsize): # infinite loop
+            T = schedule(t)
+            if T == 0:
+                return current
+            neighbors = [node(problem.result(current.s, action)) for action in problem.actions(current.s)]
+            if not neighbors:
+                return current
+            neighbor = random.choice(neighbors)
+            delta_e = f(neighbor) - f(current)
+            if delta_e > 0 or random.uniform(0, 1) < math.exp(delta_e / T):
+                current = neighbor
+
+```
+
+[See full python implementations for local search problems](./algorithms/local_search_problems.py)
 
 </details>
 
@@ -404,3 +410,158 @@ $T$ segue una fuzione definita dal programmatore che diminuisce nel tempo.
 
 <!-- #TODO --> add genetic algorithms
 ___
+
+#### Problemi di Soddisfacimento di Vincoli
+
+Un approccio completamente diverso alla risoluzione dei problemi presentati, e molti altri come job scheduling, magic squares, ecc. è quello di usare un algoritmo di soddisfacimento di vincoli. Questo tipo di algoritmi sono detti ___constraint satisfaction problems___ (CSP) a volte indicati come ___constraint programming___.
+
+Questo tipi di problemi viene risolto per inferenza, ovvero propagando i vincoli e le assegnazioni. La struttura di un CSP è ben diversa da quella di un problema di ricerca. 
+
+I problemi di programmazione lineare sono un caso particolare di CSP (eg. problema del simplesso). I CSP sono NP-completi, quindi non esiste un algoritmo polinomiale per risolverli.
+
+__Formalizzazione__:
+Chiamiamo __$X$__ $ = \{ X_1, \dots, X_n \} $ l'insieme delle __variabili__ del problema. \
+Chiamiamo __$D$__ $ = \{ D_1, \dots, D_n \} $ l'insieme dei __domini__ di ciascuna variabile. \
+Chiamiamo __$C$__ l'insieme di vincoli. \
+Ciascun vincolo $c_i$ è una coppia $<scope, rel>$ dove $scope$ è una tupla di variabili e $rel$ è una relazione che specifica i valori che le variabili possono assumere. \
+
+Un __assegnamento__ è una funzione $A$ che associa ad ogni variabile un valore del suo dominio. \
+Un assegnamento è __consistente__ se non viola nessun vincolo. \
+Chiamiamo __assegnamento completo__ un assegnamento che associa un valore ad ogni variabile. \
+Una __soluzione__ è un assegnamento completo e consistente.
+
+<details>
+    <summary> <b>Example</b>: Problema di soddisfacimento di vincoli </summary>
+
+> __Problema__: criptoaritmetica, ovvero trovare un assegnamento di valori alle lettere che renda vera l'equazione.
+> X = {S, E, N, D, M, O, R, Y}
+> D = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9} 
+> C : __SEND__ + __MORE__ = __MONEY__ (andrebbe formalizzato meglio, un'altro vincolo è che le lettere non possono avere lo stesso valore)
+> soluzione = {S:9, E:5, N:6, D:7, M:1, O:0, R:8, Y:2}
+
+lo stesso problema può essere formalizzando prendendo altre variabili e vincoli
+> X = {S, E, N, D, M, O, R, Y, C1, C2, C3, C4}
+> D = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9}
+> C : S + M = C1 + 10 * C2, E + O + C1 = C2 + 10 * C3, N + R + C2 = C3 + 10 * C4, D + E = C4
+ecc.
+
+> __Problema__: colorazione di una mappa, ovvero trovare un assegnamento di colori ai territori in modo che territori adiacenti abbiano colori diversi.
+> Mappa dell'australia X = {WA, NT, Q, NSW, V, SA, T}
+> D = {red, green, blue}
+> C : WA $\neq$ NT, WA $\neq$ SA, NT $\neq$ SA, NT $\neq$ Q, SA $\neq$ Q, SA $\neq$ NSW, SA $\neq$ V, Q $\neq$ NSW, NSW $\neq$ V (in realtà dovremmo scrivere $<(SA,WA), SA \neq WA> \in C \dots$)
+> soluzione = {WA:red, NT:green, Q:red, NSW:green, V:red, SA:blue, T:red}
+
+![](https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRTO6lKn8y-Dfjj1-A5dch4M3WSG8cmGbG5SQ&usqp=CAU)
+
+> __Problema__: sudoku, ovvero trovare un assegnamento di valori alle caselle che rispetti le regole del gioco.
+> X = $\{X_{i,j} | i,j \in \{1, 2, 3, 4, 5, 6, 7, 8, 9\}\}$
+> D = {1, 2, 3, 4, 5, 6, 7, 8, 9}
+> C : $\forall i,j \in \{1, 2, \dots , 9\}, i \neq j \implies X_{i,j} \neq X_{i,j}$ (ovvero non ci possono essere due valori uguali nella stessa riga)
+> $\forall i,j \in \{1, 2, \dots , 9\}, i \neq j \implies X_{i,j} \neq X_{i,j}$ (ovvero non ci possono essere due valori uguali nella stessa colonna)
+> $\forall i,j \in \{1, 2, \dots , 9\}, i \neq j \implies X_{i,j} \neq X_{i,j}$ (ovvero non ci possono essere due valori uguali nella stessa regione)
+
+</details>
+
+<br>
+
+<details>
+    <summary> <b>Proof</b>: CSP (quando applicabile) più efficiente Searching algorithms </summary>
+
+Riprendiamo il problema delle n-regine con $n = 8$. Abbiamo già visto come questo può essere formalizzato e risolto come problema di ricerca. Vediamo ora come può essere formalizzato come CSP.
+
+> ||X|| = 64
+> D = {0, 1} (0 = non presente, 1 = presente)
+> C : $\forall i, j \in X, i \neq j \implies \neg$ (i e j sono sulla stessa riga o sulla stessa colonna o sulla stessa diagonale), $\sum_{i \in X} i = 8$ (ovvero ci sono 8 regine)
+
+una formalizzazione più efficiente è quella di usare un dominio di 8 valori (le righe) e vincoli che impongono che non ci siano due regine sulla stessa colonna o sulla stessa diagonale. 
+
+> ||X|| = 8
+> D = {1, 2, 3, 4, 5, 6, 7, 8}
+> C : $\forall i, j \in X, i \neq j \implies \neg$ (i e j sono sulla stessa colonna o sulla stessa diagonale)
+> $\forall i,j \in \{1, 2, \dots , ||X||\}, i \neq j \implies X_i \neq X_j$
+> $\forall i,j \in \{1, 2, \dots , ||X||\}, i \neq j \implies |X_i - X_j| \neq |i - j|$ 
+
+<table style = "border: 0px solid #0000">
+    <tr>
+        <td>
+            <table>
+                <tr><td></td><td><b>a</b></td><td><b>b</b></td><td><b>c</b></td><td><b>d</b></td><td><b>e</b></td><td><b>f</b></td><td><b>g</b></td><td><b>h</b></td></tr>
+                <tr><td><b>1</b></td><td>1</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td></tr>
+                <tr><td><b>2</b></td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>1</td><td>0</td></tr>
+                <tr><td><b>3</b></td><td>0</td><td>0</td><td>0</td><td>0</td><td>1</td><td>0</td><td>0</td><td>0</td></tr>
+                <tr><td><b>4</b></td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>1</td></tr>
+                <tr><td><b>5</b></td><td>0</td><td>0</td><td>1</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td></tr>
+                <tr><td><b>6</b></td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>1</td><td>0</td><td>0</td></tr>
+                <tr><td><b>7</b></td><td>0</td><td>1</td><td>0</td><td>0</td><td>0</td><td>0</td><td>1</td><td>0</td></tr>
+                <tr><td><b>8</b></td><td>0</td><td>0</td><td>0</td><td>1</td><td>0</td><td>0</td><td>0</td><td>0</td></tr>
+            </table>
+        </td>
+        <td>
+            <img src="https://yue-guo.com/wp-content/uploads/2019/02/N_queen.png" width="360" />
+        </td>
+    </tr>
+</table>
+
+| __$x_1$__ | __$x_2$__ | __$x_3$__ | __$x_4$__ | __$x_5$__ | __$x_6$__ | __$x_7$__ | __$x_8$__ |
+|-------|-------|-------|-------|-------|-------|-------|-------|
+| 1 (__a__) | 6 (__f__) | 8 (__h__) | 3 (__c__) | 7 (__g__) | 4 (__d__) | 2 (__b__) | 5 (__e__) |
+
+
+Applicare un algoritmo di ricerca ad un problema formalizzato nel precedente modo comporta un 
+__branching factor__ = $|D| \times |X|$ (ovvero per ogni variabile devo provare tutti i valori del dominio) \
+__depth__ = $|X|$ (ovvero devo assegnare un valore ad ogni variabile) \
+__number of leafs__ = $|X|! \times (|D|)^{|X|}$
+__number of actual possible assignment__ = $|D|^{|X|}$
+
+paghiamo $|X|!$ ovvero tutte le permutazioni fra le varie assegnazioni per ciascuna variabile, quando a noi non interessa la sequenza in cui queste vengono assegniate ma solo il valore finale. 
+
+</details>
+
+<br>
+
+__Finite Domain Solver__ :
+Itroduciamo dei concetti importanti.
+___arc-consistent___ : $x_i$ si dice arc-consistent rispetto a $x_j$ se per ogni valore $x_i$ esiste un valore $x_j$ consistente con $x_i$ ovvero $\forall a \in D_i, \exists b \in D_j | (a,b) \text{ soddisfi i vincoli booleani di } (x_i, x_j)$. (tutti i CSP possono essere ridotti a SAT problem, ovvero con vincoli binari/booleani).
+
+L'idea dell'algoritmo è di rendere arc-consistenti tutte le variabili, in questo modo siamo sicuri che esista una soluzione, riducendo i domini delle variabili.
+
+> __Example__: Consideriamo un vincolo del tipo $Y = X^2$ con $D = \{1, 2, 3, 4, 5, 6, 7, 8, 9\}$ sia per X che per Y. Possiamo ridurre il dominio di Y a {1, 4, 9} poichè Y deve essere arc-consistent rispetto a X. Possiamo ridurre il dominio di X a {1, 2, 3} poichè X deve essere arc-consistent rispetto a Y.
+
+Un algoritmo che rende arc-consistenti tutte le variabili è il ___AC-3___ (Arc Consistency 3) che è un algoritmo di ricerca locale. L'algoritmo è simile ad una BFS, ma invece di espandere i nodi espande gli archi. L'algoritmo è completo e termina in tempo polinomiale (?). <!-- #TODO --> check.
+
+<details>
+    <summary> <b>Code</b>: AC-3 </summary>
+    
+```python
+    #O(|C| * |D|^3)
+
+    def AC_3(csp): # csp with finite domains
+        queue = [(X_i, X_j) for X_i in csp.X for X_j in csp.X if X_i != X_j] # all arcs
+        while queue:
+            (X_i, X_j) = queue.pop() # ha senso una funzione euristica per l'estrazione ?
+            if revise(csp, X_i, X_j):
+                if not csp.D[X_i]:
+                    return False # no solution
+                for X_k in csp.X: # propagate trough all neighbors of X_i
+                    if X_k != X_i and X_k != X_j:
+                        queue.append((X_k, X_i))
+        return True
+
+    def revise(csp, X_i, X_j):
+        revised = False
+        for x in csp.D[X_i]:
+            if not any([csp.rel(X_i, x, X_j, y) for y in csp.D[X_j]]):
+                csp.D[X_i].remove(x)
+                revised = True
+        return revised
+
+    #by Macworth 1977
+```
+
+<!-- #TODO --> add actual code link (implementation)
+
+</details>
+
+<br>
+
+Oltre l'AC-3 esistono altri algoritmi di ricerca locale che rendono arc-consistenti le variabili, come il ___AC-4___ ($O(|C| * |D|^2)$), ___AC-5___, ___AC-6___, ecc. che sono teoricamente più efficienti dell'AC-3, sfortunatamente l'AC-4 è anche $\Theta(|C| * |D|^2)$ e si verifica empiricamente che seppur l'AC-3 ha complessità peggiore peggiore, è mediamente migliore.

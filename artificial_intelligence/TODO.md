@@ -21,4 +21,6 @@ indentation: optional readings
     - [ ] [https://www.semanticscholar.org/paper/Optimization-by-Simulated-Annealing-Kirkpatrick-Gelatt/dd5061631a4d11fa394f4421700ebf7e78dcbc59]
 
 - lecture 5
-- [ ] cap. 6.1-6.2
+- [x] cap. 5.1-5.2
+
+- lecture 6
