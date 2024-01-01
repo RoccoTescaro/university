@@ -8,6 +8,8 @@ ___
 
 Professore : [Paolo Frasconi](paolo.frasconi@pm.me) \
 Textbook : [Artificial Intelligence: A Modern Approach](<!-- #TODO -->) (4th Edition)
+
+> __Nota__: Questo documento è una raccolta di appunti personali presi durante il corso di Intelligenza Artificiale tenuto dal prof. Paolo Frasconi e sui capitoli assegnati del libro di testo. Non sono compresi gli argomenti tenuti negli articoli e _papers_ collegati e suggeriti dal professore.
 ___
 
 ##### Indice: <!-- #TODO -->
@@ -20,6 +22,9 @@ ___
 - [Algoritmi di Ricerca Informata](#algoritmi-di-ricerca-informata)
 - [Problemi di Ottimizzazione](#problemi-di-ottimizzazione)
 - [Problemi di Soddisfacimento di Vincoli](#problemi-di-soddisfacimento-di-vincoli)
+- [Finite Domain Solver](#finite-domain-solver)
+- [Backtracking](#backtracking)
+- [Altri approcci per risolvere CSP](#altri-approcci-per-risolvere-csp)
 ___
 
 #### Introduzione al corso
@@ -513,15 +518,15 @@ __depth__ = $|X|$ (ovvero devo assegnare un valore ad ogni variabile) \
 __number of leafs__ = $|X|! \times (|D|)^{|X|}$
 __number of actual possible assignment__ = $|D|^{|X|}$
 
-paghiamo $|X|!$ ovvero tutte le permutazioni fra le varie assegnazioni per ciascuna variabile, quando a noi non interessa la sequenza in cui queste vengono assegniate ma solo il valore finale. 
+paghiamo $|X|!$ ovvero tutte le permutazioni fra le varie assegnazioni per ciascuna variabile, quando a noi non interessa la sequenza in cui queste vengono assegniate ma solo il valore finale. Si dice che i CSP hanno proprietà commutativa, non importa l'ordine di esecuzione delle azioni (assegnazioni nel caso delle CSP).
 
 </details>
 
-<br>
+___
 
-__Finite Domain Solver__ :
+#### Finite Domain Solver
 Itroduciamo dei concetti importanti.
-___arc-consistent___ : $x_i$ si dice arc-consistent rispetto a $x_j$ se per ogni valore $x_i$ esiste un valore $x_j$ consistente con $x_i$ ovvero $\forall a \in D_i, \exists b \in D_j | (a,b) \text{ soddisfi i vincoli booleani di } (x_i, x_j)$. (tutti i CSP possono essere ridotti a SAT problem, ovvero con vincoli binari/booleani).
+___arc-consistent___ o ___2-consistent___: $x_i$ si dice arc-consistent rispetto a $x_j$ se per ogni valore $x_i$ esiste un valore $x_j$ consistente con $x_i$ ovvero $\forall a \in D_i, \exists b \in D_j | (a,b) \text{ soddisfi i vincoli booleani di } (x_i, x_j)$. (tutti i CSP possono essere ridotti a SAT problem, ovvero con vincoli binari/booleani).
 
 L'idea dell'algoritmo è di rendere arc-consistenti tutte le variabili, in questo modo siamo sicuri che esista una soluzione, riducendo i domini delle variabili.
 
@@ -565,3 +570,165 @@ Un algoritmo che rende arc-consistenti tutte le variabili è il ___AC-3___ (Arc 
 <br>
 
 Oltre l'AC-3 esistono altri algoritmi di ricerca locale che rendono arc-consistenti le variabili, come il ___AC-4___ ($O(|C| * |D|^2)$), ___AC-5___, ___AC-6___, ecc. che sono teoricamente più efficienti dell'AC-3, sfortunatamente l'AC-4 è anche $\Theta(|C| * |D|^2)$ e si verifica empiricamente che seppur l'AC-3 ha complessità peggiore peggiore, è mediamente migliore.
+
+___path consistent___ o ___3-consistent___: data una terna di variabili $X_i, X_j, X_k (i \neq j \neq k)$, la coppia ($X_i, X_k$) è path-consistent rispetto a $X_j$ se $\forall a \in D_i, b \in D_j$ allora $X_i = a, X_j = b \implies X_k$ è arc-consistent rispetto a $X_i$ e rispetto a $X_j$ (supponendo per dati che $X_i$ e $X_j$ siano arc-consisten fra loro). 
+
+Possiamo descrivere queste proprietà in algebra relazionale come:
+- arc-consistency $\iff D_i \subseteq \pi(R_{i,j} \bowtie D_j)$  (ovvero il dominio di $X_i$ è contenuto nella proiezione del join fra $R_{i,j}$ e il dominio di $X_j$)
+- path-consistency $\iff D_i \subseteq \pi(R_{i,j} \bowtie R_{j,k} \bowtie D_k)$ (?) <!-- #TODO --> check
+
+Il concetto di arc-consistency può essere esteso a vincoli di cardinalità superiore a 2, ovvero vincoli che coinvolgono più di due variabili. Un vincolo di cardinalità $k$ è detto ___k-consistent___ se ogni tupla di $k-1$ variabili è arc-consistent rispetto alla variabile rimanente. 
+
+Con k abbastanza grande è dimostrabile che il problema è risolvibile senza backtracking con costo $O(|C||D|^k)$. Per risolvere i problemi di vincoli efficacemente si ricorre solitamente ad altre tecniche, come il cluster di variabili (come visto per il problema delle n-regine) o riducendo il problema ad un sat problem (per i quali sono noti solver molto efficienti).
+___
+
+#### Backtracking
+
+```python
+
+def backtracking_search(csp):
+    if csp.assignment_complete():
+        return csp.assignment
+
+    """
+        selezioniamo una variabile non assegnata, diversi problemi possono sfruttare diverse euristiche per la scelta
+        maggiormente è informata l'euristica maggiore sarà l'efficienza dell'algoritmo. 
+        Eg. di euristiche
+        - minimum remaining values (MRV) : scegliere la variabile con il dominio residuo più piccolo
+        - degree heuristic to break ties : scegliere la variabile che appare in più vincoli ovvero che influenza più variabili
+    """
+    X = csp.select_unassigned_variable()
+
+    """
+        ordiniamo i valori del dominio della variabile scelta in modo da provare prima i valori più promettenti seguendo 
+        quindi una euristica.
+        Eg. di euristiche
+        Possiamo stimare il numero di soluzioni in un sottoproblema (sottoalbero), facile se il problema è un albero (basta attraversarlo), in caso di cicli si rimuovono alcuni archi che li generano. Stimate il numero di soluzioni possiamo comunque seguire due approcci controllare quelli con meno soluzioni cercando di scartarli il prima possibili o cercare in quello con più soluzioni cercando di imbatterne una il prima possibile.
+        Oppure possiamo scegliere in base alla dimesione dei domini residui delle altre variabili dopo la propagazione (si anticipa la propagazione = forward checking). In ogni caso non è semplice stabilire se è meglio prendere la somma, il prodotto, il minimo (escludendo il caso con dominio di dimesione 0) o massimo. 
+
+        Vedi product AAAI 1990 - sum Frost 1995 
+    """
+    for value in csp.order_domain_values(X):
+        csp.assignment[X] = value
+        if csp.propagate() # analogo al revise
+            result = backtracking_search(csp)
+            if result != failure:
+                return result
+        else:
+            csp.assignment[X] = None
+            csp.restore() # unpropagate
+        
+        return failure
+
+```
+
+Solitamente per l'euristica di selezione viene adottato un approccio ___fail-first___ ovvero si cerca di fallire il prima possibile, in questo modo si evitano di esplorare molti stati che non portano a soluzione. Per l'ordinamento dei valori del dominio si adotta un approccio ___fail-last___ ovvero si cerca di fallire il più tardi possibile. La ragione di questa opposizione nelle scelte è che ogni variabile prima o poi dovrà essere assegnata, quindi è meglio fallire il prima possibile per eseguire il backtracking il prima possibile.
+Per la scelta dei valori invece è meglio fallire il più tardi possibile, poichè siamo interessati ad un unica soluzione.
+
+La più semplice forma di inferenza è detta ___forward checking___ ovvero propagare i vincoli dopo ogni assegnamento. Questo è un approccio ___2-consistent___, ovvero arc-consistent.
+
+Come viene ottenuta l'infereza o propagazione può essere molto diverso da problema a problema. 
+Vediamo un esempio di propagazione per il problema delle n-regine con n = 6.
+
+Supponiamo che select_unassigned_variable() scelga le variabili da assegnare in ordine alfabetico, mentre order_domain_values() scelga i valori in ordine crescente. 
+
+<div style="display:inline-block">
+<div style="float:left;margin:0 60px 20px 20px">
+    <table >
+        <tr><td></td><td><b>a</b></td><td><b>b</b></td><td><b>c</b></td><td><b>d</b></td><td><b>e</b></td><td><b>f</b></td></tr>
+        <tr><td><b>6</b></td><td>1</td><td>1</td><td>0</td><td>0</td><td>0</td><td>0</td></tr>
+        <tr><td><b>5</b></td><td style="background-color:#72dd99" >Q<sub>1</sub></td><td>1</td><td>1</td><td>1</td><td>1</td><td>1</td></tr>
+        <tr><td><b>4</b></td><td>1</td><td>1</td><td>0</td><td>0</td><td>0</td><td>0</td></tr>
+        <tr><td><b>3</b></td><td>1</td><td>0</td><td>1</td><td>0</td><td>0</td><td>0</td></tr>
+        <tr><td><b>2</b></td><td>1</td><td>0</td><td style="background-color:#a5c0ff">1</td><td>1</td><td>0</td><td>0</td></tr>
+        <tr><td><b>1</b></td><td>1</td><td>0</td><td>0</td><td>0</td><td>1</td><td>0</td></tr>
+    </table>
+</div>
+
+<div style="float:right;margin:0 20px 20px 60px">
+    <table >
+        <tr><td></td><td><b>a</b></td><td><b>b</b></td><td style="background-color:#dd7272"><b>c</b></td><td><b>d</b></td><td><b>e</b></td><td><b>f</b></td></tr>
+        <tr><td><b>6</b></td><td>1</td><td>1</td><td>2</td><td>0</td><td>2</td><td>2</td></tr>
+        <tr><td><b>5</b></td><td>Q<sub>1</sub></td><td>1</td><td>1</td><td>1</td><td>1</td><td>1</td></tr>
+        <tr><td><b>4</b></td><td>1</td><td>1</td><td>2</td><td>2</td><td>2</td><td>2</td></tr>
+        <tr><td><b>3</b></td><td>1</td><td>2</td><td>1</td><td>2</td><td>0</td><td>0</td></tr>
+        <tr><td><b>2</b></td><td>1</td><td style="background-color:#72dd99">Q<sub>2</sub></td><td>1</td><td>1</td><td>2</td><td>2</td></tr>
+        <tr><td><b>1</b></td><td>1</td><td>2</td><td>2</td><td>2</td><td>1</td><td>0</td></tr>
+    </table>
+</div>
+
+La casa __c2__ dopo la prima propagazione diventa 1 a causa del revise$(X_b,X_c)$, infatti una qualsiasi assegnazione a $X_b$ rende $X_{c2}$ inconsistente.
+
+Con la scelta di porre $X_b = 2$ e propagando raggiungiamo uno stato detto ___dead end___ poichè $|D_c| = 0$. A questo punto l'algoritmo torna indietro (dopo i 2 assegnamenti, nel caso propagate mantenga la 2-consistency). Optare per un approccio 6-consistency è come detto molto costoso, in generale fare una propagazione completa è meno efficiente di fare più propagazioni parziali ovvero assegnare un valore anche se possibilmente sbagliato e entrare in una situazione di dead end per poi tornare indietro.
+</div>
+
+> (I numeri rappresentano l'iterazione in cui vengono cancellati i valori dal dominio, 0 se il valore è ancora valido)
+___
+
+#### Altri approcci per risolvere CSP
+
+Ci sono approcci migliori per fare backtracking. Un'idea è quella di tornare indietro ad una variabile ancora precedente all'assegnazione che ha causato la dead end e risolvere il problema prima di quella assegnazione. 
+
+Spesso molti CSP sono più facilmente risolvibili come local searches con un euristica che miri a ridurre al minimo il numero di conflitti tra assegnamenti di variabili. Ad esempio è stato dimostrato empiricamente che per il problema delle n-regine si riesce ad ottenere una soluzione anche per problemi molto grandi in una 50-ina di step (in tempo praticamente costante) perchè il set delle soluzioni è detto _denso_, molti stati sono magari ad un'assegnamento dalla soluzione. 
+
+Un altro approccio è quello di considerare la struttura del problema. Come detto possiamo vedere una CSP come un grafo i cui nodi sono le variabili e i vincoli i rami. Consideriamo adesso per esempio la mappa dell'Australia. La Tasamania risulta non connessa al resto delle altre variabili, questo significa che la sua assegnazione è indipendente dall'assegnazione delle altre variabili. Colorare la Tasmania e le terre connesse possono essere considerati come due __sottoproblemi indipendenti__. L'indipendenza può essere verificata grazie all'algoritmo per determinare le __componenti connesse__. Supponiamo che ciascuna sotto-$CSP_i$ abbia $c$ variabili sulle $n$ totali. Ci sono quindi $\frac{n}{c}$ sottoproblemi per i quali sappiamo trovare soluzione in $O(|D|^c)$, il che vuol dire che per risolvere completamente la CSP serve $O(\frac{n}{c}|D|^c)$ che è lineare rispetto a $n$. 
+
+Diciamo che una CSP è ___directional arc consistent___ (__DAC__) rispetto ad ordinamento delle variabili $S = <X_1, X_2, \dots, X_n>$ se $\forall X_i, X_j \in S, \text{ con } i < j, X_i$ è arc consistent rispetto a $X_j$.
+
+Per risolvere una CSP a struttura d'albero basta prendere ciascuna variabile come radice e ordinarle in modo che ciascuna di queste appaia dopo il proprio genitore nella sequenza. Questo tipo di algoritmo è detto __ordinamento topologico__. Un qualsiasi albero di $n$ nodi ha $n-1$ archi quindi è possibile rendere un albero directional arc consistent in $O(n)$ e per ciascuno dobbiamo controllare fino a $|D|$ possibili valori per coppie di variabili $\implies \text tempo \prop O(n*|D|^2)$
+
+<details>
+    <summary><b>Code</b>: Tree-CSP solver </summary>
+
+```python
+
+def tree_solver(csp):
+    root = csp.select_unassigned_variable()
+    csp.topological_sort(root)
+    for d in csp.D:
+        if not d:
+            return False
+    for x in csp.X:
+        x = random(csp.D[x])
+    return csp.assignment
+
+```
+
+</details>
+
+</br>
+
+__Cutset Conditioning__ :
+La tecnica appena proposta è, come stato detto, valida solo per CSP che possono essere rappresentati come alberi. Un'altro approccio è quello di trovare un insieme di variabili $S$ tale che la rimozione di $S$ dal grafo renda il grafo un albero. Questo insieme è detto ___cutset___ e la tecnica è detta ___cutset conditioning___. Le variabili del cutset possono essere assegnate in modo da rendere il grafo un albero e poi risolvere i sottoproblemi indipendenti. L'algoritmo ha complessità $O(|D|^c * (n-c)*|D|^2)$. Trovare il più piccolo cutset è un problema NP-completo, ma esistono euristiche che trovano un cutset in tempi brevi.
+
+Eg.
+![](./images/cut_conditioning.png)
+
+$P_1$ e $P_2$ ammettono le stesse soluzioni.
+
+__Dual Graph__ :
+Un'altro approccio è quello di costruire un grafo duale al grafo delle variabili. Prima di invischiarsi in questo annoso problema, vediamo alcuni concetti chiave. 
+
+Chiamiamo ___Clique___ un insieme di nodi $C \subseteq V$ tale che $C$ induce un sottografo completo ovvero $\forall X_i, X_j \in C, X_i$ è connesso a $X_j$ da un arco. Chiamiamo ___Maximal Clique___ una clique che non è sottoinsieme di un'altra clique.
+![](https://i.stack.imgur.com/MrlSG.png)
+
+Vediamo ora un esempio di problema duale. Consideriamo come problema principale un cruciverba.
+
+<div style="display:inline-block; float:left; margin-right: 40px">
+    <table style="border:3px solid black">
+        <tr><td><sup>1</sup></td><td><sup>2</sup></td><td><sup>3</sup></td><td><sup>4</sup></td><td><sup>5</sup></td></tr>
+        <tr><td  style="background-color:#a5c0ff"></td><td style="background-color:#a5c0ff"></td><td><sup>6</sup></td><td style="background-color:#a5c0ff"></td><td><sup>7</sup></td></tr>
+        <tr><td style="background-color:#a5c0ff"></td><td><sup>8</sup></td><td><sup>9</sup></td><td><sup>10</sup></td><td><sup>11</sup></td></tr>   
+        <tr><td style="background-color:#a5c0ff"></td><td style="background-color:#a5c0ff"></td><td><sup>12</sup></td><td><sup>13</sup></td><td style="background-color:#a5c0ff"></td></tr>
+    </table>
+</div>
+
+<div style="display:inline-block; float:right; margin-left: 20px;">
+    <img src="./images/dual_problem.png" width="400" />
+</div>
+
+Potremmo prendere come variabili le singole celle bianche, ai domini corrisponderebbero quindi le lettere dell'alfabeto mentre i vincoli sarebbero relazioni del tipo $R_{3,6,9,12} = \{ "TALL", "FINE", \dots \}$. Questo comporta domini più piccoli ma un numero di vincoli molto elevato. Un'altro approccio è quello di prendere come variabili i gruppi di celle ovvero $v_{1,2,3,4,5}, v_{3,6,9,12}, v_{5,7,11}, \dots$, come domini le parole del dizionario e come vincoli coerenza fra intersezioni di variabili e parole. Questo comporta domini più grandi ma un numero di vincoli più piccolo (a destra i grafi corrispondenti).
+
+L'operazione evidente che abbiamo eseguito è sostituire le variabili con le clique massimali, questo ha trasformato i vincoli del problema principale in domini del problema duale e viceversa. Questo è un esempio di ___dual graph___.
+
+Introduciamo ora il concetto di ___running intersection property___ (RIP) ovvero una proprietà che garantisca la consistenza di un problema duale. Un problema duale è consistente se e solo se $\forall X_i, X_j \in V, X_i$ e $X_j$ sono connessi da un arco nel grafo duale $\implies D_i \cap D_j \neq \emptyset$.

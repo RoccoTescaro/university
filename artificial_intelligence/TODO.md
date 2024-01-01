@@ -1,5 +1,6 @@
 total lectures: 24
 indentation: optional readings
+papers: [proxy-auth.unifi.it:8888] 
 
 - lecture 1
 - [x] cap. 1, 2.1-2.3, 3.1-3.2 / 
@@ -24,3 +25,22 @@ indentation: optional readings
 - [x] cap. 5.1-5.2
 
 - lecture 6
+- [x] cap. 5.3
+- [ ] [https://cs.uwaterloo.ca/~vanbeek/Publications/survey06.pdf]
+    - [ ] [https://www.ijcai.org/Proceedings/93-1/Papers/034.pdf]
+
+- lecture 7
+- [x] cap. 5.4-5.5
+- [ ] [https://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.79.9283&rep=rep1&type=pdf] <!-- doesn't seems to work -->
+
+- lecture 8
+- [ ] [https://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.79.9283&rep=rep1&type=pdf] <!-- doesn't seems to work -->
+
+- lecture 9
+- [ ] [https://www.minizinc.org/downloads/doc-latest/minizinc-tute.pdf]
+    - [ ] [https://modref.github.io/papers/ModRef2019_Increasing%20modeling%20language%20convenience%20with%20a%20universal%20n-dimensional%20array.pdf]
+    - [ ] [https://www.minizinc.org/]
+    - [ ] [https://github.com/CPMpy/cpmpy]
+
+- lecture 10
+- [ ] cap. 7.1, 7.3-7.4, 8.1-8.2
