@@ -43,4 +43,7 @@ papers: [proxy-auth.unifi.it:8888]
     - [ ] [https://github.com/CPMpy/cpmpy]
 
 - lecture 10
-- [ ] cap. 7.1, 7.3-7.4, 8.1-8.2
+- [x] cap. 7.1, 7.3-7.4, 8.1-8.2
+
+- lecture 11
+- [ ] cap. 7.5-

@@ -732,3 +732,58 @@ Potremmo prendere come variabili le singole celle bianche, ai domini corrisponde
 L'operazione evidente che abbiamo eseguito è sostituire le variabili con le clique massimali, questo ha trasformato i vincoli del problema principale in domini del problema duale e viceversa. Questo è un esempio di ___dual graph___.
 
 Introduciamo ora il concetto di ___running intersection property___ (RIP) ovvero una proprietà che garantisca la consistenza di un problema duale. Un problema duale è consistente se e solo se $\forall X_i, X_j \in V, X_i$ e $X_j$ sono connessi da un arco nel grafo duale $\implies D_i \cap D_j \neq \emptyset$.
+<!--TODO--> complete
+___
+
+#### Logic
+
+La logica è uno strumento matematico che ha radici antiche, che ha visto diverse evoluzioni e che permette un diverso approccio al mondo dell'intelligenza artificiale. Questo approccio prevede di rappresentare il mondo come un insieme di proposizioni e di usare la logica per dedurre nuove proposizioni a partire da quelle date, ovvero un processo di ___reasoning___. 
+
+Distinguiamo due tipi di ragionamento:
+- __ontologico__: ragionamento su cosa possiamo sapere del mondo
+- __epistemologico__: ragionamento su cosa sappiamo del mondo
+
+Il componente principale di un ___knowledge-based agent___ è la ___knowledge base___  (__KB__) ovvero la base di conoscenza. La conoscenza è rappresentata come un insieme di ___sentences___ o formule, ovvero frasi che esprimono proposizioni nel ___knowledge rappresentation language___. Una frase non derivata da altre frasi è detta ___assioma___. Le operazioni prinicipali che si possono eseguire su una KB sono: ___tell___ (aggiungere una frase), ___ask___ (chiedere se una frase è vera). Entreambe le operazioni coinvolgono il processo di __inferenza__ ovvero derivare nuove frasi a partire da quelle nella KB. La KB ha inizialmente solo assiomi e questo gruppo iniziale è detto ___background knowledge___. 
+
+Ci sono due modi per costruire la KB:
+- __dichiarativa__ : si dichiarano le proposizioni vere una alla volta
+- __procedurale__ : si codifica il modo in cui vogliamo che l'agente si comporti come un programma, un'insieme di regole.
+
+La __sintassi__ è la grammatica che definisce quali formule sono ben formate (wff ___well formed formulae___).
+La __semantica__ definisce il significato delle formule, ovvero quali proposizioni sono vere e quali sono false rispetto a tutti i possibili __modelli__.
+
+Eg.
+$x + y = 4$ è sintatticamente corretta (dato per linguaggio il linguaggio matematico).
+$4x + = y$ è sintatticamente scorretta.
+
+Con questo esempio introduciamo un altro concetto importante, quello di ___interpretation___ ovvero una funzione che associa ad ogni simbolo un significato. In questo caso $x$ e $y$ sono variabili e $4$ è una costante. Non possiamo dire nulla sulla semantica di questa formula senza conoscere l'interpretazione delle variabili e delle costanti. Applicando l'interpretazione per tutti i simboli possiamo determinare se la formula è vera o falsa rispetto a quella stessa interpretazione (una variabile potrebbe non avere ancora un valore associato, $x+y=4$ è vera per $x, y = 2$ ma è falsa per $x = 5, y = 13$). 
+
+Se una formula $\alpha$ è vera nel modello $m$, diciamo allora che $m$ __soddisfa__ $\alpha$. L'insieme di modelli in cui $\alpha$ è vera si scrive $M(\alpha)$. Quando una formula è logicamente implicata da un'altra si parla di ___entailment___ e si indica con $\beta \models \alpha$ ($\alpha \implies \beta$). La definizione formale è: $\beta \models \alpha \iff M(\beta) \subseteq M(\alpha)$ ovvero se per ogni modello di $\beta$ in cui $\beta$ è vera, $\alpha$ è vera. $\beta$ è una ___conseguenza logica___ di $\alpha$ e per tanto una formula _più forte_ di $\alpha$ (vera per meno modelli).
+
+Il processo di inferenza logica varia da linguaggio a linguaggio ma consiste sempre fondamentalmente in derivare nuove formule da quelle presenti nella KB ovvero $KB \models \alpha$. Quando questo richiede $i$ passaggi si scrive $KB \models_i \alpha$ e si dice che $\alpha$ deriva da KB per $i$. L'idea di controllare tutti i possibili modelli per verificare se una formula è vera è detta ___model checking___.
+
+Un algoritmo che derivi solo formule entailed è detto ___sound___ o ___truth preserving___. Un algoritmo che derivi tutte le formule entailed è detto ___complete___. 
+
+Ci sono diversi tipi di logica, vediamo le più importanti.
+- __Logica proposizionale__ (PL)
+
+    Ontologia: fatti. Eg. "Vienna è la capitale dell'Austria" ( modello/mondo finito ).
+    Sintassi: proposizioni atomiche, operatori logici. Eg. $P \land Q \implies R$ 
+        Variabili: un qualsiasi simbolo che possa essere associato ad un fatto ontologico per mezzo dell'interpretazione (a volte due simboli diversi possono essere associati allo stesso fatto, dipende dall'interpretazione). Eg. $P, Q, R$
+        Operatori logici: $\neg, \land, \lor, \implies, \iff$
+    Semantica: Il numero di possibili mondi in logica proposizionale è $2^n$ dove $n$ è il numero di simboli proposizionali, ogni variabile può assumere un valore booleano.
+
+    La pl è decidibile, esiste un algoritmo che determina se una formula è vera o falsa in tempo finito.
+
+- __Logica di primo ordine__ (FOL)
+
+    Ontologia: fatti, oggetti, relazioni, funzioni ( modello/mondo infinito ).
+    Sintassi: proposizioni atomiche, quantificatori, operatori logici. Eg. $\forall x \in X, P(x) \implies Q(x)$
+
+    La fol è semidecidibile, esiste un algoritmo che determina se una formula è vera in tempo finito, ma non esiste un algoritmo che determina se una formula è falsa in tempo finito.
+
+- __Logica di secondo ordine__ (SOL, è indecidibile)
+- __Logica descrittiva__ (frammenti di FOL)
+- __Reti semantiche__ 
+- __Grafi si conoscenza__ (usata da google per certe query)
+
