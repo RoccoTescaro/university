@@ -27,13 +27,13 @@
 - [x] Lavoro elettrostatico
 - [x] Divergenza del campo elettrico
 - [x] Legge di Gauss
-- [ ] Intensità di corrente e densità di corrente
-- [ ] Significato corrente stazionaria
+- [x] Intensità di corrente e densità di corrente
+- [x] Significato corrente stazionaria
 - [x] Effetto Hall e sonda di Hall
 - [ ] Dimostrazione equazioni del Maxwel differenziali
 - [x] Teorema di Gauss dimostrazioni
 - [ ] Passaggio da equazioni di Maxwell a onde elettromagnetiche
-- [ ] Leggi di Ohm
+- [x] Leggi di Ohm
 ___
 
 - [x] Perché il flusso del campo elettrico è nullo (nel campo elettrostatico)?

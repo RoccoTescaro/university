@@ -96,7 +96,7 @@ $\Phi(\vec{E}) = \oint_\Sigma \vec{E} \cdot \vec{u_n} d\Sigma = \int_\tau \nabla
 $\implies \nabla \cdot \vec{E} = \frac{\rho}{\epsilon_0}$.
 
 $\nabla \cdot \vec{E} = \frac{\delta E_x}{\delta x} + \frac{\delta E_y}{\delta y} + \frac{\delta E_z}{\delta z}$\
-poichè vale $E = \nabla V$ allora $\nabla \cdot \vec{E} = \nabla \cdot \nabla V = \nabla^2 V = \frac{\delta^2 V}{\delta^2 x} + \frac{\delta^2 V}{\delta^2 y} + \frac{\delta^2 V}{\delta^2 z} = - \frac{\rho}{\epsilon_0}$\
+poichè vale $E = - \nabla V$ allora $\nabla \cdot \vec{E} = \nabla \cdot \nabla V = \nabla^2 V = \frac{\delta^2 V}{\delta^2 x} + \frac{\delta^2 V}{\delta^2 y} + \frac{\delta^2 V}{\delta^2 z} = - \frac{\rho}{\epsilon_0}$\
 Questa formulazione che mette in relazione potenziale e densità di carica è detta __equazione di Poisson__.
 
 La nozione di flusso è applicabile anche al campo magnetico, in questo caso però data la proprietà del campo magnetico, che le linee di campo sono chiuse, ogni linea di campo che entra in una superficie deve uscirne e quindi il flusso è sempre nullo. Si parla in questo caso di __legge di Gauss per il campo magnetico__.\
@@ -185,7 +185,7 @@ La legge di Ohm è spesso scritta nella forma $\vec{E} = \rho \vec{j}$ con $\rho
 
 Prendiamo in considerazione un conduttore metallico generico, tra campo elettrico e differenza di potenziale vale $\Delta V = \int_A^B \vec{E} \cdot d\vec{s} = \int_A^B \rho \vec{j} \cdot d\vec{s} = \int_A^B \rho \frac{i}{d\Sigma} \vec{u_n} \cdot d\vec{s} = i \int_A^B \rho \frac{d\vec{s}}{d\Sigma} \cdot \vec{u_n}$.\
 Quando il conduttore ha forma cilindrica ad esempio vale $\Delta V = i \rho \frac{l}{\Sigma}$ con $l$ la lunghezza del conduttore e $\Sigma$ la sua sezione.\
-Chiamiamo __resistenza elettrica__ $R = \int_A^B \rho \frac{d\vec{s}}{d\Sigma} \cdot \vec{u_n}$ 
+Chiamiamo __resistenza elettrica__ $R = \int_A^B \rho \frac{d\vec{s}}{d\Sigma} \cdot \vec{u_n} \implies \Delta V = Ri$ detta legge di Ohm per i conduttori metallici. 
 ___
 
 #### Forza di Lorentz e effetto Hall
