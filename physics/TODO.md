@@ -7,23 +7,133 @@
 - [x] Capacità condensatore sferico
 - [x] Energia di un condensatore
 - [x] Legge di ampere con anche  formulazione locale
-- [ ] Dimostrazione della legge di ampere con biot savart
+- [x] Dimostrazione della legge di ampere con biot savart
 - [x] Dimostrazione che il campo elettrostatico è conservativo
 - [x] Equazione di poisson
 - [x] Cos'è la legge di Faraday
-- [ ] Come costruire un generatore di corrente continua sfruttando la legge di Faraday
+- [x] Come costruire un generatore di corrente continua sfruttando la legge di Faraday
 - [x] Dipolo elettrico con calcolo del potenziale e campo elettrico
 - [x] Dipolo elettrico immerso in un campo elettrico anche non uniforme e relative forze/momenti
 - [ ] Equazioni onde elettromagnetiche a partire da Maxwell
 - [x] Dimostrazione legge di Gauss + forma differenziale
 - [ ] Legge di Ampere Maxwell
+- [x] Dipolo elettrico
+- [x] Cosa lega campo elettrico e potenziale
+- [x] Forza di Lorentz
+- [x] Moto di una carica immersa in un campo magnetico
+- [ ] Equazione di Ampere-Maxwell in forma completa
+- [x] Legge di Ampere
+- [x] Potenziale elettrostatico
+- [x] Lavoro elettrostatico
+- [x] Divergenza del campo elettrico
+- [x] Legge di Gauss
+- [ ] Intensità di corrente e densità di corrente
+- [ ] Significato corrente stazionaria
+- [x] Effetto Hall e sonda di Hall
+- [ ] Dimostrazione equazioni del Maxwel differenziali
+- [x] Teorema di Gauss dimostrazioni
+- [ ] Passaggio da equazioni di Maxwell a onde elettromagnetiche
+- [ ] Leggi di Ohm
+___
 
+- [x] Perché il flusso del campo elettrico è nullo (nel campo elettrostatico)?
+- [x] Dimostrare perché i conduttori hanno le cariche sulla superficie: presa una qualsiasi superficie contenuta nel conduttore voglio dimostrare che è nulla la carica al suo interno (usando gauss)
+- [x] Qual è la prima condizione da imporre in elettrostatica per un conduttore?
+- [x] Cosa succede al potenziale nel caso precedente: definizione potenziale sul campo elettrico
+- [x] Mostra che il campo elettrostatico è conservativo
+- [x] Quale è la cosa più importante del conduttore in elettrostatica: cos'è che è nullo per definizione
+- [ ] Legge di Ampere
+- [x] Legge di gauss: per una carica puntiforme e per distribuzione di cariche (dimostrazione per carica puntiforme)
+- [x] divergenza di un vettore/ campo radiale
+- [x] Forme locali
+- [ ] Profilo delle onde nel tempo
+- [x] dimostrazione campo elettrostatico conservativo
+- [x] Definizione potenziale elettrico
+- [x] condizione campo elettrico conservativo in forma integrale e forma locale
+- [x] Proprietà di un Conduttore in elettrostatica
+- [x] Perché le cariche si dispongono sulla superficie
+- [x] Dimostrazione che il campo elettrostatico è conservativo
+- [x] Dipolo elettrico con calcolo del potenziale e campo elettrico
+- [x] Dipolo elettrico immerso in un campo elettrico anche non uniforme e relative forze/momenti
+- [x] Dimostrazione legge di Gauss + forma differenziale
+- [x] Dipolo elettrico
+- [x] Cosa lega campo elettrico e potenziale
+- [x] Potenziale elettrostatico
+- [x] Lavoro elettrostatico
+- [x] Divergenza del campo elettrico
+- [x] Legge di Gauss
+- [x] Teorema di Gauss dimostrazioni
+- [x] dipolo elettrico (dimostrazione) e dipolo elettrico immerso in un campo elettrico costante e non
+- [x] Gauss
+- [x] E conservativo
+- [ ] Generatore di tensione
+- [ ] Corrente alternata
+- [ ] Ricavare la legge di Biot Savart dalla prima legge di Laplace
+- [ ] Calcolare la divergenza o rotore di un campo
+- [ ] Dimostrazione come si arriva alla legge di Biot Savart
+- [ ] cosa cambia se ho un campo magnetico variabile nel tempo?
+- [ ] generatore di corrente continua e corrente alternata
+- [ ] Fenomeno Autoinduzione
+- [ ] Legge di Faraday
+- [ ] Dimostrazione legge energia magnetica
+- [ ] Capacità condensatore sferico
+- [ ] Condensatore
+- [ ] Energia di un condensatore
+- [ ] Legge di ampere con anche formulazione locale
+- [ ] Dimostrazione della legge di ampere con biot savart
+- [ ] Legge di ampere Maxwell
+- [x] Equazione di poisson
+- [ ] Cos'è la legge di Faraday
+- [ ] Come costruire un generatore di corrente continua sfruttando la legge di Faraday
+- [ ] Forza di Lorentz
+- [ ] Moto di una carica immersa in un campo magnetico
+- [ ] Equazione di Ampere-Maxwell in forma completa
+- [ ] Legge di Ampere
+- [ ] Intensità di corrente e densità di corrente
+- [ ] Significato corrente stazionaria
+- [ ] Effetto Hall e sonda di Hall
+- [ ] Dimostrazione equazioni del Maxwel differenziali
+- [ ] Leggi di Ohm
+- [ ] Faraday, come si può ricondurre a Lorentz ed in quali casi, generatore di corrente continua ed alternata applicando Faraday
+- [ ] densità di corrente e corrente (dimostrazione) e leggi di Ohm con dimostrazione
+- [ ] effetto Hall e sonda di Hall
+- [ ] Ricavare l'equazione d'onda dalle leggi di Maxwell
+- [ ] inizio di come si ottengono le onde elettromagnetiche: partire dalla legge di Maxwell
+- [ ] Profilo delle onde nel tempo
+- [ ] Equazioni onde elettromagnetiche a partire da Maxwell
+- [ ] Passaggio da equazioni di Maxwell a onde elettromagnetiche
+- [ ] I j e ohm
+- [ ] Conduttori
+- [x] Dipolo
+- [ ] L di una spira
+- [ ] Autoinduzione e cavo coassiale
+- [ ] Faraday e Generatori
+- [ ] Ampere
+- [ ] ampere maxwellFenomeno Autoinduzione
+- [ ] Legge di Faraday
+- [ ] Dimostrazione legge energia magnetica
+- [ ] Proprietà di un Conduttore in elettrostatica
+- [x] Perché le cariche si dispongono sulla superficie
+- [ ] Condensatore
+- [ ] Capacità condensatore sferico
+- [ ] Energia di un condensatore
+- [ ] Legge di ampere con anche formulazione locale
+- [ ] Dimostrazione della legge di ampere con biot savart
+- [x] Dimostrazione che il campo elettrostatico è conservativo
+- [ ] Equazione di poisson
+- [ ] Cos'è la legge di Faraday
+- [ ] Come costruire un generatore di corrente continua sfruttando la legge di Faraday
+- [x] Dipolo elettrico con calcolo del potenziale e campo elettrico
+- [x] Dipolo elettrico immerso in un campo elettrico anche non uniforme e relative forze/momenti
+- [ ] Equazioni onde elettromagnetiche a partire da Maxwell
+- [x] Dimostrazione legge di Gauss + forma differenziale
+- [ ] Legge di ampere Maxwell
 - [x] Dipolo elettrico
 - [x] Cosa lega campo elettrico e potenziale
 - [ ] Forza di Lorentz
 - [ ] Moto di una carica immersa in un campo magnetico
 - [ ] Equazione di Ampere-Maxwell in forma completa
-- [x] Legge di Ampere
+- [ ] Legge di Ampere
 - [x] Potenziale elettrostatico
 - [x] Lavoro elettrostatico
 - [x] Divergenza del campo elettrico
