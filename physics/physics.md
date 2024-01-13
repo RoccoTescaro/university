@@ -9,6 +9,7 @@ ___
 #### Indice
 
 - [Lavoro e Potenziale elettrostatico (conservatività del campo elettrostatico)](#lavoro-e-potenziale-elettrostatico-conservatività-del-campo-elettrostatico)
+- [Rotore del campo elettrostatico](#rotore-del-campo-elettrostatico)
 - [Dipolo elettrico](#dipolo-elettrico)
 - [Legge/Teorema di Gauss](#leggeteorema-di-gauss)
 - [Proprietà di un Conduttore in elettrostatica](#proprietà-di-un-conduttore-in-elettrostatica)
@@ -21,6 +22,7 @@ ___
 - [Generatore di corrente (continua e alternata)](#generatore-di-corrente-continua-e-alternata)
 - [Autoinduzione](#autoinduzione)
 - [Energia magnetica](#energia-magnetica)
+- [Legge di Ampere-Maxwell](#legge-di-ampere-maxwell)
 - [Equazioni di Maxwell](#equazioni-di-maxwell)
 ___
 
@@ -40,6 +42,15 @@ Consideriamo ora però il caso del campo generato da una carica puntiforme.\
 Vale $dW = q_0\vec{E} \cdot d\vec{s} = \frac{q_0q}{4\pi\epsilon_0}\frac{\vec{u_r} \cdot d\vec{s}}{r^2} = \frac{q_0q}{4\pi\epsilon_0}\frac{dr}{r^2} \implies \int dW = \int_{r_1}^{r_2} \frac{q_0q}{4\pi\epsilon_0}\frac{dr}{r^2} = \frac{q_0q}{4\pi\epsilon_0}(\frac{1}{r_1} - \frac{1}{r_2}) = q_0\frac{q}{4\pi\epsilon_0}[-(\frac{1}{r_2} - \frac{1}{r_1})] = -q_0 \Delta V = \Delta U_e$ con $\Delta V$ la differenza di __potenziale__ tra i due punti e $\Delta U_e$ la differenza di __energia potenziale elettrostatica__ (entrambi definiti a meno di una costante additiva).
 
 Come ci accorgiamo il lavoro non dipende dal percorso scelto ma dal campo elettrostatico nel punto iniziale e finale, di fatto se consideriamo $V(A) - V(A) = 0$. Questo ci suggerisce che il campo elettrostatico è conservativo. I risultati si possono infatti estendere ad un sistema discreto di cariche grazie al principio di sovrapposizione e ad un sistema continuo sempre per il principio di linearità degli integrali.
+___
+
+#### Rotore del campo elettrostatico
+pag. 45
+
+Grazie al teorema di Strokes vale che la circuitazione di un campo vettoriale (come ad esempio $\vec{E}$) lungo un circuito $\gamma$, è uguale al flusso del rotore del campo attraverso una qualsiasi superficie $\Sigma$ che abbia come bordo il circuito $\gamma$:\
+$\oint_\gamma \vec{E} \cdot d\vec{s} = \int_\Sigma \nabla \times \vec{E} \cdot \vec{u_n} d\Sigma$.
+
+Per campi elttrostatici vale che $\nabla \times \vec{E} = 0$ (dato che $\vec{E}$ è conservativo) e si dice che il campo elettrostatico è __irrotazionale__.
 ___
 
 #### Dipolo elettrico
@@ -96,7 +107,7 @@ $\Phi(\vec{E}) = \oint_\Sigma \vec{E} \cdot \vec{u_n} d\Sigma = \int_\tau \nabla
 $\implies \nabla \cdot \vec{E} = \frac{\rho}{\epsilon_0}$.
 
 $\nabla \cdot \vec{E} = \frac{\delta E_x}{\delta x} + \frac{\delta E_y}{\delta y} + \frac{\delta E_z}{\delta z}$\
-poichè vale $E = - \nabla V$ allora $\nabla \cdot \vec{E} = \nabla \cdot \nabla V = \nabla^2 V = \frac{\delta^2 V}{\delta^2 x} + \frac{\delta^2 V}{\delta^2 y} + \frac{\delta^2 V}{\delta^2 z} = - \frac{\rho}{\epsilon_0}$\
+poichè vale $E = - \nabla V$ allora $- \nabla \cdot \vec{E} = \nabla \cdot \nabla V = \nabla^2 V = \frac{\delta^2 V}{\delta^2 x} + \frac{\delta^2 V}{\delta^2 y} + \frac{\delta^2 V}{\delta^2 z} = - \frac{\rho}{\epsilon_0}$\
 Questa formulazione che mette in relazione potenziale e densità di carica è detta __equazione di Poisson__.
 
 La nozione di flusso è applicabile anche al campo magnetico, in questo caso però data la proprietà del campo magnetico, che le linee di campo sono chiuse, ogni linea di campo che entra in una superficie deve uscirne e quindi il flusso è sempre nullo. Si parla in questo caso di __legge di Gauss per il campo magnetico__.\
@@ -143,9 +154,9 @@ La capacità di un condensatore è definita come $C = \frac{Q}{V}$ dove $Q$ è l
 
 L'unità di misura della capacità è il ___Farad___ (F) che è pari a $[F] = \frac{[C]}{[V]} = \frac{[A][s]}{[V]} = [A][s][V]^{-1}$
 
-Nel caso di un conduttore sferico di raggio $R_1$ al centro di un conduttore sferico cavo di raggio interno $R_2$ e raggio esterno $R_3$, se $Q$ è la carica disposta sulla superficie del conduttore interno, $-Q$ è la carica disposta sulla superficie interna del conduttore esterno e $Q$ quella sulla superficie esterna.
+Nel caso di un conduttore sferico di raggio $R_1$ al centro di un conduttore sferico cavo di raggio interno $R_2$ ($R_2 > R_1$) e raggio esterno $R_3$, se $Q$ è la carica disposta sulla superficie del conduttore interno, $-Q$ è la carica disposta sulla superficie interna del conduttore esterno e $Q$ quella sulla superficie esterna.
 
-$E(r) = \begin{cases} \frac{Q}{4\pi\epsilon_0 r^2} & r \geq R_3 \\ 0 & R_2 \leq r \leq R_3 \\ \frac{Q}{4\pi\epsilon_0 R_3^3} \frac{R_2^3}{r^2} & R_1 \leq r \leq R_2 \\ 0 & r \leq R_1 \end{cases}, \Delta V = \frac{Q}{4\pi\epsilon_0}(\frac{1}{R_1}-\frac{1}{R_2}), C = \frac{4\pi\epsilon_0R_1R_2}{R_2 - R_1}$
+$E(r) = \begin{cases} \frac{Q}{4\pi\epsilon_0 r^2} & r \geq R_3 \\ 0 & R_2 \leq r \leq R_3 \\ \frac{Q}{4\pi\epsilon_0 R_3^3} \frac{R_2^3}{r^2} & R_1 \leq r \leq R_2 \\ 0 & r \leq R_1 \end{cases}, \space\space\space \Delta V = \frac{Q}{4\pi\epsilon_0}(\frac{1}{R_1}-\frac{1}{R_2}), \space\space\space C = \frac{4\pi\epsilon_0R_1R_2}{R_2 - R_1}$
 
 Nel caso due conduttori siano posti in parallelo in modo tale che le loro armature compongano due conduttori collegati allora la capacità del sistema è la somma delle capacità dei due conduttori. 
 
@@ -153,7 +164,7 @@ Nel caso di condensatori in serie la carica è la stessa per entrambi i condensa
 
 Il processo di carica di un condensatore consiste in una separazione di cariche e richiede un determinato lavoro che, essendo il campo elettrostatico conservativo, dipende solo dallo stato iniziale e finale. Questa separazione può essere considerata come un trasferimento della carica dall'armatura negativa su quella positiva.
 
-Quindi $dW = V' \cdot dq' = \frac{q'}{C}dq'$ con $V'$ la differenza di potenziale tra le due amrature in una fase intermedia del processo e $q'$ la carica $CV'$ trasferita.
+Quindi $dW = V' \cdot dq' = \frac{q'}{C}dq'$ con $V'$ la differenza di potenziale tra le due armature in una fase intermedia del processo e $q'$ la carica $CV'$ trasferita.
 
 $W = \int dW = \int_0^Q \frac{q'}{C}dq' = \frac{Q^2}{2C}$. Questo lavoro viene immagazzinato nel sistema sotto forma di energia potenziale elettrostatica.
 
@@ -161,7 +172,7 @@ $U_e = \frac{Q^2}{2C} = \frac{CV^2}{2} = \frac{QV}{2}$
 
 In un condensatore piano il campo elettrostatico uniforme $V = E*h$, $C = \frac{\epsilon_0 \Sigma}{h}$ e $U_e = \frac{1}{2} \epsilon_0 E^2 \Sigma h = \frac{1}{2} \epsilon_0 E^2 \tau$.
 
-Si definisce la __densità di energia elettrostatica__ come $u_e = \frac{U_e}{\tau} = \frac{1}{2} \epsilon_0 E^2$. Il fatto che la formula della densità di energia elettrostatica non contenga misure relative al condensatore ci suggerisce la sua genralità. E' dimostrabile che $dU_e = u_e \cdot d\tau = \frac{1}{2} \epsilon_0 E^2 \cdot d\tau \implies U_e = \int_\tau \frac{1}{2} \epsilon_0 E^2 \cdot d\tau$.
+Si definisce la __densità di energia elettrostatica__ come $u_e = \frac{U_e}{\tau} = \frac{1}{2} \epsilon_0 E^2$. Il fatto che la formula della densità di energia elettrostatica non contenga misure relative al condensatore ci suggerisce la sua generalità. E' dimostrabile che $dU_e = u_e \cdot d\tau = \frac{1}{2} \epsilon_0 E^2 \cdot d\tau \implies U_e = \int_\tau \frac{1}{2} \epsilon_0 E^2 \cdot d\tau$.
 ___
 
 #### Corrente elettrica e legge di Ohm
@@ -191,9 +202,11 @@ ___
 #### Forza di Lorentz e effetto Hall
 pag. 145, 153
 
-Consideriamo una particella di massa $m$ e carica $q$ immersa in un campo magnetico $\vec{B}$. Se la carica è ferma rispetto alla sorgente del campo magnetico, allora non è soggetta a nessuna forza. Se invece la carica si muove allora è soggetta ad una forza detta __forza di Lorentz__ $\vec{F} = q\vec{v} \times \vec{B}$.
+Consideriamo una particella di massa $m$ e carica $q$ immersa in un campo magnetico $\vec{B}$. Se la carica è ferma rispetto alla sorgente del campo magnetico, allora non è soggetta a nessuna forza. Se invece la carica si muove allora è soggetta ad una forza detta __forza di Lorentz per il campo magnetico__ (a volte abbreviata semplicemente con forza di Lorentz) $\vec{F} = q\vec{v} \times \vec{B}$.
 
 Lungo uno spostamento l'energia cinetica della particella non varia poichè la forza di Lorentz non compie lavoro sulla stessa. Quando una particella casica si muove in un campo magnetico, la sua velocità cambia di direzione ma non di modulo.
+
+Quando è presente anche un campo elettrico oltre a quello magnetico, la __forza di Lorentz__ indica la forza complessiva che agisce sulla particella e dipende quindi da entrambi i campi: $\vec{F} = q_0(\vec{E} + \vec{v}\times\vec{B})$ (non vale più il discorso sul lavoro e sull'energia cinetica).
 
 Consideriamo ora una lamina rettangolare di spessore $h$ e larghezza $l$ immersa in un campo magnetico $\vec{B}$ uniforme e costante. Sulla lamina agisce una forza di Lorentz $\vec{F} = q\vec{v} \times \vec{B}$ che tende a spostare le cariche verso un lato della lamina. Questo spostamento di cariche genera un campo elettrico $\vec{E}$ che tende a contrastare la forza di Lorentz.
 
@@ -206,6 +219,20 @@ Grazie alle formule di Hall è possibile costruire un sonda detta __sonda di Hal
 $ℰ_H = \int_0^h \vec{E_H} \cdot d\vec{z} = \vec{E_H} \cdot h\vec{u_z} = E_H h = \frac{j B h}{n e} = \frac{i B}{n e l}$
 
 Ora misurando $ℰ_H$ per un campo $B$ noto è possibile stabilire una costante di proporzionalità che ci permette di calcolare campo magnetico qualsiasi.
+___
+
+#### Leggi di Laplace e di J.B.Biot-F.Savart
+
+La seconda legge di Laplace si verifica sperimentalmente e afferma che la forza esercitata da un campo magnetico su una spira in cui scorre corrente è:\
+$\vec{F} = \int_\gamma i d\vec{s} \times \vec{B}$ con $\gamma$ il percorso della spira e $i$ l'intensità di corrente che scorre nella spira.
+
+La prima legge di Laplace afferma invece che:\
+$d\vec{B} = \frac{\mu_0}{4\pi} \frac{i d\vec{s} \times \vec{u_r}}{r^2}$ con $r$ la distanza tra il punto in cui si calcola il campo e il punto in cui scorre la corrente.
+
+Sia $R$ la distanza minima (perpendicolare alla spira lineare) tra il punto in cui si calcola il campo e il punto in cui scorre la corrente, allora $r = \frac{R}{\sin \theta}$ (con $\theta$ l'angolo compreso fra $d\vec{s}$ e $\vec{u_r}$) e $d\vec{s} = \frac{Rd\theta}{\sin^2\theta}$ allora per la prima legge di Laplace vale:\
+$d\vec{B} = \frac{\mu_0}{4\pi} \frac{i \frac{Rd\theta}{\sin^2\theta} \sin\theta}{\frac{R^2}{\sin^2\theta}} \vec{u_\phi} = \frac{\mu_0}{4\pi} \frac{i \sin \theta d\theta}{R} \vec{u_\phi}$ con $\vec{u_\phi}$ il versore tangente alla circonferenza di raggio $R$ centrata nel punto in cui scorre la corrente e contenente il punto in cui si calcola il campo.
+
+$\frac{B} = \int_0^\infty \frac{\mu_0}{4\pi} \frac{i \sin \theta d\theta}{R} \vec{u_\phi} = \frac{\mu_0 i}{2 \pi} \frac{1}{R} \vec{u_\phi}$  detta __legge di Biot-Savart__.
 ___
 
 #### Moto di una particella in un campo magnetico uniforme
@@ -257,6 +284,10 @@ Da questo possiamo dedurre che la corrente indotta è data da $i = \frac{ℰ_i}{
 
 Ricordiamo che la forza elettromotrice è il lavoro per unità di carica necessario per spostare una carica positiva da un punto ad un altro del circuito e vale: \
 $ℰ_i = \oint E_i \cdot ds = - \frac{d \Phi(B)}{dt} [V]$ (altra dimostrazione che il campo elettrico indotto non è conservativo)
+
+La legge di Faraday può essere scritta anche nella forma differenziale: \
+$\oint E_i \cdot ds = \int_\Sigma (\nabla \times E_i) \cdot u_n d\Sigma = - \frac{d \Phi(B)}{dt} \implies \nabla \times E_i = - \frac{d B}{dt}$\
+detta appunto __forma locale__ della legge di Faraday.
 ___
 
 #### Generatore di corrente (continua e alternata)
@@ -306,10 +337,23 @@ Si dimostra che lo stesso vale per un solenoide toroidale. Possiamo quindi ident
 $U_L = \int_\tau \frac{B^2}{2\mu_0} d\tau$ 
 ___
 
+#### Legge di Ampere-Maxwell
+pag. 221
+
+Abbiamo già trattato la condizione di stazionarietà della corrente. Consideriamo ora un circuito in cui il generatore sta caricando un condensatore piano. Fissato il circuito $\gamma$ intorno ad un lato della spira, che definisce una superficie $\Sigma_1$ data da una sezione perpendicolare al lato della spira definita dal circuito, e $\Sigma_2$ che passa fra le due armature del condensatore. La corrente che passa attraverso $\Sigma_1$ è $i(t)$ mentre quella che passa attraverso $\Sigma_2$ è 0 (non c'è corrente nella parte di circuito aperto).\
+In questo caso viene meno la condizione di stazionarietà.
+
+La carica che si accumula su una superficie del condensatore genera per induzione un accumulo di carica nella superficie opposta, portando a definire una corrente detta __corrente di spostamento__ legata alla variazione del campo elettrico $i_s = \epsilon_0\frac{d\Phi(\vec{E})}{dt}$.
+
+Possiamo riscrivere quindi la legge di Ampere come $\oint \vec{B} \cdot d\vec{s} = \mu_0 (i_{conc} + \epsilon_0 \frac{d\Phi(\vec{E})}{dt})$. Questa è la __legge di Ampere-Maxwell__.
+
+E' importante notare come questa forma della legge di Ampere pone in relazione il campo magnetico con la variazione del campo elettrico. Mentre per la legge di Faraday abbiamo una relazione simmetrica tra campo elettrico e variazione del campo magnetico.
+___
+
 #### Equazioni di Maxwell
 pag. 223, 262
 
-Ci è utile spesso in fisica modellare eventi fisici periodici come funzioni sinusoidali (___onde___). Queste onde possono propagarsi attraverso e per mezzo di materia (in questo caso si parla di onde meccaniche) o attraverso e per mezzo di campi (come ad esempio le onde elettromagnetiche). Per semplificare questi oggetti matematici si riducono le funzioni onda a due variabili, una spaziale e una temporale: $\vec{E}(x,t) e \vec{B}(x,t)$. Si parla in questo caso di __onde piane__.
+Ci è utile spesso in fisica modellare eventi fisici periodici come funzioni sinusoidali (___onde___). Queste onde possono propagarsi attraverso e per mezzo di materia (in questo caso si parla di onde meccaniche) o attraverso e per mezzo di campi (come ad esempio le onde elettromagnetiche). Per semplificare questi oggetti matematici si riducono le funzioni onda a due variabili, una spaziale e una temporale: $\vec{E}(x,t)$ e $\vec{B}(x,t)$. Si parla in questo caso di __onde piane__.
 
 L'esistenza di onde piane fu prevista da Maxwell che riuscì a raggruppare le leggi di Gauss, Ampere e Faraday in quattro equazioni differenziali che descrivono il comportamento di un campo elettromagnetico. Queste equazioni sono dette __equazioni di Maxwell__ (in forma integrale):\
 $\oint \vec{E} \cdot d\Sigma = \frac{Q_{int}}{\epsilon_0}$\
@@ -317,9 +361,22 @@ $\oint \vec{B} \cdot d\Sigma = 0$\
 $\oint \vec{E} \cdot ds = - \frac{d \Phi(B)}{dt}$\
 $\oint \vec{B} \cdot ds = \mu_0 i + \mu_0 \epsilon_0 \frac{d \Phi(E)}{dt}$
 
-Per il teorema della divergenza possiamo riscrivere le prime due equazioni come:\
-$\nabla \cdot \vec{E} = \frac{\rho}{\epsilon_0} && \nabla \cdot \vec{B} = 0$
+Le analoghe formule in forma locale sono:
+- Per il teorema della divergenza possiamo riscrivere le prime due equazioni come:\
+    $\qquad \nabla \cdot \vec{E} = \frac{\rho}{\epsilon_0} \qquad\qquad\text{ , }\qquad\qquad \nabla \cdot \vec{B} = 0$\
+    vedi [Legge/Teorema di Gauss](#leggeteorema-di-gauss)
 
-Per il teorema di Stokes possiamo riscrivere le ultime due equazioni come:\
-$\nabla \times \vec{E} = - \frac{\delta B}{\delta t} && \nabla \times \vec{B} = \mu_0 j + \mu_0 \epsilon_0 \frac{\delta E}{\delta t}$
+- Per il teorema di Stokes possiamo riscrivere le ultime due equazioni come:\
+    $\qquad \nabla \times \vec{E} = 0 \qquad\qquad\text{ , }\qquad\qquad \nabla \times \vec{B} = \mu_0 \vec{j}$\
+    vedi [Rotore del campo ellttrostatico](#rotore-del-campo-elettrostatico) e [Legge di Ampere](#legge-di-ampere)\
+    tuttavia queste valgono per casi particolari, estese dai campi variabili nel tempo con la [forma locale legge di Faraday](#legge-di-faraday) e con la [legge di Ampere-Maxwell](#legge-di-ampere-maxwell):\
+    $\qquad \nabla \times \vec{E} = - \frac{d \vec{B}}{dt} \qquad\qquad\text{ , }\qquad\qquad \nabla \times \vec{B} = \mu_0 \vec{j} + \mu_0 \epsilon_0 \frac{d \vec{E}}{dt}$
 
+L'ipotesi di onda piana vuol dire che si cerca una soluzione in cui i campi $\vec{E}$ e $\vec{B}$ non variano per le variabili $y$ e $z$ vale a dire che $\delta/\delta y$ e $\delta/\delta z$ sono nulle.\
+Dalle equazioni di Maxwell in forma locale possiamo ricavare che:
+$\nabla \cdot \vec{E} = 0 \implies \frac{\delta E_x}{\delta x} = 0$\
+$\nabla \cdot \vec{B} = 0 \implies \frac{\delta B_x}{\delta x} = 0$\
+$\nabla \times \vec{E} = - \frac{\delta \vec{B}}{\delta t} = - \frac{\delta B_x}{\delta t} \vec{u_x} - \frac{\delta B_y}{\delta t} \vec{u_y} - \frac{\delta B_z}{\delta t} \vec{u_z} = 0\vec{u_x} - \frac{\delta E_z}{\delta x}\vec{u_y} + \frac{\delta E_y}{\delta x}\vec{u_z}$\
+$\nabla \times \vec{B} = \mu_0 \epsilon_0 \frac{\delta \vec{E}}{\delta t} = \mu_0 \epsilon_0 (\frac{\delta E_x}{\delta t} \vec{u_x} + \frac{\delta E_y}{\delta t} \vec{u_y} + \frac{\delta E_z}{\delta t} \vec{u_z}) = \mu_0 \epsilon_0 ( 0\vec{u_x} - \frac{1}{\mu_0 \epsilon_0} \frac{\delta B_z}{\delta x}\vec{u_y} + \frac{1}{\mu_0 \epsilon_0} \frac{\delta B_y}{\delta x}\vec{u_z})$
+
+In queste relazioni possiamo vedere come sia $\vec{E}$ che $\vec{B}$ siano costanti rispetto a $x$ e $t$ (la loro derivata rispetto a $x$ e $t$ è nulla).\
