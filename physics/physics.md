@@ -148,7 +148,7 @@ ___
 #### Condensatore
 pag. 76
 
-Un sistema costituito da due conduttori tra i quali c'è induzione completa è detta condensatore.
+Un sistema costituito da due conduttori, detti armature, tra i quali c'è induzione completa è detta condensatore.
 
 La capacità di un condensatore è definita come $C = \frac{Q}{V}$ dove $Q$ è la carica e $V$ la differenza di potenziale tra i due conduttori. 
 
@@ -156,7 +156,7 @@ L'unità di misura della capacità è il ___Farad___ (F) che è pari a $[F] = \f
 
 Nel caso di un conduttore sferico di raggio $R_1$ al centro di un conduttore sferico cavo di raggio interno $R_2$ ($R_2 > R_1$) e raggio esterno $R_3$, se $Q$ è la carica disposta sulla superficie del conduttore interno, $-Q$ è la carica disposta sulla superficie interna del conduttore esterno e $Q$ quella sulla superficie esterna.
 
-$E(r) = \begin{cases} \frac{Q}{4\pi\epsilon_0 r^2} & r \geq R_3 \\ 0 & R_2 \leq r \leq R_3 \\ \frac{Q}{4\pi\epsilon_0 R_3^3} \frac{R_2^3}{r^2} & R_1 \leq r \leq R_2 \\ 0 & r \leq R_1 \end{cases}, \space\space\space \Delta V = \frac{Q}{4\pi\epsilon_0}(\frac{1}{R_1}-\frac{1}{R_2}), \space\space\space C = \frac{4\pi\epsilon_0R_1R_2}{R_2 - R_1}$
+$E(r) = \begin{cases} \frac{Q}{4\pi\epsilon_0 r^2} & r \geq R_3 \\ 0 & R_2 \leq r \leq R_3 \\ \frac{Q}{4\pi\epsilon_0 r^2} & R_1 \leq r \leq R_2 \\ 0 & r \leq R_1 \end{cases}, \space\space\space \Delta V = \frac{Q}{4\pi\epsilon_0}(\frac{1}{R_1}-\frac{1}{R_2}), \space\space\space C = \frac{4\pi\epsilon_0R_1R_2}{R_2 - R_1}$
 
 Nel caso due conduttori siano posti in parallelo in modo tale che le loro armature compongano due conduttori collegati allora la capacità del sistema è la somma delle capacità dei due conduttori. 
 
@@ -296,6 +296,8 @@ pag. 209
 Consideriamo un circuito elettrico in cui è presente una resistenza esterna $R$, $r$ la resistenza della sbarretta mobile, immerso in un campo magnetico $B$ perpendicolare al piano della sbarretta e uniforme in tutto il circuito. Siccome manteniamo con velocità $\vec{v}$ costante della sbarretta, nel circuito compare la forza elettromotrice $ℰ_i = -vBl$ ($l$ lunghezza della sbarretta) e circola una corrente $i = \frac{ℰ_i}{R+r} = \frac{vBl}{R+r}$. Quindi sulla sbarretta agisce la forza di Lorentz $F = il \times B = - \frac{B^2 l^2}{R+r}\vec{v}$ che rallenta la sbarretta. Questa forza è detta __resistenza di attrito elettromagnetico__.
 
 Per mantenere la velocità costante della sbarretta è necessario applicare una forza di eguale modulo e direzione opposta spendendo una potenza $P = F \cdot v = \frac{B^2 l^2}{R+r} v^2 = ℰ_i i$. Il sistema può essere considerato come un __generatore__ in cui la potenza erogata $P = ℰ_i i$ proviene da un'azione meccanica esterna.
+
+Come abbiamo già detto sulla sbarretta agisce una forza di Lorentz $\vec{F} = l \vec{i} \times \vec{B} = \vec{v} \times \vec{B} \implies \vec{E_i} = \vec{F}/(-e)$ ovvero definisce un campo elettrico indotto detto __campo elettromotore__. Quando un elemento di materiale conduttore si muove in un campo magnetico fisso, si genera al suo interno una separazione di cariche che genera un campo elettrico indotto che ha origine proprio dalla forza di Lorentz. C'è poi una seconda causa di induzione, ovvero la variazione del campo magnetico per un circuito fisso.
 
 Possiamo invece costruire un generatore di corrente alternata considerando una spira rettangolare immersa in un campo magnetico uniforme e costante che ruota con velocità costante $\omega$ attorno ad un asse perpendicolare al piano della spira. \
 $\Phi(B) = \int_\Sigma B \cdot u_n d\Sigma = B\Sigma \cos\theta = B\Sigma\cos(\omega t) \implies ℰ_i = - \frac{d \Phi(B)}{dt} = B\Sigma\omega\sin(\omega t)$\
