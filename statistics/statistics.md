@@ -305,6 +305,7 @@ $P(-z_{\frac{\alpha}{2}} \leq \frac{\bar{X}-\mu}{\sigma/\sqrt{n}} \leq z_{\frac{
 __intervallo di confidenza__ : $\mu \in [\bar{X}-z_{\frac{\alpha}{2}}\frac{\sigma}{\sqrt{n}}, \bar{X}+z_{\frac{\alpha}{2}}\frac{\sigma}{\sqrt{n}}]$
 __ampiezza intervallo__ : $ci = 2z_{\frac{\alpha}{2}}\frac{\sigma}{\sqrt{n}}$
 __numerosità campionaria__ : $n = (\frac{2z_{\frac{\alpha}{2}}\sigma}{ci})^2$
+> __intervallo di predizione__ : $X_{n+1} \in [\bar{X}-z_\alpha \sigma\sqrt{1+1/n}, \bar{X}+z_\alpha \sigma\sqrt{1+1/n}]$(sempre con probabilità$1-\alpha$)
 ___
 __intervalli di confidenza per$\mu$di una Normale con varianza$\sigma$incognita__ :
 $\frac{\bar{X}-\mu}{S/\sqrt{n}} \sim t_{n-1}$con$S^2 = \frac{1}{n-1}\sum_{i=1}^{n}(X_i-\bar{X})^2$
@@ -335,8 +336,32 @@ __intervallo di confidenza__ : $p \in [\hat{p} - z_{\frac{\alpha}{2}}\sqrt{\frac
 ___
 
 ### Test di ipotesi
-Sia$H_0$__l'ipotesi nulla__ (un'affermazione sulla distribuzione di probabilità di una o più variabili casuali secondo la quale non ci sia differenza oppure non vi sia relazione tra due fenomeni misurati, o associazione tra due gruppi) da verificare su$\theta$. __Accetto__$H_0$se$(x_1, ..., x_n) \notin C$con$C$__regione critica__.
-Indico con$H_1 \neq H_0$__l'ipotesi alternativa__ e$\alpha$la probabilità di __errore di prima specie__ ovvero la probabilità che il campione cada nella regione critica. Le ipotesi alternative possono essere di tre tipi : __bilaterali__ ($\neq$), __unilaterali__ (< o >), __puntuali__ (=).
+Vogliamo stabilire se l'ipotesi fatta su un certo parametro che regola una distribuzione di una certa v.a. è accettabile o meno alla luce delle osservazioni fatte su un campione di osservazioni della v.a. in questione (ovvero verificare se il campione supporta l'ipotesi avanzata).
+
+Sia $H_0$ __l'ipotesi nulla__ (da verificare su $\theta$ ). __Accetto__ $H_0$ se $(x_1, ..., x_n) \notin C$ con$C$__regione critica__. \
+Indico con $H_1 \neq H_0$ __l'ipotesi alternativa__ (che è un ipotesi non compatibile con l'ipotesi nulla, non necessariamente l'opposto ma l'una esclusiva dell'altra) e $\alpha$ la probabilità di __errore di prima specie__ ovvero la probabilità che il campione cada nella regione critica pur essendo vera l'ipotesi nulla. 
+
+Le ipotesi alternative possono essere di tre tipi : __bilaterali__ ($\neq$), __unilaterali__ (< o >), __puntuali__ (=).
+
+Esiste anche la probabilità di __errore di seconda specie__, indicata con $\beta$ ovvero la probabilità di scelta dell'ipotesi nulla pur essendo vera l'ipotesi alternativa.\
+<!-- TODO --> check. \
+$\beta(\mu) = P_\mu(-z_\frac{\alpha}{2} \leq \frac{\bar{X}-\mu_0}{\sigma/\sqrt{n}} \leq z_\frac{\alpha}{2}) = \Phi(-z_\frac{\alpha}{2} - \frac{\mu-\mu_0}{\sigma/\sqrt{n}}) - \Phi(z_\frac{\alpha}{2} - \frac{\mu-\mu_0}{\sigma/\sqrt{n}})$ \
+__funzione potenza__ : $1 - \beta(\mu)$
+
+con $H_1 : \mu \neq \mu_0$ si ha $C = [-\infty , -z_{\frac{\alpha}{2}}] \cup [ z_{\frac{\alpha}{2}}, \infty ]$ \
+con $H_1 : \mu < \mu_0$ si ha $C = [-\infty , -z_{\alpha}]$ \
+con $H_1 : \mu > \mu_0$ si ha $C = [z_{\alpha} , \infty ]$
+
+cosa devo valutare se appartiene a $C$ ? \
+$\frac{\bar{X}-\mu_0}{\sigma/\sqrt{n}}$ 
+
+oppure con la p-value confrontata con $\alpha$ : \
+$1 - \Phi(\frac{\bar{X}-\mu_0}{\sigma/\sqrt{n}})$ 
+
+__test d'ipotesi sulla proporzione__ : \
+$\frac{\hat{p}-p_0}{\sqrt{\hat{p}(1-\hat{p})/n}}$
+
+
 - __verifica di ipotesi su$\mu$con$X \sim N(\mu, \sigma^2)$(test bilaterale)__ : 
    $H_0 : \mu = \mu_0$e$H_1 : \mu \neq \mu_0$
    $C = ((x_1, ..., x_n) : |\bar{x}-\mu_0| > z_{\frac{\alpha}{2}}\frac{\sigma}{\sqrt{n}})$
@@ -344,8 +369,6 @@ Indico con$H_1 \neq H_0$__l'ipotesi alternativa__ e$\alpha$la probabilità di __
 
     Indico con$\beta$la probabilità di __errore di seconda specie__ ovvero la probabilità di scelta$H_0$con$H_1$vera (con$H_0 : \mu = \mu_0$e$H_1 : \mu \neq \mu_0$).
 
-   $\beta(\mu) = P_\mu(-z_\frac{\alpha}{2} \leq \frac{\bar{X}-\mu_0}{\sigma/\sqrt{n}} \leq z_\frac{\alpha}{2}) = \Phi(-z_\frac{\alpha}{2} - \frac{\mu-\mu_0}{\sigma/\sqrt{n}}) - \Phi(z_\frac{\alpha}{2} - \frac{\mu-\mu_0}{\sigma/\sqrt{n}})$
-    __funzione potenza__ : $1 - \beta(\mu)$
 
     >$n \approx (\frac{z_\frac{\alpha}{2} + z_\beta}{\mu-\mu_0})^2 \sigma^2$
 
@@ -439,7 +462,7 @@ $E[\epsilon] = 0 \implies E[Y] - E[\alpha + \beta_1 x_1 + ... + \beta_n x_n] = 0
    $SS_R = \sum_i (y_i -A -Bx_i)^2 \implies \frac{SS_R}{\sigma^2} \sim \Chi_{n-2}^2$(Chi)
    $E[\frac{SS_R}{\sigma^2}] = n-2 \implies E[\frac{SS_R}{n-2}] = \sigma^2$stimatore non distorto
     __somma dei quadrati__:
-   $S_{xy} = \sum_i (x_i - \bar{x})(y_i - \bar{y}) = \sum_i x_iy_i - n\bar{x}\bar{y}$
+   $S_{xy} = \sum_i (x_i - \bar{x})(y_i - \bar{y}) = \sum_i x_iy_i - n\bar{x}\bar{y} = r \sqrt{S_{xx}S_{yy}}$
    $S_{xx} = \sum_i (x_i - \bar{x})^2 = \sum_i x_i^2 - n\bar{x}^2$
    $S_{yy} = \sum_i (y_i - \bar{y})^2 = \sum_i y_i^2 - n\bar{y}^2$
    $\hat{\beta} = \frac{S_{xy}}{S_{xx}}$,$\hat{\alpha} = \bar{y} - \hat{\beta}\bar{x}$
