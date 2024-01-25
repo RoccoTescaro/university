@@ -1,22 +1,25 @@
+import java.util.Queue;
 
 public class User
 {
-    User(String name, String password)
+    private static Long next_id = 0L;
+    private Long id = next_id++;
+
+    private String name;
+
+    public User(String name)
     {
         this.name = name;
-        this.password = password;
+        //System.out.println("User " + id + " created.");
+    }
+
+    public Long getId()
+    {
+        return id;
     }
 
     public String getName()
     {
         return name;
     }
-
-    public String getPassword()
-    {
-        return password;
-    }
-
-    private String name;
-    private String password;
 }
