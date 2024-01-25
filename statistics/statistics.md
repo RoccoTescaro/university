@@ -183,7 +183,7 @@ ___
         #### Uniforme
        $X \sim U(a,b)$
        $f_X(x) = \frac{1}{b-a}$con$x \in [a,b]$
-       $F_X(x) = \frac{x-a}{b-a}$con$x \in [a,b] \implies P(\alpha \leq X \leq \beta) = \frac{\alpha-\beta}{b-a}$
+       $F_X(x) = \frac{x-a}{b-a}$con$x \in [a,b] \implies P(\alpha \leq X \leq \beta) = \frac{\beta-\alpha}{b-a}$
        $E[X] = \frac{a+b}{2}$
        $Var[X] = \frac{(b-a)^2}{12}$
         >$E[X^2] = \frac{a^2+ab+b^2}{3}$

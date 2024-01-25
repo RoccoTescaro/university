@@ -1,1 +1,1 @@
-pdflatex -output-directory=build software_engineering.tex
+pdflatex -output-directory=.build_pdf software_engineering.tex
