@@ -7,7 +7,8 @@ Corso di Laurea in Ingegneria Informatica \
 ___
 
 Professore : [Paolo Frasconi](paolo.frasconi@pm.me) \
-Textbook : [Artificial Intelligence: A Modern Approach](<!-- #TODO -->) (4th Edition)
+Textbooks : [Artificial Intelligence: A Modern Approach](<!-- #TODO -->) (4th Edition)
+            [Bayesian Reasoning and Machine Learning](http://web4.cs.ucl.ac.uk/staff/D.Barber/textbook/200620.pdf)
 
 > __Nota__: Questo documento è una raccolta di appunti personali presi durante il corso di Intelligenza Artificiale tenuto dal prof. Paolo Frasconi e sui capitoli assegnati del libro di testo. Non sono compresi gli argomenti tenuti negli articoli e _papers_ collegati e suggeriti dal professore.
 ___
@@ -25,6 +26,8 @@ ___
 - [Finite Domain Solver](#finite-domain-solver)
 - [Backtracking](#backtracking)
 - [Altri approcci per risolvere CSP](#altri-approcci-per-risolvere-csp)
+- [Logica](#logica)
+- [Inferenza](#inferenza)
 ___
 
 #### Introduzione al corso
@@ -735,7 +738,7 @@ Introduciamo ora il concetto di ___running intersection property___ (RIP) ovvero
 <!--TODO--> complete
 ___
 
-#### Logic
+#### Logica
 
 La logica è uno strumento matematico che ha radici antiche, che ha visto diverse evoluzioni e che permette un diverso approccio al mondo dell'intelligenza artificiale. Questo approccio prevede di rappresentare il mondo come un insieme di proposizioni e di usare la logica per dedurre nuove proposizioni a partire da quelle date, ovvero un processo di ___reasoning___. 
 
@@ -786,4 +789,117 @@ Ci sono diversi tipi di logica, vediamo le più importanti.
 - __Logica descrittiva__ (frammenti di FOL)
 - __Reti semantiche__ 
 - __Grafi si conoscenza__ (usata da google per certe query)
+___
 
+#### Inferenza
+
+Abbiamo accennato al fatto che possiamo determinare l'entailment di una formula controllando tutti i possibili modelli (model checking), ma questo è un approccio inefficiente. Un approccio più efficiente è quello del ___theorem proving___ ovvero dimostrare che una formula è vera applicando inferenza alle formule della KB, senza controllare tutti i possibili modelli. Se il numero di modelli è alto questo approccio è più efficiente. 
+
+Il primo concetto fondamentale è quello di __equivalenza logica__: due formule sono logicamente equivalenti se e solo se sono vere per gli stessi modelli. Si scrive $\alpha \equiv \beta$ (semanticamente è analogo a $\alpha \iff \beta$ ma $\equiv$ viene usato per eguagiliare fomule mentre $\iff$ viene usato internamete alle formule). Una definizione analoga è: date due formule $\alpha$ e $\beta$, $\alpha \equiv \beta \iff \alpha \models \beta \land \beta \models \alpha$.
+
+Il secondo concetto fondamentale è quello di __validità__: una formula è valida se vera in tutti i modelli (anche dette __tautologie__).
+
+Da questi due concetti fondamentali possiamo derivare il terzo il __teorema della deducibilità__: $\forall \alpha, \beta \in WFF, \alpha \models \beta \iff (\alpha \implies \beta) \text{ è valida}$.
+
+L'ultimo concetto fondamentale è quello di __soddifacibilità__: una formula è soddisfacibile se esiste almeno un modello in cui è vera. Una formula è insoddisfacibile se non esiste alcun modello in cui è vera. Il problema di determinare se una formula è soddisfacibile in logica proposizionale è detto ___SAT problem___ ed è noto essere NP-completo.
+
+Validità e insoddisfacibilità sono concetti duali, infatti $\alpha$ è valida se e solo se $\neg \alpha$ è insoddisfacibile. $\alpha \models \beta \iff \alpha \land \neg \beta$ è insoddisfacibile (detta dimostrazione per __contraddizione__).
+
+__regole di inferenza__:\
+per arriava ad una dimostrazione l'approccio più comune e noto è ___modus ponens___.\
+Comunemente viene usata la notazione $\frac{\alpha \implies \beta \space\space\space , \space\space\space \alpha}{\beta}$ per indicare che ogni volta che $\alpha$ è dato e $\alpha \implies \beta$ pure, possiamo inferire $\beta$. \ 
+Un'altra regola comune è l'___and elimination___ $\frac{\alpha \land \beta}{\alpha \space\space\space , \space\space\space \beta}$
+tra le varie altre regole utili per fare inferenza ci sono: la commutatività e associatività degli operatori logici $\land$ e $\lor$, l'eliminazione della doppia negazione, contrapposizione, implicazione, bicondizionale, leggi di de Morgan, distributiva ecc.
+
+Un'ultima proprietà di sistemi logici è la __monoticità__, per ogni informazione aggiunta alla base di conoscienze l'insieme di fomule deducibili può solo aumentare: $KB \models \alpha \implies KB \land \beta \models \alpha$.
+
+Non sempre però gli algoritmi di ricerca che sfruttano le regole di inferenza sono completi, infatti se mancano alcune regole alcuni goal potrebbero essere irragiungibili. E' necessario quindi affiancare alle regole di inferenza un'altra fondamentale regola: ___resolution___: \
+$\frac{l_1 \lor \cdots \lor l_k \space\space\space , \space\space\space m_1 \lor \cdots \lor m_n}{l_1 \lor \cdots \lor l_{i-1} \lor l_{i+1} \lor \cdots \lor l_k \lor m_1 \lor \cdots \lor m_{j-1} \lor m_{j+1} \lor \cdots \lor m_n}$ dove $l_i$ e $m_j$ sono _unit clause_ complementari. \
+Inoltre il risultato della regola di risoluzione contiene una sola copia per ogni _literals_  e questa semplificazione è detta ___factoring___. Questa regola permette di enuncirare un teorema inportante: il ___ground resolution theorem__: se una formula è insoddisfacibile allora la _resolution closure_ di quella formula contiene la _clause_ vuota. La _resolution closure_ di una formula è l'insieme di tutte le _clause_ che possono essere ottenute applicando la regola di risoluzione a partire da quella formula (si dimostra per contrapposizione).
+
+__Conjunctive normal form__ (CNF):
+>Tutte le formule in logica proposizionale sono trasformabili in _CNF_.
+
+una formuala in CNF è un insieme di _clause_ messe in _and_ le une con le altre, mentre vengono dette _clause_ un insieme di _litterals_ messi in _or_ gli uni con gli altri. I _literals_ sono simboli o negazione degli stessi\
+eg. $A \land (A \lor B \lor \neg C) \land (\neg B \lor D)$
+
+Provare una CNF è più semplice che provare una formula generica, infatti basta provare ogni _clause_ separatamente. Una _clause_ è vera se almeno un _literals_ è vero. Una CNF è vera se ogni _clause_ è vera. \
+Possiamo procedere per contraddizione mostrando che $KB \models \alpha \iff KB \land \neg \alpha$ è insoddisfacibile. Il processo di risoluzione continua finchè non si raggiunge uno di due casi: non ci sono più _clause_ o si raggiunge una _clause_ vuota. Nel primo caso la formula è vera, nel secondo caso è falsa.
+
+<details>
+    <summary><b>Code</b>: Resolution </summary>
+
+```python
+
+def pl_resolution(kb, alpha):
+    clauses = kb.clauses + cnf(not alpha)
+    new = set()
+    while True:
+        n = len(clauses)
+        pairs = [(clauses[i], clauses[j]) for i in range(n) for j in range(i+1, n)]
+        for (ci, cj) in pairs:
+            resolvents = pl_resolve(ci, cj)
+            if False in resolvents:
+                return True
+            new = new.union(set(resolvents))
+        if new.issubset(set(clauses)):
+            return False
+        for c in new:
+            if c not in clauses:
+                clauses.append(c)
+
+def pl_resolve(ci, cj):
+    clauses = []
+    for di in ci:
+        for dj in cj:
+            if di == ~dj:
+                clauses.append(set.union(ci.difference({di}), cj.difference({dj})))
+    return clauses
+
+```
+
+</details>
+
+La notazione CNF ci permette di fare facilmente alcune semplificazioni, ad esempio possiamo eliminare dalle _clause_ i _literals_ doppioni o eliminare del tutto i _literals_ che compaiono normalmente e negati nella stessa _clause_. Possiamo eliminare le _clause_ che contengono un solo _literal_ poichè questo deve essere necessariamente vero (o falso se negato) affinchè la formula abbia senso, quindi possiamo eliminare tutte le _clause_ che contengono quel _literal_, poichè basta quel _literal_ per renderle vere. \
+eg. sia $A$ vera e sia $A \land (A \lor B \lor \neg C) \land (B \lor \neg B \lor D \lor C) \land (D \lor \neg C)$ allora:\
+$A \land (A \lor B \lor \neg C) \land (B \lor \neg B \lor D \lor C) \land (D \lor \neg C) \implies \cancel{A} \land \cancel{(A \lor B \lor \neg C)} \land (B \lor \neg B \lor D \lor C) \land (D \lor \neg C) \implies (\cancel{B \lor \neg B} \lor D \lor C) \land (D \lor \neg C) \implies (D \lor \cancel{C}) \land (D \lor \cancel{\neg C}) \implies D$
+
+Se imponiamo altre restrizioni alla formulazione del problema possiamo rendere l'algoritmo ancora più efficiente. \
+Parliamo di ___definite clause___ se sono _clause_ con un solo _literal_ positivo. \
+Parliamo di ___Horn clause___ se sono _clause_ con al più un _literal_ positivo. \
+Parliamo di ___goal clause___ se sono _clause_ senza _literal_ positivi. \
+Parliamo di ___k-CNF clause___ se sono _clause_ con al più $k$ _literal_ per _clause_. 
+
+La peculiarità delle _definite cluase_ è che possono essere scritte come implicazione. L'inferenza nelle _horn clause_ può essere fatta con ___forward checking___ e ___backward checking___. Decidere l'_eintailment_ delle _horn clause_ è un problema lineare.
+
+<details>
+    <summary><b>Code</b>: PL_FC_Entails </summary>
+
+```python
+
+def pl_fc_entails(kb, q):
+    count = {}
+    inferred = {}
+    for clause in kb.clauses:
+        for symbol in symbols(clause):
+            if symbol not in count:
+                count[symbol] = 0
+            count[symbol] += 1
+    agenda = [q]
+    while agenda:
+        p = agenda.pop()
+        if p == q:
+            inferred[p] = True
+        else:
+            inferred[p] = True
+            for clause in kb.clauses:
+                if p in clause:
+                    count[symbol] -= 1
+                    if count[symbol] == 0:
+                        if symbol not in inferred:
+                            agenda.append(symbol)
+    return q in inferred
+
+```
+
+</details>

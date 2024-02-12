@@ -92,8 +92,8 @@ ___
         - mediana$\tilde{x}$: $F_X(\tilde{x}) = \frac{1}{2}$(analogo per$Q_1$e$Q_3$)
     __valore atteso__ : 
         -$E[aX + bY + c] = aE[X] + bE[Y] + c$
-        -$E[XY] = E[X]E[Y]$se$X \perp Y$
-        -$E[X+Y] = E[X] + E[Y]$se$X \perp Y$
+        -$E[XY] = E[X]E[Y]$ se $X \perp Y$
+        -$E[X+Y] = E[X] + E[Y]$ se $X \perp Y$
     __varianza__ :
         -$Var[aX + bY + c] = a^2Var[X] + b^2Var[Y] + 2abCov(X,Y)$con$Cov(X,Y) = 0$se$X \perp Y$
         -$Var[X] = E[X^2] - E[X]^2$

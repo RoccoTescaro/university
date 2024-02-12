@@ -1,5 +1,6 @@
 total lectures: 24
-indentation: optional readings
+---  : secondary textbook 
+     : optional readings
 papers: [proxy-auth.unifi.it:8888] 
 
 - lecture 1
@@ -46,4 +47,18 @@ papers: [proxy-auth.unifi.it:8888]
 - [x] cap. 7.1, 7.3-7.4, 8.1-8.2
 
 - lecture 11
-- [ ] cap. 7.5-
+- [ ] cap. 7.5-7.6
+    - [ ] [https://www.cs.ubc.ca/~hoos/SLS-Internal/ch6.pdf]
+
+- lecture 12
+- [ ] cap. 7.5
+
+- lecture 13
+- [ ] cap. 12.1-12.5 
+--- [ ] cap. 1, 3.1
+
+- lecture 14
+- [ ] cap. 13.2
+--- [ ] cap. 4.1-4.2
+
+- lecture 15
