@@ -7,7 +7,7 @@ Corso di Laurea in Ingegneria Informatica \
 ___
 
 Professore : [Paolo Frasconi](paolo.frasconi@pm.me) \
-Textbooks : [Artificial Intelligence: A Modern Approach](<!-- #TODO -->) (4th Edition)
+Textbooks : [Artificial Intelligence: A Modern Approach](<!-- #TODO -->) (4th Edition) \
             [Bayesian Reasoning and Machine Learning](http://web4.cs.ucl.ac.uk/staff/D.Barber/textbook/200620.pdf)
 
 > __Nota__: Questo documento è una raccolta di appunti personali presi durante il corso di Intelligenza Artificiale tenuto dal prof. Paolo Frasconi e sui capitoli assegnati del libro di testo. Non sono compresi gli argomenti tenuti negli articoli e _papers_ collegati e suggeriti dal professore.
@@ -28,6 +28,7 @@ ___
 - [Altri approcci per risolvere CSP](#altri-approcci-per-risolvere-csp)
 - [Logica](#logica)
 - [Inferenza](#inferenza)
+- [Incertezza](#incertezza)
 ___
 
 #### Introduzione al corso
@@ -1038,4 +1039,7 @@ def num_conflicts(symbol, kb, model):
 
 ___
 
-#### 
+#### Incertezza
+
+Non è sempre possibile avere completa conoscienza del mondo, potrebbe non essere completamente osservabile, non deterministico ecc. e quindi lo stato e le conseguenze delle azioni di un agente non sono sempre completamente noti o prevedibili. In questi casi è necessario introdurre la nozione di __incertezza__ e __probabilità__.
+
