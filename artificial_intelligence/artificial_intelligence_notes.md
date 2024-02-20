@@ -873,7 +873,7 @@ Parliamo di ___k-CNF clause___ se sono _clause_ con al più $k$ _literal_ per _c
 La peculiarità delle _definite cluase_ è che possono essere scritte come implicazione. L'inferenza nelle _horn clause_ può essere fatta con ___forward checking___ e ___backward checking___. Decidere l'_eintailment_ delle _horn clause_ è un problema lineare.
 
 <details>
-    <summary><b>Code</b>: PL_FC_Entails </summary>
+    <summary><b>Code</b>: PL_FC_Entails (algoritmo di forward-chaining) </summary>
 
 ```python
 
@@ -903,3 +903,139 @@ def pl_fc_entails(kb, q):
 ```
 
 </details>
+
+L'algoritmo di _forward-chaining_ consiste nell'inserire nella KB i fatti che si possono dedurre da quelli già presenti e vedere se si arriva al goal. Si esegue in tempo lineare ed è facile vedere che è _sound_ e _complete_ (ogni inferenza è l'applicazione del modus ponens e tutte le inferenze possibili vengono esplorate). Ogni _definite clause_ è vera in questo algoritmo. L'algoritmo è _data-driven_ ovvero si basa sui dati e non sul goal.
+
+L'algoritmo di _backward-chaining_ è simile ma parte dalla query. Se la query è nota essere vera allora non è necessario svolgere alcun lavoro, altrimenti si cercano tutte le implicazioni che portano alla query e si esplorano. Questo algoritmo è _sound_ ma non _complete_. L'algoritmo, in questo caso, è _goal-driven_ o _goal-directed_ ovvero si basa sul goal. In generale è più efficiente _forward-chaining_ in termini di memoria in quanto non è necessario memorizzare tutte le implicazioni ma solo quelle che portano al goal.
+
+##### Famiglie di algoritmi di inferenza per _model-checking_ (SAT problem):
+
+Prima di introdurre le due famiglie di algoritmi di inferenza per _model-checking_ bisogna fare una premessa. Alcuni SAT problem sono più difficili di altri. Problemi facili sono facilmente risolvibili con algoritmi già visti ma in generale il SAT problem è NP-complete. Il problema delle n regine è semplice nel senso che le soluzioni sono densamente distribuite vale a dire che dato un assegnamento qualsiasi iniziale bastano poche mosse per arrivare ad una soluzione. Un altro modo di vederla è che il problema delle n-regine è __underconstrained__ ovvero ci sono pochi vincoli. Quando guardiamo un problema CNF con poche clausole tipo $(\neg D \lor \neg B \lor C) \land (B \lor \neg A \lor \neg C) \land (\neg C \lor \neg B \lor E) \land (E \lor \neg D \lor B) \land (B \lor E \lor \neg C)$ ci sono 32 possibili assegnamenti e 16 di questi sono soluzioni, in media due assegnamenti bastano per trovare una soluzione. \
+Dall'altra parte ci sono problemi che sono __overconstrained__ ovvero ci sono molti vincoli rispetto al numero di variabili. In questo caso spesso non esiste alcuna soluzione e si arriva velocemente ad una dead end e di conseguenza anche in questo caso l'algoritmo è rapido. Dove sono i problemi difficili? Sono i problemi che ricadono in un area di _threshold_ (che secondo un teorema non provato esiste sempre ed è proporzionale al numero di variabili) dove i problemi passano da avere soluzioni a non averne affatto. 
+
+![](https://wikidocs.net/images/page/189101/Fig_07_19.PNG)
+
+- __backtracking__ (diverso da _backward-chaining_, _backtracking_ su SAT)
+- __local hill-climbing search__ (_hill-climbing_ su SAT)
+
+###### Backtracking
+L'algoritmo specifico che andremo ad analizzare è detto ___DPLL___ (Davis-Putnam-Logemann-Loveland). Questo algoritmo è un ottimizzazione dell'algoritmo di _backtracking_ per il _SAT problem_. Apporta tre principali migliorie:
+- _Early termination_: se una _clause_ è vera allora non è necessario esplorare ulteriormente, vale a dire che se un qualsiasi _literal_ è vero allora la _clause_ è vera.
+- _Pure symbol heuristic_: se un _literal_ appare sempre come vero o sempre come falso in diverse _clause_ allora è possibile assegnare quel valore a quel _literal_ (eg. $(A \lor B \lor \neg C) \land (\neg A \lor \neg B \lor D)$, $A$ e $D$ sono sempre veri e $C$ è sempre falso quindi posso assegnarli).
+- _Unit clause heuristic_: se una _clause_ ha un solo _literal_ (o più _literal_ ma solo uno non assegnato e non assegnato a falso) allora è possibile assegnare quel valore a quel _literal_ (eg. $A \land (B \lor \neg C) \land \neg B$, $A$ è vero e $B$ è falso il che porta a semplificare sempre per _unit clause_ anche $(B \lor \neg C) \implies \neg C$). 
+
+<details>
+    <summary><b>Code</b>: DPLL </summary>
+
+```python
+
+def dpll_satisfiable(kb):
+    symbols = set()
+    for clause in kb.clauses:
+        for symbol in clause:
+            symbols.add(symbol)
+    return dpll(kb, symbols, {})
+
+def dpll(kb, symbols, model):
+
+    if not kb.clauses:
+        return True, model
+    if set() in kb.clauses:
+        return False, {}
+    P, value = find_pure_symbol(kb, symbols, model)
+    if P:
+        return dpll(kb, symbols.difference({P}), model.union({P: value}))
+    P, value = find_unit_clause(kb, symbols, model)
+    if P:
+        return dpll(kb, symbols.difference({P}), model.union({P: value}))
+    P = symbols.pop()
+    return dpll(kb, symbols, model.union({P: True})) or dpll(kb, symbols, model.union({P: False}))
+
+def find_pure_symbol(kb, symbols, model):
+
+    for symbol in symbols:
+        found_pos = False
+        found_neg = False
+        for clause in kb.clauses:
+            if symbol in clause:
+                found_pos = True
+            if ~symbol in clause:
+                found_neg = True
+        if found_pos and not found_neg:
+            return symbol, True
+        if found_neg and not found_pos:
+            return symbol, False
+    return None, None
+
+def find_unit_clause(kb, symbols, model):
+
+    for clause in kb.clauses:
+        if len(clause) == 1:
+            symbol = clause.pop()
+            if symbol not in model:
+                return symbol, True
+    return None, None
+
+```
+
+</details>
+
+</br>
+
+Ci sono diverse altre ottimizzazzioni possibili accennate altre volte precedentemente:
+- analisi dei componenti: una volta assegnato un valore ad un set di variabili, l'insieme di _clause_ potrebbero essere ridotte e separate poichè contenenti variabili distinte. Risolvere i sotto-problemi in parallelo e separatamente è più efficiente.
+- ordinare le variabili: assegnare prima le variabili che compaiono in più _clause_ (_degree heuristic_).
+- backtracking intelligente: se si raggiunge uno stato di _dead end_ si può tornare indietro e cambiare una assegnazione, ma se si torna indietro e si cambia una assegnazione che ha già portato ad un _dead end_ allora è inutile. Si può quindi tenere traccia delle assegnazioni che hanno portato ad un _dead end_ e non ripeterle.
+- random restart: se si raggiunge uno stato di _dead end_ si può ripartire da zero con una nuova assegnazione casuale.
+- indicizzazione intelligente di variabili e _clause_ per rispondere a domande come "in quali _clause_ compare questa variabile come _literal_ positivo?".
+
+###### Local hill-climbing search
+L'algoritmo specifico che andremo ad analizzare è detto ___WalkSAT__ (Walk SATisfiability). Questo algoritmo è un ottimizzazione dell'algoritmo di _local hill-climbing search_ per il _SAT problem_. Dobbiamo trovare una funzione euristica che possa essere applicata a problemi di soddisfacibilità. L'euristica è la stessa a cui abbiamo accennato nell'esempio del problema delle n regine ovvero il numero di conflitti. Ad ogni iterazione si sceglie una variabile e si cambia il suo valore in modo da ridurre il numero di conflitti. Se non si riesce a ridurre il numero di conflitti si cambia variabile. Se si raggiunge un _dead end_ si rinizia da zero (random restart). Questo algoritmo è _sound_ ma non _complete_, a meno di un numero di iterazioni infinito. Per questo motivo è utile su problemi in cui è nota l'esistenza di una soluzione e si vuole trovare una soluzione in tempi brevi.
+
+<details>
+    <summary><b>Code</b>: WalkSAT </summary>
+
+```python
+
+def walksat_satisfiable(kb, p=0.5, max_flips=1000):
+    symbols = set()
+    for clause in kb.clauses:
+        for symbol in clause:
+            symbols.add(symbol)
+    return walksat(kb, symbols, p, max_flips)
+
+def walksat(kb, symbols, p, max_flips):
+    
+        model = {}
+        for i in range(max_flips):
+            if kb.clauses == set():
+                return True, model
+            clause = random.choice(list(kb.clauses))
+            if random.random() < p:
+                symbol = random.choice(list(symbols))
+            else:
+                symbol = max(symbols, key=lambda s: num_conflicts(s, kb, model))
+            if num_conflicts(symbol, kb, model) > num_conflicts(~symbol, kb, model):
+                model[symbol] = True
+            else:
+                model[symbol] = False
+        return False, {}
+
+def num_conflicts(symbol, kb, model):
+    count = 0
+    for clause in kb.clauses:
+        if symbol in clause:
+            if clause.satisfied_by(model):
+                count += 1
+        if ~symbol in clause:
+            if clause.satisfied_by(model):
+                count += 1
+    return count
+
+```
+
+</details>
+
+___
+
+#### 
