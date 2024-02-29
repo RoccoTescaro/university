@@ -54,11 +54,22 @@ papers: [proxy-auth.unifi.it:8888]
 - [x] cap. 7.5
 
 - lecture 13
-- [ ] cap. 12.1-12.5 
--- [ ] cap. 1, 3.1
+- [x] cap. 12.1-12.5 
+-- [x] cap. 1, 3.1
 
 - lecture 14
-- [ ] cap. 13.2
--- [ ] cap. 4.1-4.2
+-- [x] cap. 4.1
 
 - lecture 15
+-- [ ] cap. 4.2, 4.5, 6.1
+
+- lecture 16
+- [ ] cap. 13.3.4, 14.1, 14.3, 23.1.6
+-- [ ] cap. 6, 23.2, 23.5.1
+
+- lecture 17
+- [ ] []
+
+- lecture 18
+- [ ] 14.2.3
+

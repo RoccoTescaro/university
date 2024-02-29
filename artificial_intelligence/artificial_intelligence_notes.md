@@ -29,6 +29,7 @@ ___
 - [Logica](#logica)
 - [Inferenza](#inferenza)
 - [Incertezza](#incertezza)
+- [Bayesian Network](#bayesian-network)
 ___
 
 #### Introduzione al corso
@@ -588,6 +589,10 @@ ___
 
 #### Backtracking
 
+<details>
+
+<summary> <b>Code</b>: Backtracking </summary>
+
 ```python
 
 def backtracking_search(csp):
@@ -625,6 +630,8 @@ def backtracking_search(csp):
         return failure
 
 ```
+
+</details>
 
 Solitamente per l'euristica di selezione viene adottato un approccio ___fail-first___ ovvero si cerca di fallire il prima possibile, in questo modo si evitano di esplorare molti stati che non portano a soluzione. Per l'ordinamento dei valori del dominio si adotta un approccio ___fail-last___ ovvero si cerca di fallire il più tardi possibile. La ragione di questa opposizione nelle scelte è che ogni variabile prima o poi dovrà essere assegnata, quindi è meglio fallire il prima possibile per eseguire il backtracking il prima possibile.
 Per la scelta dei valori invece è meglio fallire il più tardi possibile, poichè siamo interessati ad un unica soluzione.
@@ -1042,4 +1049,158 @@ ___
 #### Incertezza
 
 Non è sempre possibile avere completa conoscienza del mondo, potrebbe non essere completamente osservabile, non deterministico ecc. e quindi lo stato e le conseguenze delle azioni di un agente non sono sempre completamente noti o prevedibili. In questi casi è necessario introdurre la nozione di __incertezza__ e __probabilità__.
+
+Come detto invece che avere certezza ci fatti atomici si lavora su casi complessi a cui viene associato un ___degree of belief___ ovvero un valore che rappresenta la probabilità che un dato fatto sia vero (valore compreso tra 0 e 1). 
+
+L'azione razionale dipende sia dalla relativa importanza degli obbiettivi (salvare il pilota, non fargli arrotare persone, portarlo a destinazione) sia dalla probabilità di successo di ciascuna azione. O meglio:
+> L'agente è razionale sse sceglie l'azione che massimizza l'aspettativa dell'__utilità__, mediata su tutti i possibili esiti delle azioni. 
+
+Detto __principio di massimizzazione dell'utilità attesa (MEU)__.
+
+>__Nota__: 
+>Vedi formulario statistica per tutte le nozioni di base sulla probabilità o dai una veloce lettura al libro di ai. Le nozioni di maggior rilevanza sono gli assimo di Kolmogorov, variabili aleatorie, distribuzioni di probabilità, funzione di ripartizione, probabilità marginale, indipendenza e più importante fra tutte la __regola di Bayes__.
+
+- _product rule_: $P(A, B) = P(A|B)P(B) = P(B|A)P(A)$
+- _bayes rule_: $P(A|B) = \frac{P(B|A)P(A)}{P(B)}$, $P(A|B, C) = \frac{P(B|A, C)P(A|C)}{P(B|C)}$
+
+La __regola di Bayes__ è fondamentale in quanto ci permette di calcolare la probabilità di una causa data un effetto e può essere scritta anche in una forma non vista a statistica: $P(A|B) = \alpha P(B|A)P(A)$ dove $\alpha$ è una costante di normalizzazione (che riporta la probabilità fra 0 e 1).
+
+- _conditional independence_: $P(A, B|C) = P(A|C)P(B|C)$, $P(A|B, C) = P(A|C)$ e $P(B|A, C) = P(B|C)$
+
+Al contrario dell'interpretazione classica della probabilità condizionata, in cui $P(A|B)$ è la probabilità che A sia vero dato che B è vero, in cui spesso dato che B è vero viene interpretato come un fatto noto, osservato; per le reti bayesiane che vedremo a breve $P(A = a | B = b)$ è da interpretare come la probabilità che A sia in un certo stato sotto la condizione che B sia in un certo stato, indipendentemente dal fatto che B sia stato osservato o meno. E la relazione fra probabilità condizionata e probabilità congiunta è che la prima è uguale alla seconda normalizzata.
+
+L'indipendenza invece è la proprità per cui la probabilità di un evento non dipende da un altro evento ovvero conoscere o meno il secondo non fa variare la probabilità condizionata (del primo rispetto al secondo).
+
+Per la risoluzione di problemi in cui non si ha certezza ma un gradi di incertezza si usano generalmente metodi che si appoggiano a grafi che possono essere orientati (come nel caso delle ___bayesian network___) o non orientati (come nel caso delle ___markov network___), in entrambi i casi i nodi rappresentano variabili casuali e gli archi rappresentano le __dipendenze__ probabilistiche fra le variabili.
+___
+
+#### Bayesian Network 
+![](https://miro.medium.com/v2/resize:fit:1204/1*9OsQV0PqM2juaOtGqoRISw.jpeg)
+
+Un ___Bayesian Network___ (o ___belief network___) è un grafo diretto aciclico (DAG) in cui i nodi rappresentano variabili casuali e gli archi rappresentano le dipendenze probabilistiche fra le variabili. Ogni nodo è associato ad una _conditional probability distribution_ (CPD) che rappresenta la probabilità condizionata del nodo rispetto ai suoi genitori. La probabilità di un nodo è condizionata solo dai suoi genitori.
+
+Possiamo calcolare la probabilità di pioggia data l'erba bagnata ma l'assenza di nuvole con la formula che segue: $P(x_1, x_2, \dots, x_n) = \prod_{i=1}^{n} P(x_i|parents(X_i))$ dove $parents(x_i)$ sono i genitori del nodo $X_i$ e $x_i$ è il valore del nodo $X_i$.\
+Nel nostro caso $P(wet, rain, \neg cloud) = P(wet|rain)P(rain|\neg cloud)P(\neg cloud)$.
+
+Spiegato come funziona un ___bayesian network___ dobbiamo vedere come costruirlo in modo che la distribuzione congiunta sia una buona rappresentazione del mondo.\
+Dalla formula appena vista possiamo derivarne un'altra utile ad identificare relazioni di _indipendenza condizionata_ che può guidare la costruzione topologica del grafo. $P(x_1, x_2, \dots, x_n) = P(x_n|x_1, x_2, \dots, x_{n-1})P(x_1, x_2, \dots, x_{n-1}) = P(x_n|x_1, x_2, \dots, x_{n-1})P(x_{n-1}|x_1, x_2, \dots, x_{n-2})P(x_1, x_2, \dots, x_{n-2}) = \dots = \prod_{i=1}^{n} P(x_i|x_1, x_2, \dots, x_{i-1})$. Questa formula è detta ___Chain Rule___.\
+Più in generale $P(X_i|X_{i-1}, X_{i-2}, \dots, X_1) = P(X_i|parents(X_i))$ soddisfatta ordinando i nodi in modo che i genitori di un nodo siano sempre prima di quel nodo.\
+Quello che la fomula ci comunica è che il bayesian network è una rappresentazione corretta solo se ogni nodo è indipendente condizionatamente dal predecessore nell'ordine topologico del grafo. Ed è una condizione raggiungibile identificando i nodi, ordinandoli (anche casualmente ma conviene che cause precedano gli effetti) e per ogni nodo scegliendo un un subset di nodi genitori che soddisfino la chain rule, unendo i nodi con un arco diretto e infine scrivendo la CPD del nodo.
+
+Un'altra caratteristica fondamentale è che il bayesian network non ha probabilità ridondanti, ovvero è consistente. E inoltre può essere ulteriormente compattato permettendo di gestire un numero alto di variabili. Ad esempio: supponiamo che ciascuna delle $n$ variabili abbia $k$ genitori, allora dovranno essere memorizzate $n \cdot 2^k$ probabilità condizionate. Se invece memorizziamo le probabilità congiunte bastano $2 \cdot n$ probabilità. Questa compattezza è raggiungibile solo a patto di scegliere un buon ordinamento dei nodi (poichè un ordinamento sbagliato implica più collegamenti e quindi più probabilità da definire). <!--TODO--> clarify
+
+Dalla semantica del bayesian network possiamo derivare alcune proprietà dell'indipendenza condizionata. Abbiamo già visto che le variabili sono condizionatamente indipendenti dal predecessore, ma possiamo anche dire che le variabili sono condizionatamente indipendenti dai __non-discendenti__ dato il genitore ovvero che _wet_ è indipendente da _cloud_ dato _rain_. In altre parole possiamo vedere la sematica di un bayesian network senza dover definire la distribuzione congiunta completa come prodotto di probabilità condizionate ma basta definire alcune proprietà di indipendenza condizionata e da quelle derivare la distribuzione congiunta.\
+Diretatmente derivante dalla proprietà dalla proprietà di non-discendenza possiamo dire che una variabile è condizionatamente indipendente da tutti i nodi del grafo dati i suoi genitori, figli e fratelli (genitori dei figli); detta ___local Markov property___. 
+
+Un'altra domanda a cui potremmo essere interessati trovare una risposta è se un insieme di nodi $A$ è indipendente da un insieme di nodi $B$ dato un insieme di nodi $C$. Questa domanda è risolvibile con la ___d-separation___, una procedura che ci permette di determinare se due insiemi di nodi sono indipendenti condizionatamente dato un terzo insieme di nodi. La procedura è la seguente:
+- consideriamo solo il sottografo di predecessori e nodi stessi di $A$, $B$ e $C$
+- aggiungiamo archi diretti per ciascuna coppia di nodi che condividono un figlio comune, abbiamo quindi un __moral graph__
+- eliminiamo tutti gli archi diretti per archi indiretti
+- se per un qualsiasi percorso da un nodo di $A$ ad un nodo di $B$ passa per un nodo di $C$ allora $A$ e $B$ sono condizionatamente indipendenti dato $C$ e si dice che $C$ _d-separa_ $A$ e $B$.
+
+In genere è utile distinguere 4 casi:
+- caso 1 (connessione consecutiva):
+
+![](./images/bayesian_network_case_1.png)
+
+$P(C | A, B) = \frac{P(A, B, C)}{P(A, B)} = \frac{P(C | A) P(A | B) P(B)}{P(A | B) P(B)} = P(C | A)$\
+$C \perp_D A | B$\
+anche detta _evidence blocus propagaion_.
+
+- caso 2 (connessione divergente):
+
+![](./images/bayesian_network_case_2.png)
+
+$P(A | B, C) = P(A | B)$\
+$A \perp_D C | B$
+
+- caso 3 (connessione convergente):
+
+![](./images/bayesian_network_case_3.png)
+
+$P(A, C) = \sum_B P(A, B, C) = \sum_B P(B | A, C) P(A) P(C) = P(A) P(C) \sum_B P(B | A, C) = P(A) P(C)$\
+anche detta _collider_.
+
+- caso 4:
+
+![](./images/bayesian_network_case_4.png)
+
+evidence su un discendente di un collider permette la propagazione.
+
+- .
+
+> con $\perp_D$ si indica $X \perp_D Y | Z$ se per ogni cammino non orientato tra $X$ e $Y$ è _bloccato_ da $Z$  \
+> con __bloccato__ si indica la proprietà di un percorso che rispetti almeno una delle seguenti condizioni: il percorso contiene un nodo in $Z$ che non è un ___collider___ per il percorso (caso 1 e 2); esiste un collider per il percorso non in $Z$ e nessuno dei discendenti del collider è in $Z$ (caso 3 e 4).
+
+<details>
+    <summary><b>Example</b>: D-separation </summary>
+
+![](https://miro.medium.com/v2/resize:fit:1400/1*ayZhEdRiy7fC4M-YdzL3zg.png)
+
+Asia $\perp_D$ Smoker ? no \
+Asia $\perp_D$ Smoker $|$ X-ray ? no, ci sono due cammini da Asia a Smoker, uno dei due è bloccato da X-ray (Asia -> Lung Cancer -> Smoker) mentre l'altro non lo è (Asia -> Dyspnea -> Smoker).  
+
+</details>
+
+##### Theorem
+Fattorizzazione di un bayesian network: $P(X_1, X_2, \dots, X_n) = \prod_{i=1}^{n} P(X_i|parents(X_i)) \implies X \perp_D Y | Z \iff X \perp Y | Z$.
+
+
+Avere una CSP di dimensioni $O(2^k)$ è comunque un problema, e non tiene conto del fatto che nella vita reale le variabili assumono spesso distribuzioni note. In questi casi basterebbe identificare la distribuzione, definirne i parametri (che sono costanti, sempre gli stessi) e poi usare la distribuzione per calcolare la probabilità di un evento. Uno dei pattern che occorre spesso ed è facile da risolvere è quello di ___deterministic nodes___ ovvero nodi i cui valori dipendono interamente dai genitori (eg. il nodo "nord-americano" dipende da "messicano", "canadese", "statunitense"). Un altro pattern comune e risolvibile facilmente è quello di ___context-specific independence___ ovvero nodi che sono indipendenti condizionatamente da alcuni parenti dati i valori di altri nodi (eg. la gravità del "danno" subito dalla tua macchina dipende dal fatto se è una "4x4" e dal fatto se è avvenuto un "incidente", ma se non è avvenuto un "incidente" il "danno" sarà nullo e indipendente dal fatto che sia una "4x4" o meno). Questo pattern può essere risolto facilmente con un if-then-else nella CPD del nodo. L'ultimo pattern notevole è il ___noisy-OR___ ovvero il valore di un nodo figlio dipende dall'unione dei genitori la cui propabilità di causare il nodo figlio è incerta (eg. il nodo "febbre" è vero se e solo se valgono "influenza" o "malaria" o "tubercolosi"). Questo pattern sottointende due principali assunzioni: tutte le cause sono elencate (spesso viene aggiunto un così detto __leak node__ che vale per i miscellanei) e assume che le cause siano indipendenti tra loro. La CPT può essere scritta come $P(x_i|parents(X_i)) = 1 - \prod_{j:X_j = true} (1 - P(x_i|\neg x_1, \neg x_2, \cdots, x_j, \cdots, x_n))$. Ovvero bastano $O(k)$ parametri per definire la CPT di un nodo con $k$ genitori.
+
+Nell'esempio del danno abbiamo anticipato un problema, le variabili possono esserze continue ed assumero quindi infiniti valori, in questo caso si ricorre alla discretizzazione. Un'altro approccio possibile che non è sempre percorribile è usare variabili continue e distribuzioni continue note (eg. la distribuzione normale). Grafi con sia nodi continui che discreti sono detti ___hybrid bayesian network___. Per questo tipo di grafi dobbiamo specificare due nuovi tipi di distribuzioni: la ditribuzione condizionata per una variabile continua dati genitori discreti e la distribuzione condizionata per una variabile discreta dati genitori continui. In questi casi, una scelta comune è usare la distribuzione gaussiana lineare ovvero una distribuzione gaussiana la cui media è una funzione lineare dei genitori e la varianza è costante. Un grafo con solo nodi continui che assumono questa distribuzione ha una distribuzione congiunta che è una gaussiana multivariata su tutte le variabili. Quando nodi con distribuzioni discrete vengono aggiunti come genitori (non come figli) di nodi con distribuzioni continue il grafo assume una distribuzione gaussiana condizionata dai valori delle variabili discrete. <!-- TODO --> to complete.
+___
+
+#### Markov Network
+I bayesian network corrispondono ad una tipica fattorizzazione della probabilità congiunta, dove ciascuno dei fattori è una distribuzione a sua volta. \
+Una fattorizzazione alternativa è $P(X_1, X_2, X_3) = \frac{1}{Z} \phi(X_1, X_2) \phi(X_2, X_3)$ dove $\phi$ è detta ___potential function___ ed una funzione non negativa (una distribuzione è un caso particolare di potential function che somma a 1) e $Z$ è una costante di normalizzazione detta ___partition function___. 
+
+Per un set di variabili $X = \{X_1, X_2, \dots, X_n\}$ un __Markov Network__ è definito come una produttoria di potenziali su un sottoinsiememe $X_C \subseteq X$ ovvero $P(X) = \frac{1}{Z} \prod_{c \in C} \phi_C(X_c)$. Graficamenteviene espresso come un grafo indiretto dove $X_c$ sono le clique massimali. Questo tipo di network ha diverse proprietà, fra le più importanti è la __proprietà globale di Markov__: per un insieme disgiunto di variabili $(A, B, S)$ con $S$ insieme di variabili che separa $A$ da $B$ allora $A$ e $B$ sono condizionatamente indipendenti dato $S$. 
+
+Un esempio classico ed esemplificativo è quello della __markov chain__ nel quale vale la proprietà che ogni nodo precedente ad un nodo dato è indipendente da ogni nodo successivo ad un nodo dato dato il nodo dato: $x_{i-1} \perp x_{i+1} | x_i$. Questa proprietà deriva direttamente dalla definizione di separazione e dalla local markov property.
+
+<details>
+    <summary><b>Exercise</b>: Markov Network </summary>
+
+![](https://ars.els-cdn.com/content/image/3-s2.0-B9780128158234000109-f10-04-9780128158234.jpg)
+
+State = X
+
+| State t | State t+1 | Potential function $(\phi(X_t, X_{t+1}))$ |
+|---|---|---|
+| 1 | 1 | 5 |
+| 1 | 2 | 2 |
+| 1 | 3 | 2 |
+| 2 | 1 | 0 |
+| 2 | 2 | 5 |
+| 2 | 3 | 2 |
+| 3 | 1 | 0 |
+| 3 | 2 | 0 |
+| 3 | 3 | 5 |
+
+Normalizzatore $\frac{1}{Z} = \frac{1}{\sum_X \prod_{c \in C} \phi_C(X_c)} = \frac{1}{\sum_X \phi(X_1, X_2) \phi(X_2, X_3)} = \frac{1}{5 + 2 + 2 + 0 + 5 + 2 + 0 + 0 + 5} = \frac{1}{21}$
+
+$P(X_t = 2, X_{t+1} = 2) = \frac{1}{Z} \phi(X_t, X_{t+1}) = \frac{1}{21} \phi(2, 2) = \frac{5}{21}$\
+$P(X_t = 2) = \sum_{X_{t+1}} P(X_t, X_{t+1}) = \frac{1}{21} \sum_{X_{t+1}} \phi(X_t, X_{t+1}) = \frac{1}{21} (0 + 5 + 2) = \frac{7}{21} = \frac{1}{3}$\
+$P(X_t = 2| X_{t+1} = 2) = P(X_t = 2, X_{t+1} = 2) / P(X_{t+1} = 2) = \frac{15}{21}$ (per la regola del prodotto)
+</details>
+
+Il passaggio da rete bayesiana a rete markoviana è semplice e sempre possibile, basta identificare i fattori per esempio $p(a|b)p(b|c)p(c) = \phi(a, b)\phi(b, c)$ con $\phi(a, b) = p(a|b)$ e $\phi(b, c) = p(b|c)p(c)$ e $Z = 1$. Tuttavia il grafo associato ha solitamente link in più rispetto al grafo bayesiano il che vuol dire che c'è perdita di informazioni (si perdono alcune indipendenze fra variabili). Ad esempio $p(c|a, b)p(a)p(b) = \phi(a, b, c)$ si  perde l'indipendenza fra $a$ e $b$. 
+
+__Indipendence map__ (I-map): \
+Dato un grafo $G$ e una distribuzione $P$. $G$ è un I-map di $P$ se per ogni $A \perp B | S$ in $G$ allora $A \perp B | S$ in $P$ con $A, B, S$ sottoinsiemi qualsiasi di $G$.
+
+__D-map__: \
+$A \perp B | S \implies A \perp_G B | S$ 
+
+__Perfect map__: \
+$A \perp B | S \iff A \perp_G B | S$ 
+
+__Trivial map__: \
+Per una I-map la mappa triviale è un grafo completo.\
+Per una D-map la mappa triviale è un grafo vuoto.
+
+##### Theorem
+
+se $G$ è una I-map di $P$ allora $P$ può fattorizzare come $P = \frac{1}{Z} \prod_{c \in C} \phi_C(X_c)$ per qualche $\phi_C > 0$, viceversa: se $P$ può fattorizzare come $P = \frac{1}{Z} \prod_{c \in C} \phi_C(X_c)$ allora $G$ è una I-map di $P$.
 
