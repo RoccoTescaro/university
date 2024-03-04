@@ -3,12 +3,12 @@ total lectures: 24
     : optional readings
 papers: [proxy-auth.unifi.it:8888] 
 
-- lecture 1
+- [ ] lecture 1
 - [x] cap. 1, 2.1-2.3, 3.1-3.2 / 
     - [ ] [http://jmc.stanford.edu/articles/whatisai/whatisai.pdf]
     - [ ] [https://www.science.org/doi/10.1126/science.aac6076]
 
-- lecture 2
+- [ ] lecture 2
 - [x] cap. 3.3
 
 - lecture 3
@@ -61,7 +61,7 @@ papers: [proxy-auth.unifi.it:8888]
 -- [x] cap. 4.1
 
 - lecture 15
--- [ ] cap. 4.2, 4.5, 6.1
+-- [x] cap. 4.2, 4.5, 6.1
 
 - lecture 16
 - [ ] cap. 13.3.4, 14.1, 14.3, 23.1.6

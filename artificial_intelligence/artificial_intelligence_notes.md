@@ -199,7 +199,7 @@ ___
 <img src="https://miro.medium.com/v2/resize:fit:750/0*QWqQL8etPd7xkVfg.png" width="600" />
 </div>
 
-- ___Breadth-first search___ : algoritmo di ricerca che espande tutti i nodi della frontiera, in ordine di profondità. La frontiera in questo caso è implementata con una ___FIFO Queue___. Analogo ad una best-first search con $f$ che restituisce la profondità del nodo. Se i costi sono uniformi la breadth-first search può fare un _early goal test_ per la proprietà di aver eplorato all'iterazione precedente di __d__ tutti i nodi a profondità __d - 1__.\
+- ___Breadth-first search___ : algoritmo di ricerca che espande tutti i nodi della frontiera, in ordine di profondità. La frontiera in questo caso è implementata con una ___FIFO Queue___. Analogo ad una best-first search con $f$ che restituisce la profondità del nodo. Se i costi sono uniformi la breadth-first search può fare un _early goal test_ per la proprietà di aver eplorato all'iterazione precedente di __d__ tutti i nodi a profondità __d - 1__.
 - ___Depth-first search___ : algoritmo di ricerca che espande il nodo più profondo della frontiera. La frontiera in questo caso è implementata con una ___LIFO Queue___. Analogo ad una best-first search con $f$ che restituisce la profondità del nodo con segno negativo. Solitamente implementato non come una _graph search_ ma come una _tree-like search_. Un implementazione ancora più avanzata vedremo più avanti si chiama ___backtracking search___. 
 - ___Iterative deepening search___ : algoritmo di ricerca che esegue una depth-first search con limite di profondità __l__ e incrementa __l__ fino a trovare una soluzione. Completo e ottimo, ma non particolarmente efficiente. 
 - ___Bidirectional search___ : algoritmo di ricerca che esegue una breadth-first search da __$s_0$__ e una da __g__ e si ferma quando le due frontiere si incontrano. Necessita di conoscere il goal ottimale e la funzione inversa di transizione. 
@@ -1203,4 +1203,243 @@ Per una D-map la mappa triviale è un grafo vuoto.
 ##### Theorem
 
 se $G$ è una I-map di $P$ allora $P$ può fattorizzare come $P = \frac{1}{Z} \prod_{c \in C} \phi_C(X_c)$ per qualche $\phi_C > 0$, viceversa: se $P$ può fattorizzare come $P = \frac{1}{Z} \prod_{c \in C} \phi_C(X_c)$ allora $G$ è una I-map di $P$.
+___
 
+#### Jointree
+
+L'algoritmo di inferenza classico che prevede l'eliminazione di variabili è efficiente per risolvere semplici _queries_ ma se vogliamo calcolare la probabilità a posteriori per tutte le variabili del grafo allora l'algoritmo diventa inefficiente. Un modo per risolvere questo problema è quello di trasformare il grafo in un grafo ad albero e poi risolvere l'algoritmo di eliminazione di variabili su questo grafo. Questa operazione è detta ___clustering___ metre il grafo risultante è detto ___jointree___. Le variabili agregate formano un ___meganode___ e diversi meganodi possono condividere alcune variabili questo porta a definire un diverso algoritmo di inferenza (quello non su jointree non funziona in presenza di meganodi che condividano variabili).\
+L'algoritmo è fondamentalmente un algoritmo di propagazione di vincoli dove questi vincoli assicurano che meganodi vicini concordino con la probabilità a posteriori delle variabili condivise. L'algoritmo è lineare nel numero di nodi del jointree ma è sempre NP-hard.
+
+
+___
+
+#### Dynamic probabilistic network
+
+Abbiamo sino ad ora considerato modelli in cui le inferenze probabilistiche sono fatte su variabili che non cambiano il loro stato. Nel mondo reale però sono più comuni casi in cui le variabili cambiano il loro stato nel tempo. Considerimo quindi modelli a tempo discreto, inoltre supporremo che l'insieme di variabili osservabili non cambi nel tempo. \
+Chiamiamo $X_t$ l'isieme di variabili al tempo t (non osservabili). \
+Chiamiamo $E_t$ l'insieme di variabili osservabili al tempo t e $E_t = e_t$ l'osservazione delle variabili osservabili al tempo t. \
+Usiamo la notazione $X_{a:b}$ per indicare l'insieme di variabili $X_a, X_{a+1}, \dots, X_b$. \
+
+Il modello di transizione stabilisce la probabilità $P(X_t | X_{0:t-1})$. Tuttavia è spesso corretto e sempre utile svolgere l'inferenza sotto l'__assunzione di Markov__ ovvero $P(X_t | X_{0:t-1}) = P(X_t | X_{a:t-1})$. Questa assunzione afferma sostanzialmente che la probabilità di un evento al tempo t dipende solo da un numero finito e fissato di eventi passati. Processi che rispettano tale assunzione sono detti ___Markov processes___ o ___Markov chains___.\
+Il più semplice modello di transizione è il ___first-order Markov chain___ ovvero $P(X_t | X_{0:t-1}) = P(X_t | X_{t-1})$ per il quale vale che la probabilità di un evento al tempo t dipende solo dall'evento al tempo t-1.\
+
+Rimane tuttavia il problema che ci sono infiniti valori assumibili da t e quindi infinite distribuzioni congiunte da definire. Per risolvere questo problema si assume che i cambiamenti nel modello siano causati da processi ___time-homogeneous___ ovvero che fondamentalmente le leggi che governano questi cambiamenti siano le stesse in ogni istante di tempo. 
+
+Per il modello dei sensori si assume che la probabilità di osservare un evento sia condizionata solo dall'evento stesso e non da eventi passati ovvero $P(E_t | X_t, E_{0:t-1}) = P(E_t | X_t)$. Questa assunzione è detta ___sensor Markov assumption___.
+
+L'ultima cosa che ci manca da definire è la probabilità iniziale ovvero $P(X_0)$. Questa probabilità è detta ___initial state probability___.
+
+$P(X_{0:t}, E_{0:t}) = P(X_0)\prod_{t=1}^{T} P(X_t | X_{t-1})P(E_t | X_t)$
+
+Per aumentare la precisione del modello possiamo o aggiungere variabili o aumentare l'ordine del modello. Vediamo ora un ___hidden Markov model___ (HMM) che è un modello a tempo discreto il cui processo è descritto da una singola discreta variabile aleatoria. Tramite la tecnica di clustering descritta precedentemente è sempre possibile ricondurci ad un modello di questo tipo. Un HMM ha per definizione un unica variabile aleatoria discreta che può quindi assumere un singolo valore (che dovrebbe rappresentare nella sua interezza lo stato del modello), questa restrizione non è però necessaria per le variabili osservate che essendo sempre tali per ipotesi non necessitano di essere tracciate da una distribuzione. 
+
+Il modo più semplice di definire una funzione di transizione per un HMM è tramite una matrice $T = S \times S$ dove $S$ è il numero di stati del modello. La matrice $T$ è detta ___transition matrix___ e contiene $P(X_t | X_{t-1})$. \
+La probabilità di osservare un evento dato uno stato è invece definita da una matrice $O_t = S \times S$ ed è una matrice diagonale. La matrice $O_t$ è detta ___observation matrix___. \
+Questo ci permette di definire una _forward equation_ e una _backward equation_ svolgendo semplici operazioni matriciali:
+- _forward equation_: $f_{1:t+1} = \alpha O_{t+1} T f_{1:t}$
+- _backward equation_: $b_{k+1:t} = T O_{k+1} b_{k+2:t}$
+
+L'algoritmo ha complessità, per una sequenza t, di $O(S^2t)$ (temporale) e $O(St)$ (spaziale).\ 
+Ma le qualità dell'HMM sono nelle ottimizzazioni che si possono fare per ridurre la complessità dell'algoritmo. E' infatti possibile ridurre la complessità spaziale a $O(S)$ ottenibile memorizzando i risultati delle forward equation e utilizzandole per calcolare le backward equation. Un' altro modo è quello di propagare contemporaneamente e nella stessa direzione sia la forward equation che la backward equation (ad esempio riformulando la forward equation come $f_{1:t} = \alpha' O^{-1}_{t+1} T^T f_{1:t+1}$). Ci sono due problematiche principali: la matrice di transizione deve essere invertibile e ogni osservazione deve essere possibile in ogni stato (la matrice di osservazione non deve avere zeri sulla diagonale, deve essere anch'essa invertibile).\
+
+Un'altro motivo per cui l'HMM si rivela utile è quello dell'online smoothing dato un lag costante $d$. L'online smoothing è il problema di calcolare la probabilità a posteriori di uno stato al tempo t dato tutte le osservazioni fino al tempo t-d. Per ogni slice temporale dobbiamo calcolare $\alpha f_{1:t-d} \times b_{t-d+1:t}$, per l'istante successivo satà invece $\alpha f_{1:t-d+1} \times b_{t-d+2:t+1}$ e così via. 
+
+
+
+___
+
+# Assioma stuff
+#### Machine Learning
+Ciascun componente di un agente può essere migliorato usando il machine learning. Le tecniche di miglioramento dipendono dai seguenti fattori:
+- il tipo di componente da migliorare
+- la prior knowledge che ha l'agente, la quale influenza il modello che costruisce
+- che tipo di dati e feedback del prior knowledge sono disponibili per l'agente
+
+
+Il processo che permette il passaggio da un insieme di osservazioni a una regola generale è chiamato __induzione__. Rispetto a quella studiata in precedenza, quest'ultima può risultare incorretta.
+Si considera problemi in cui gli input sono una __factored representation__, cioè un vettore di valori di attributi. Se gli output sono un insieme finito di valori (come soleggiato/nuvoloso/pioggia o vero/falso), allora si dice che il learning problem è di __classificazione__. Se questi valori sono numerici, allora il problem learning è chiamato __regression__.
+Esistono tre tipologie di __feedback__ che vengono associate agli input, e perciò si definiscono tre tipologie di learning:
+- __supervised learning__: l'agente osserva gli input e gli output, e genera una funzione che mappa da input a output. Per esempio, gli input possono essere delle immagini, ciascuna associata a un output del tipo "autobus" o "pedone". Queste tipologie di output sono definite __labels__. L'agente impara, attraverso una funzione, ad associare a un'immagine un label.
+- __unsupervised learning__: l'agente impara dei pattern tramite gli input e non ha bisogno di alcun feedback esplicito. L'esempio più comune è il __clustering__, cioè individua delle somiglianze tra gli esempi dati in input.
+- __reinforcement learning__: l'agente impara attraverso una serie di __reinforcements__ (rewards o punishments). Nel caso degli scacchi, a ogni fine partita all'agente viene detto se ha vinto (reward) o perso (punishment). In caso di sconfitta, spetta a quest'ultimo individuare quali azioni a priori hanno portato alla sconfitta, e modificarle, in modo da ottenere più rewards.
+___
+
+#### Supervised Learning
+Formalmente, l'obiettivo del supervised learning è il seguente: dato un __training set__ di $N$ esempi input ($x$)-output ($y$) $(x_1,y_1),...,(x_n,y_n)$ dei quali, ciascuna coppia è generata da una funzione sconosciuta $y=f_{(x)}$, il supervised learning individua una funzione $h$ che approssima la vera funzione $f$.
+$h$ è definita __hypothesis__ del mondo, ed è ottenuta da un __hypothesis space__ $\mathcal{H}$ di possibili funzioni (per esempio l'hypothesis space può essere uno spazio di polinomi di terzo grado). In altre parole, si può considerare $h$ il __modello__ del dataset, ottenuto da una __classe di modelli__ $\mathcal H$, o ancora una __funzione__ ottenuta da una __classe di funzioni__.\
+Si definisce $y_i$ la __ground-truth__, cioè la vera risposta che si sta richiedendo all'hypothesis di predire.
+Per scegliere l'hypothesis space, si può considerare di avere conoscenze a priori riguardo il processo che genera i dati ($f$), oppure si studia i dati attraverso studi statistici e grafici (__exploratory data analysis__), oppure si possono considerare molteplici hypothesis space e controllare quale è quello più appropriato. In quest'ultimo caso si determina il miglior hypothesis space che possiede una __consistent hypothesis__, cioè un $h$ t.c. per ciascun $x_i$ nel training set si ha $h_{(x_i)}=y_i$. In caso di output continui, si individua la __best-fit function__ per cui ciascun $h_{(x_i)}$ si avvicina a $y_i$.
+L'obiettivo principale della funzione $h$ è quello prevedere i possibili output di input che non sono all'interno del training set, cioè delle coppie $(x_i,y_i)$ chiamate __test set__. A questo punto, si dice che la funzione $h$ generalizza bene se predice in maniera accurata gli output del test set.
+Un modo per analizzare l'hypothesis space è tramite __bias__ e __variance__. Per bias si intende la tendenza dei valori ottenuti da $h$ ad "allontanarsi" dai feedback dei diversi training sets. Il bias, inoltre, è influenzato dalle restrizioni dell'hypothesis space: se, ad esempio, si ha un insieme di funzioni lineari, il bias è forte in quanto sono ammesse solo funzioni lineari. Però, questa funzione non sarebbe in grado di considerare quei valori che si discostano da essa.
+Si dice che la funzione $h$ è __underfitting__ se non individua un pattern all'interno del training data.
+Per quanto riguarda la varianza, invece, si intende quanto varia la funzione $h$ in base ai dati: se questi sono eterogenei, cioè che sono sparsi nel grafico, non permettono di realizzare una funzione lineare; invece, nel caso in cui i dati sono "compatti" nel grafico, si ha una funzione che tende a essere lineare (__low variance__). Quando il valore della varianza è alto, si dice che la funzione $h$ è __overfitting__.
+Spesso, si deve considerare il __bias-variance tradeoff__: si deve scegliere tra una funzione complessa che riesce a "coprire" tutti i valori del dataset (low-bias), e una funzione che li generalizza meglio (low-variance).
+Alla fine dei seguenti processi, il supervised learning seleziona la funzione $h^*$ più probabile dato il dataset $h^*={\arg\max}_{h\in\mathcal H}P(h|data)$ se si applica la regola di Bayes $h^*={\arg\max}_{h\in\mathcal H}P(data|h)P(h)$ si può affermare che il valore di $P(h)$ è alto per funzioni di basso grado, e viceversa.
+
+- __Error rates to loss__
+    In machine learning per determinare l'error rate si considera la __loss function__. Essa, definita come $L(x,y,\hat y)$, determina la perdita dovuta alla predizione di $h_{(x)}=\hat y$ quando la risposta corretta sarebbe $f_{(x)}=y$. La versione semplificata sarebbe $L(y,\hat y)$.
+    Dato $\varepsilon$ l'insieme di input-output degli esempi, la __generalization loss__ per un hypothesis $h$ è $GenLoss_L(h)=\sum_{(x,y)\in\varepsilon}L(y,h_{(x)})P(x,y)$ e il miglior $h$ è dato da $h^*={\arg\min}_{h\in\mathcal H}GenLoss_L(h)$
+
+    Siccome nella maggior parte dei casi $P(x,y)$ è sconosciuta, si definisce la generalization loss in modo empirico su insieme di esempi $E$ di dimensione $N$ $EmpLoss_{L,E}(h)=\sum_{(x,y)\in E}L(y,h(x))\frac{1}{N}$ il miglior $h$ sarà quindi (__empirical risk minimisation__) $\hat h^*={\arg\min}_{h\in\mathcal H}EmpLoss_{L,E}(h)$
+    La funzione $\hat h^*$ può differire da $f$ nei seguenti modi:
+    - __unrealizability__: l'hypothesis space $\mathcal H$ non contiene la funzione che risolve il problema, cioè non trova la vera funzione $f$
+    - __variance__: se il problema è realizzabile, allora la varianza deve tendere a zero all'aumentare dei training set
+    - __noise__: può succedere che $f$ sia non deterministica (noisy) e, quindi, si possono  avere valori diversi di $f_{(x)}$ data la stessa $x$. Questo aspetto non può essere predetto, ma caratterizzato
+    - __computational complexity__: quando $h$ sono delle funzioni complesse in un grande spazio di hypothesis, trovare i possibili valori che avvicinano $h$ a $f$ sarebbe complesso a livello computazionale. In questo caso si potrebbe utilizzare la ricerca per individuare una possibile $h$, ma non è garantito che funzioni
+
+- __Perceptron__
+    Si considera una classificazione binaria tramite supervised learning utilizzando la funzione a valori reali $f:X\subseteq\mathbb R^n\to\mathbb R$, in cui l'insieme di input $\mathbf x=x_1 ... x_n \ \ \forall\ \mathbf x \in X$ è assegnato alla classe positiva se $f_{(\mathbf x)}\geq 0$, oppure è assegnato alla classe negativa altrimenti. Formalmente, si scrive $f_{(\mathbf x)}=\mathbf w\cdot\mathbf x+b=\sum_{i=1}^nw_ix_i+b$ dove $\mathbf w, b \ \in\mathbb R^n\times\mathbb R$ (rispettivamente __weight vector__ e __bias__) (ogni tanto $b$ è rimpiazzato da $\theta$ chiamato __threshold__) sono i parametri che modificano la funzione e la regola di decisione è data dal segno della funzione. 
+    Un'interpretazione geometrica della funzione può essere la divisione di $X$ in due parti nell'iperpiano definito dall'equazione $\langle\mathbf w\cdot \mathbf x\rangle+b=0$
+    ![[Pasted image 20231208114729.png]]
+    Un iperpiano è un sottospazio affine di dimensione $n-1$ che divide lo spazio in due metà-spazi che corrispondono agli input delle due classi distinte. Nel caso del grafico, l'iperpiano è rappresentato dal segmento evidenziato in bianco, con la regione delle classi positive sopra e quella delle negative sotto. $\mathbf w$ rappresenta un vettore che indica la direzione perpendicolare e $b$, invece, muove il l'iperpiano in maniera parallela rispetto a se stesso.
+    Questa tipologia di classifier viene chiamata __linear discriminants__ o __perceptrons__.
+    Si considerano le seguenti notazioni: si indica con $X$ lo spazio degli input e con $Y$ lo spazio degli output. Mentre per il binary classification si ha $Y=\{-1,1\}$, per il multiclass classification si ha $Y=\{1,...,m\}$, e per regression (e quindi per previsioni di variabili a valore continuo) si ha $Y\subset \mathbb R$ . Il __training set__ è l'insieme dei __training examples__ (o __training data__). Si nota come$$S=((\mathbf x_1,y_1),...,(\mathbf x_l,y_l))\subseteq(X\times Y)^l$$dove $l$ indica il numero di esempi. $\mathbf x_i$ sono gli __esempi__ o __istanze__, mentre gli $y_i$ sono i __labels__. Il training set $S$ è __trivial__ se i labels di tutti gli esempi sono uguali
+- __Rosenblatt's Perceptron__
+    Il Rosenblatt's perceptron è un algoritmo che parte da un weight vector iniziale $\mathbf w_0$ (tendenzialmente posto a zero per indicare l'all zero vector) e lo adatta ogni volta che un punto del training è mal classificato dai weights correnti. Aggiorna weight e bias direttamente (__primal form__), ed è garantito che la procedura converga se esiste un iperpiano che classifica in maniera accurata il dataset: in questo caso si dice che è __linearly separable__. Se succede il caso contrario, si dice che è __nonseparable__.
+    Si definisce il __functional margin__ di un esempio ($\mathbf x_i,y_i$) rispetto a un iperpiano ($\mathbf w, b$) la quantità$$\gamma_i=y_i(\langle\mathbf w\cdot \mathbf x_i\rangle+b)$$se $\gamma_i>0$, allora si ha una corretta classificazione di ($\mathbf x_i,y_i$). La __functional margin distribution__ di un iperpiano ($\mathbf w$,b) rispetto a un training set $S$ è la distribuzione di singoli margin di ciascun esempio in $S$.
+    Se si sostituisce la functional margin con il geometric margin $(\frac{1}{||\mathbf w||}\mathbf w, \frac{1}{||\mathbf w||}b)$, si misura la distanza euclidea tra un punto e la retta che divide il piano.
+    Il margin di un training set rappresenta il massimo geometric margin tra tutti gli iperpiani. Il massimo iperpiano è definito __maximal margin hyperplane__.
+    ![[Pasted image 20231209105305.png]]
+    A livello di pseudo-codice, si ha
+    ```
+    Given a linearly separable training set S and a learing rate r in R+
+    w[0]=0, b[0]=0, k=0;
+    R=max i(from 1 to l) ||x[i]||; \\ si sceglie l'esempio a distanza maggiore
+    // numero di errori commessi in un dataset (epoca)
+    repeat
+            ne=0; // numero di errori commessi
+            for i=1 to l
+                    if y[i](<w[k]*x[i]>+b[k]) <= 0
+                            w[k+1]=w[k]+y[i]*x[i]*r;
+                            b[k+1]=b[k]+y[i]*R^2*r;
+                            k=k+1;
+                            ne=ne+1;
+    until ne==0; // se il database è linearmente separabile, allora esce dal loop
+                            // altrimenti, è possibile aggiungere un counter
+    return(w[k],b[k]);
+    ```
+    __TEOREMA__ (Novikoff):
+    sia $S$ un dataset non banale (contiene, cioè, almeno un positivo e un negativo) e sia$$R=\max_{1\leq i\leq l}||x_i||$$Si suppone esistano $\mathbf w^*$, $b^*$, $||\mathbf w^*||=1$, $\gamma>0$ t.c.$$y_i(\langle\mathbf w^*\cdot\mathbf x_i\rangle+b^*)\geq \gamma \ \ \ \ \ 1\leq i\leq l$$allora il numero di errori commessi dall'algoritmo perceptron è al massimo$$(\frac{2R}{\gamma})^2$$__NOTA__: se l'upper-bound è basso, diminuisce anche l'errore.
+    __DIMOSTRAZIONE__:
+    Si aggiunge al vettore degli input una coordinata extra con valore $R$. Si definisce il nuovo vettore, chiamato __augmented input vector__, come$$\hat{\mathbf x}_i=(\mathbf x_i^T,R)^T$$dove il simbolo $\mathbf x^T$ indica la trasposta del vettore. Si aggiunge, inoltre, una coordinata extra al weight vector $\mathbf w$, e cioè il bias $b$, ottenendo$$\hat{\mathbf w}=(\mathbf w^T,b/R)^T$$chiamato __augmented weight vector__.
+    L'algoritmo inizia con il vettore $\hat{\mathbf w}=0$ e si aggiorna a ogni errore. Sia ${\hat{\mathbf{w}}_{t-1}}$ l'augmented weight vector prior del $t$-esimo errore. Il $t$-esimo aggiornamento avverrà quando$$y_i\langle{\hat{\mathbf w}}_{t-1}\cdot\hat{\mathbf x}_i\rangle=y_i(\langle\mathbf w_{t-1}\cdot\mathbf x_i\rangle+b_{t-1})\leq 0$$dove $(\mathbf x_i,y_i)\in S$ rappresenta il punto non correttamente classificato dall'augmented weight vector $${{\hat{\mathbf w}}_{t-1}}=(\mathbf w_{t-1}^T,b_{t-1}/R)^T$$L'aggiornamento sarà$${\hat{\mathbf w}}_t=(\mathbf w_{t}^T,b_{t}/R)^T=(\mathbf w_{t-1}^T,b_{t-1}/R)^T+\eta y_i(\mathbf x_i^T,R)^T={\hat{\mathbf w}}_{t-1}+\eta y_i{\hat{\mathbf x}}_i$$dove $\eta$ rappresenta il learning rate. Per la seguente equazione sono state usate le notazioni$$\begin{align*}b_t/R  &= b_{t-1}/R+\eta y_iR\\ \text{dato che }b_t&=b_{t-1}+\eta y_iR^2\end{align*}$$La derivata$$\langle{\hat{\mathbf w}}_{t}\cdot{\hat{\mathbf w}}^*\rangle=\langle{\hat{\mathbf w}}_{t-1}\cdot{\hat{\mathbf w}}^*\rangle+\eta y_i\langle{\hat{\mathbf x}}_i\cdot{\hat{\mathbf w}}^*\rangle\geq \langle{\hat{\mathbf w}}_{t-1}\cdot{\hat{\mathbf w}}^*+\eta \gamma$$ciò implica, per induzione$$\langle{\hat{\mathbf w}}_{t}\cdot{\hat{\mathbf w}}^*\rangle\geq t\eta\gamma$$Si ha inoltre$$\begin{align*}||{\hat{\mathbf w}}_{t}||^2&=||{\hat{\mathbf w}}_{t-1}||^2+2\eta y_i\langle{\hat{\mathbf w}}_{t-1}\cdot{\hat{\mathbf x}}_i\rangle+\eta^2||{\hat{\mathbf x}}_i||^2\\ &\leq ||{\hat{\mathbf w}}_{t-1}||^2+\eta^2||{\hat{\mathbf x}}_i||^2\\ &\leq||{\hat{\mathbf w}}_{t-1}||^2+\eta^2(||\mathbf x_i||^2+R^2)\\ &\leq ||{\hat{\mathbf w}}_{t-1}||^2+2\eta^2R^2\end{align*}$$il quale implica che$$||{\hat{\mathbf w}}_{t}||^2\leq 2t\eta^2 R^2$$Si ottiene quindi$$||{\hat{\mathbf w}}^*||\sqrt{2}t\eta R\geq||{\hat{\mathbf w}}^*||\ ||{\hat{\mathbf w}}_{t}||\geq\langle{\hat{\mathbf w}}_{t},{\hat{\mathbf w}}^*\rangle\geq t\eta\gamma$$da cui si ha il limite$$t\leq2(\frac{R}{\gamma})^2||{\hat{\mathbf w}}^*||^2\leq(\frac{2R}{\gamma})^2$$essendo $b^*\leq R$ per una separazione non banale del dataset e$$||{\hat{\mathbf w}}^*||^2\leq||{\mathbf w}^*||^2+1=2$$
+- __Voted Perceptron__
+    Il voted perceptron rappresenta una variante del perceptron, il quale tiene traccia di più weight vectors durante la fase di training, e ciascuno ha una propria iterazione dedicata.
+    Durante la fase di testing, la predizione viene effettuata "a votazione". Questo tipo di approccio permette al normale perceptron di gestire dataset non separabili linearmente considerando diversi limiti di decisione (cioè diversi weights).
+- __Dual form__
+    Il perceptron algorithm funziona anche aggiungendo esempi positivi mal classificati o rimuovendo esempi negativi mal classificati.
+    Senza perdita di generalità, si assume che il weight vector iniziale sia lo zero vector. La hypothesis sarà una combinazione lineare definita come$$\mathbf w=\sum_{i=1}^l\alpha_iy_i\mathbf x_i$$dove gli $\alpha_i$ sono un insieme di valori positivi proporzionale alla quantità di $\mathbf x_i$ che causano l'aggiornamento dei weights. Vengono chiamati anche __embedding strength__ del pattern $\mathbf x_i$ e hanno valore basso se gli esempi hanno causato meno errori.
+    Il vettore $\pmb \alpha$ può essere considerato una rappresentazione alternativa dell'hypothesis sia nel caso di doppia coordinata che multipla, solo che a diverse $\pmb \alpha$ corrispondono la stessa hypothesis $\mathbf w$.
+    La decision function può essere riscritta in doppia coordinata (__dual form__) come$$\begin{align*}h_{(x)}&=sign(\langle\mathbf w\cdot \mathbf x\rangle+b)\\ &=sign(\langle\sum_{j=1}^l\alpha_jy_j\mathbf x_j\cdot \mathbf x\rangle+b)\\&=sign(\sum_{j=1}^l\alpha_jy_j\langle\mathbf x_j\cdot \mathbf x\rangle+b)\end{align*}$$e il perceptron algorithm può essere riscritto in dual form nel seguente modo:
+    ```
+    Given a training set S
+    alpha = 0, b =0;
+    R = max i(from 1 to l) ||x[i]||;
+    repeat
+            for i = 1 to l
+                    if y[i]*(sum(j from 1 to l)alpha[i]y[i]<x[j]*x[i]>+b)<= 0
+                            alpha[i] = alpha[i]+1
+                            b = b + y[i]*R^2
+    until no mistakes made within the for loop
+    return(alpha, b);
+    ```
+    La forma duale permette di classificare il dataset in base al loro contenuto grazie al valore di $\alpha_i$.
+    Dato che il numero di aggiornamenti del weight corrisponde al numero di errori commessi, la norma di $\pmb \alpha$ soddisfa$$||\pmb \alpha||\leq(\frac{2R}{\gamma})^2$$Essa può essere vista come la complessità del target concept nella dual representation.
+___
+
+#### Decision tree learning
+Decision tree learning è un metodo per classificare un target a valori discreti utilizzando una funzione sotto forma di albero di decisione. Quest'ultimo predice le istanze nell'albero partendo dalla radice fino al nodo che contiene le foglie.
+Ciascun nodo specifica un test per un attributo dell'istanza, e ciascun arco rappresenta un possibile valore che l'attributo può assumere. Quindi, la classificazione dell'istanza consisterà nel verificare tutti i possibili attributi di quest'ultima, fino a quando non si raggiunge una foglia che indica l'esito.
+Il decision tree learning è ottimale per problemi che hanno le seguenti caratteristiche:
+- le istanze sono rappresentate da coppie attributi-valori: ciascuna istanza è rappresentata da un insieme di attributi (ad esempio Temperatura, Umidità,....) e dai loro attributi (ad esempio caldo, normale,...). La situazione più semplice per il decision tree learning è quando ciascun attributo ha pochi valori, indipendenti
+- la target function ha un numero discreto di valori
+- è necessario che le descrizioni siano indipendenti tra di loro
+- il training data può contenere errori: decision tree learning è "resistente" a errori commessi sia nella classificazione dei training examples che nei valori degli attributi che descrivono tali esempi
+- il training data può non contenere valori di attributi
+
+
+#### Algoritmo
+Gli algoritmi di decision tree learning sono top-down e greedy. Un caso basilare è il seguente:
+- passo base: se $S$ è puro, allora ritorna le foglie
+- induzione: $$gain(j)={\text{before split cost}}_{C(S)}-\sum_{v\in dom(j)}\frac{|S_{jv}|}{|D|}C(S_{jv})$$dove $j$ indica l'attributo. Essa rappresenta la verifica di quanta impurità è stata rimossa.$$split \ on \ j^*={\arg\max}_{j=1 ...d}gain(j)$$
+
+
+L'impurità di un algoritmo è data$$P_k=\frac{1}{|S|}\sum_{(x,y)\in S}\mathbb 1\{y=k\}$$da cui si ottengono diverse tipologie di costi$$\begin{align*}C(S)&=1-P_k\\ C(S)&=\sum_{k=1}^{\mathcal K}P_k(1-P_k)\\ C(S)&=-\sum_kP_k\log_2(P_k)\end{align*}$$
+__NOTA__: $gain$, impurità, costi, ... rappresentano tutti __iperparamentri__.
+##### ID-3
+Un esempio di algoritmo è l'__ID-3__ il quale costruisce il decision tree partendo dalla radice, fino ad arrivare alle foglie. A ogni iterazione, ogni attributo della istanza viene posizionato come nodo in base a un test statistico che verifica quanto bene riesce a classificare il training example da solo (cioè senza che ci sia bisogno di sapere degli attributi a priori).
+Questa tipologia di algoritmo non effettua backtracking per verificare le precedenti scelte.
+Si considera il caso in cui l'algoritmo impara solo funzioni a valori booleani. Per selezionare in maniera corretta quale attributo inserire prima nell'albero, si considera prima il concetto di __entropia__. Essa determina l'impurità di un insieme arbitrario di esempi. 
+Dato $S$ insieme degli esempi (composto da target positivi e negativi), l'entropia è data da$$Entropy(S)=-P_p\log_2{P_p}-P_n\log_2{P_n}$$dove $P_k$ rappresenta l'impurità (essendo funzioni binarie, si hanno solo casi positivi $p$ e negativi $n$) ed è definita come$$P_k=\frac{1}{|S|}\sum_{(x,y)\in S}\mathbb 1\{y=k\}$$L'entropia è un valore compreso tra 0 e 1 e, nel caso generale, è definita come$$Entropy(S)=-\sum_{k=1}^cP_k\log_2{P_k}$$Una possibile rappresentazione grafica è la seguente
+![[Pasted image 20231210122650.png]]
+dove come come ascissa si ha, per esempio, $P_p$ che varia tra 0 e 1.
+L'__information gain__  rappresenta l'efficienza di un attributo nel classificare il training data. Più precisamente, il $Gain(S,A)$ di un attributo $A$ in un insieme di esempi $S$ è dato da$$Gain(S,A)=Entropy(S)-\sum_{v\in Values(A)}\frac{|S_v|}{|S|}Entropy(S_v)$$dove $S_v$ indica un sottoinsieme di $S$ i cui esempi hanno $v$ come valore di $A$.
+#### Bias-Variance tradeoff
+Il decision tree presenta una high variance e un low bias.
+- __bias__: per bias si intende le assunzioni che si fanno a priori per la target function. Maggiore è la quantità di assunzioni e maggiore è il bias. Modelli con tale livello di bias sono meno flessibili in quanto vengono imposte più regole alla target function. Nel caso del decision tree non viene effettuata quasi nessuna assunzione a priori.
+- __variance__: per variance si intende di quanto varia la target function al variare del training set. Modelli con bassa variance hanno funzioni che non variano di molto se vengono modificate alcune istanze del training set. Il decision tree, invece, è sensibile alle variazioni del training data.
+
+
+Per ovviare a ciò, esistono algoritmi (ensemble learning) che riducono la variance al costo del bias (cioè permettono la combinazione delle predizioni di più modelli), come il __bootstrap__ o il __random forest__.
+## Ensemble algorithms
+Questa categoria di algoritmi raccoglie un inseme (ensemble) di ipotesi $h_1, h_2, ....,h_n$ e mette in relazione le loro predizioni attraverso la media, il voting o altri metodi. Le singole ipotesi sono chiamate __base models__, mentre la loro combinazione __ensemble model__. 
+Inoltre, hanno lo scopo di ridurre il bias o la variance di determinati algoritmi.
+Per generare tali ipotesi, gli ensemble utilizzano dei __weak learning algorithm__ $L$ (cioè algoritmi che eseguono previsioni leggermente più accurate col training set invece che col random guessing). Un esempio può essere il __decision tree stumps__, il quale rappresenta un decision tree con un solo split, e cioè quello che parte alla radice.
+### Bootstrap aggregating (bagging)
+Nel bagging si generano $K$ training set distinti, di dimensione $N$, campionando senza rimpiazzamento (cioè nessun sample del training set viene campionato più di una volta). Successivamente si genera l'ipotesi a partire dal singolo training set generato in precedenza (quindi questo procedimento verrà ripetuto $K$ volte). Nel momento in cui si deve definire l'esito di un input casuale, esterno al training set, si verifica quale risultato si è presentato più volte tra gli esiti delle ipotesi.
+Il difetto del seguente algoritmo sta nel fatto che genera alberi che sono altamente correlati tra di loro: se c'è un attributo che ha alto information gain, allora risulterà essere la radice di molti di essi.
+### Random forests
+Il random forest è un algoritmo molto simile al bagging in quanto genera sempre $K$ alberi differenti con la differenza che, durante creazione di questi ultimi, viene effettuato un campionamento randomico degli attributi a ogni split e viene scelto quello con information gain più alta. Questo metodo permette di avere una bassa varianza.
+Nel caso di algoritmi decisionali, se si hanno $n$ attributi, ogni volta che si esegue uno split dell'albero vengono selezionati $\sqrt n$ attributi in maniera random per la classificazione.
+Un miglioramento può essere quello di selezionare in maniera randomica i possibili valori di un attributo (e quindi i rami) a partire da una distribuzione uniforme. Successivamente, si determina quello con maggior information gain. Questo miglioramento viene chiamato __extremely randomized trees (ExtraTrees)__. 
+Il random forest può generare modelli complessi, ma che non sono soggetti a pruning in quanto non causano overfitting. La generalizzazione dell'errore di previsione del random forest converge all'aumentare del numero di alberi presenti all'interno della foresta.
+#### Accuratezza
+Dato un insieme di classificatori $h_{1(\mathbf x)}, ... ,h_{K(\mathbf x)}$ e un training set generato casualmente dalla coppia di vettori $Y, \mathbf X$, si definisce la funzione marginale (funzione che determina l'accuratezza del classificatore nell'effettuare decisioni) come$$mg(\mathbf X, Y)=av_kI(h_k(\mathbf X)=Y)-\max_{j\not=Y}av_kI(h_k(\mathbf X)=j)$$dove $I()$ rappresenta la funzione di identità. Il primo termine a destra della equazione rappresenta la media delle assunzioni corrette fatte dagli alberi dato un input $\mathbf X$ (vengono sommate le funzioni identità per ciascun classificatore che predice $Y$ dato $\mathbf X$). Il secondo termine a destra, invece, determina il maggior valore medio tra tutte le assunzioni non corrette dato come input $\mathbf X$.
+Maggiore è il margine, più è accurata la classificazione.
+
+
+La generalizzazione dell'errore è data da$$PE^*=P_{\mathbf X, Y}(mg(\mathbf X, Y) < 0)$$Cioè rappresenta la probabilità che la funzione marginale sia negativa, dato lo spazio $\mathbf X,Y$.
+
+
+All'aumentare della quantità di alberi, $PE^*$ converge a$$P_{\mathbf X, Y}(P_\Theta(h(\mathbf X,\Theta)=Y))-\max_{j\not = Y}P_\Theta(h(\mathbf X,\Theta)=j)<0$$dove $\Theta$ indica l'insieme dei vettori randomici indipendenti e ugualmente distribuiti (rappresenta praticamente l'insieme degli attributi dell'albero).
+#### Generalization error
+Nel caso del random forest, un possibile limite superiore per gli errori di generalizzazione può essere ottenuto attraverso l'utilizzo di due parametri che misurano, rispettivamente, l'accuratezza dei singoli classificatori e la dipendenza tra di loro.
+### Boosting
+L'ensemble algorithm più conosciuto è il boosting algorithm. Utilizza il concetto di __weighted training set__, cioè a ciascun training example viene associato un peso $w_j \geq 0$ il quale indica quanto è rilevante quell'esempio durante il training (se un esempio ha peso 3, significa che durante il training vengono considerate 3 istanze uguali invece che una sola).
+All'inizio, il boosting inizia con tutti i pesi uguali a 1. Dal training set iniziale genera una classificazione $h_1$, la quale prevederà alcuni example in maniera corretta e altri no. L'obiettivo è quello di migliorare la classificazione successiva aumentando il peso degli esempi mal classificati e diminuendone quello degli esempi che ha azzeccato. Questo nuovo weighted training set viene utilizzato per generare la classificazione $h_2$.
+Il procedimento prosegue fino a quando non si hanno $K$ classificatori differenti (dove $K$ rappresenta un input del boosting algorithm). Si può notare che il seguente algoritmo è greedy in quanto non esegue backtrack e si forza a trovare un classificatore che predice ciascun training example, anche a costo di aumentarne il peso.
+Una volta ottenuta una collezione di classificatori, a ciascuno viene associato un altro peso che corrisponde a quanta importanza ha il singolo nel prendere una decisione (questo peso viene calcolato in base a quanto bene il classificatore ha eseguito le previsioni dato il suo dataset).
+Nel caso specifico degli alberi decisionali, essendo di dimensioni limitate, viene utilizzato l'algoritmo __AdaBoost__ il quale possiede una proprietà per la quale, dato un weak learning algorithm ritorna un classificatore che prende decisioni sul training data in maniera corretta per $K$ abbastanza grandi.
+#### AdaBoost
+L'algoritmo AdaBoost prende come input un training set $(x_1,y_1), ... ,(x_m,y_m)$, in cui gli $x_i$ appartengono a uno spazio di istanze $X$ e gli $y_i$ appartengono allo spazio di classificazione (per ciascuna istanza $i$) $Y$, che in questo caso si definisce come $Y=\{-1,+1\}$. Successivamente, invoca un __weak o base learning algorithm__ dato a priori (come il decision tree learning) $T$ volte (o $K$ se si vuole far riferimento alla definizione data nel boosting).
+L'obiettivo principale del seguente algoritmo è quello di mantenere una weight distribution sul training set: quest'ultima, se applicata a un training example $i$, si definisce la denotazione $D_t(i)$ dove $t=1, ..., T$.
+Inizialmente, la distribuzione del peso è uguale per tutti i training example. Se uno di essi viene mal classificato, allora si aumenta il peso di modo che il weak algorithm si concentri "sull'imparare" gli esempi che gli sono risultati più "difficili".
+A ogni iterazione $t$ il weak learner individua un classificatore $h_t: X\to \{-1,+1\}$ per la distribuzione $D_t$. L'accuratezza del singolo classificatore viene determinata dal suo errore$$\varepsilon_t=Pr_{i\sim D_t}[h_t(x_i)\not=y_i]=\sum_{i:h_t(x_i)\not=y_i}D_t(i)$$dove $Pr$ indica la distribuzione degli errori commessi dal classificatore sulla distribuzione $D_t$.
+
+
+A livello di pseudo-codice si ha:
+```
+given (x[1],y[1]) ... (x[m],y[m]) where x[i] in X and y[i] in Y={-1,+1}
+initialize D[1](i)=1/m; //rappresenta la distribuzione di pesi iniziale su
+                                                //ciascun esempio
+for t = 1 ... T
+        train weak learner using distribution D[t];
+        get weak hypothesis h[t]:X -> {-1,+1} with error e[t]=function_1; //l'errore
+                        //è stato definito in precedenza
+        choose alpha[t]=1/2*ln((1-e[t])/e[t]); //rappresenta l'importanza
+                                                                                   //da assegnare all'ipotesi h[t]
+        update D[t+1](i)=function_2; //si aggiorna il peso di ciascun esempio
+output the final hypotesis H(X)=function_3; //viene dato in output il
+                                                                                        //classificatore finale che 
+                                                                                        //rappresenta la maggioranza 
+                                                                                        //dei voti dati dai singoli
+                                                                                        //classificatori h[t] con il loro
+                                                                                        //peso alpha[t]
+```
+Dove$$function\textunderscore2=\frac{D_t(i)}{Z_t}\times\begin{equation}\begin{cases}e^{-\alpha_t}&h_t(x_i)=y_i\\e^{\alpha_t}&h_t(x_i)\not=y_i\end{cases}\end{equation}$$cioè$$function\textunderscore2=\frac{D_t(i)\exp(-\alpha_ty_ih_t(x_i))}{Z_t}$$dove $Z_t$ rappresenta il normalizzatore che rende $D_{t+1}$ una distribuzione.
+Mentre$$function\textunderscore3=sign(\sum_{t=1}^T\alpha_th_t(X))$$Si nota che $\alpha_t\geq 0$ se $\varepsilon_t \leq 1/2$ e che $\alpha_t$ aumenta al diminuire di $\varepsilon_t$.
+$D_t$ viene aggiornata aumentando il peso degli esempi mal classificati da $h_t$ e diminuendo il peso di quelli classificati correttamente, facendo in modo che il weak learner si concentri solo sugli esempi che sono risultati più difficili.
+
+
+Una delle proprietà dell'AdaBoost è quella di ridurre il training error.
+Si considera l'errore $\varepsilon_t$ di $h_t$ come $\frac{1}{2}-\gamma_t$. Siccome il classificatore che classifica ciascuna istanza a caso ha un rateo di errore equivalente a $1/2$ (nei problemi binari), $\gamma_t$ determina quanto meglio sono le predizioni delle $h_t$ rispetto a quelle random. Il training error di $H$ risulta al massimo di$$\prod_t[2\sqrt{\varepsilon_t(1-\varepsilon_t)}]=\prod_t\sqrt{1-4\gamma^2_t}\leq\exp(-2\sum_t\gamma^2_t)$$Se ciascun classificatore è leggermente migliore di quello randomico in modo tale che $\gamma_t\geq \gamma$ per un $\gamma>0$, allora il training error si riduce esponenzialmente.
