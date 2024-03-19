@@ -30,6 +30,7 @@ ___
 - [Inferenza](#inferenza)
 - [Incertezza](#incertezza)
 - [Bayesian Network](#bayesian-network)
+- [Markov Network](#markov-network)
 ___
 
 #### Introduzione al corso
@@ -427,15 +428,18 @@ Un approccio completamente diverso alla risoluzione dei problemi presentati, e m
 
 Questo tipi di problemi viene risolto per inferenza, ovvero propagando i vincoli e le assegnazioni. La struttura di un CSP è ben diversa da quella di un problema di ricerca. 
 
-I problemi di programmazione lineare sono un caso particolare di CSP (eg. problema del simplesso). I CSP sono NP-completi, quindi non esiste un algoritmo polinomiale per risolverli.
+I problemi di programmazione lineare sono un caso particolare di CSP (eg. problema del simplesso). I CSP sono NP-completi, quindi non esiste un algoritmo polinomiale per risolverli. 
+
+> __NP__ : classe di problemi di decisione che possono essere risolti in tempo polinomiale da una macchina di Turing non deterministica. \
+> __NP-completo__ : classe di problemi di decisione che possono essere _ridotti_ in tempo polinomiale a un problema NP.
 
 __Formalizzazione__:
 Chiamiamo __$X$__ $ = \{ X_1, \dots, X_n \} $ l'insieme delle __variabili__ del problema. \
 Chiamiamo __$D$__ $ = \{ D_1, \dots, D_n \} $ l'insieme dei __domini__ di ciascuna variabile. \
 Chiamiamo __$C$__ l'insieme di vincoli. \
-Ciascun vincolo $c_i$ è una coppia $<scope, rel>$ dove $scope$ è una tupla di variabili e $rel$ è una relazione che specifica i valori che le variabili possono assumere. \
+Ciascun vincolo $c_i$ è una coppia $<scope, rel>$ dove $scope$ è una tupla di variabili ($scope \subseteq X$) e $rel$ è una relazione che specifica i valori che le variabili possono assumere ( $rel \subseteq D^{||scope||}$).
 
-Un __assegnamento__ è una funzione $A$ che associa ad ogni variabile un valore del suo dominio. \
+Un __assegnamento__ è una funzione $A$ che associa ad <u>ogni</u> variabile un valore del suo dominio. \
 Un assegnamento è __consistente__ se non viola nessun vincolo. \
 Chiamiamo __assegnamento completo__ un assegnamento che associa un valore ad ogni variabile. \
 Una __soluzione__ è un assegnamento completo e consistente.
@@ -643,6 +647,8 @@ Vediamo un esempio di propagazione per il problema delle n-regine con n = 6.
 
 Supponiamo che select_unassigned_variable() scelga le variabili da assegnare in ordine alfabetico, mentre order_domain_values() scelga i valori in ordine crescente. 
 
+> __Note__: la rappresentazione sotto è stata realizzata come una tabella nxn per semplificarne la visualizzazione, ma il problema è espresso nella forma duale, con le variabili che rappresentano le colonne e non ciascuna casa della scacchiera.
+
 <div style="display:inline-block">
 <div style="float:left;margin:0 60px 20px 20px">
     <table >
@@ -686,7 +692,7 @@ Un altro approccio è quello di considerare la struttura del problema. Come dett
 
 Diciamo che una CSP è ___directional arc consistent___ (__DAC__) rispetto ad ordinamento delle variabili $S = <X_1, X_2, \dots, X_n>$ se $\forall X_i, X_j \in S, \text{ con } i < j, X_i$ è arc consistent rispetto a $X_j$.
 
-Per risolvere una CSP a struttura d'albero basta prendere ciascuna variabile come radice e ordinarle in modo che ciascuna di queste appaia dopo il proprio genitore nella sequenza. Questo tipo di algoritmo è detto __ordinamento topologico__. Un qualsiasi albero di $n$ nodi ha $n-1$ archi quindi è possibile rendere un albero directional arc consistent in $O(n)$ e per ciascuno dobbiamo controllare fino a $|D|$ possibili valori per coppie di variabili $\implies \text tempo \prop O(n*|D|^2)$
+Per risolvere una CSP a struttura d'albero basta prendere ciascuna variabile come radice e ordinarle in modo che ciascuna di queste appaia dopo il proprio genitore nella sequenza. Questo tipo di algoritmo è detto __ordinamento topologico__. Un qualsiasi albero di $n$ nodi ha $n-1$ archi quindi è possibile rendere un albero directional arc consistent in $O(n)$ e per ciascuno dobbiamo controllare fino a $|D|$ possibili valori per coppie di variabili $\implies \text tempo \propto O(n*|D|^2)$
 
 <details>
     <summary><b>Code</b>: Tree-CSP solver </summary>
@@ -1060,19 +1066,32 @@ Detto __principio di massimizzazione dell'utilità attesa (MEU)__.
 >__Nota__: 
 >Vedi formulario statistica per tutte le nozioni di base sulla probabilità o dai una veloce lettura al libro di ai. Le nozioni di maggior rilevanza sono gli assimo di Kolmogorov, variabili aleatorie, distribuzioni di probabilità, funzione di ripartizione, probabilità marginale, indipendenza e più importante fra tutte la __regola di Bayes__.
 
-- _product rule_: $P(A, B) = P(A|B)P(B) = P(B|A)P(A)$
-- _bayes rule_: $P(A|B) = \frac{P(B|A)P(A)}{P(B)}$, $P(A|B, C) = \frac{P(B|A, C)P(A|C)}{P(B|C)}$
+Chiamiamo __probabilità a priori__ o incondizionata la probabilità che una certa variabile aleatoria assuma un determinato valore ($P(X)$).\
+Chiamiamo __probabilità condizionata__ la probabilità che una certa variabile aleatoria assuma un determinato valore dato che un'altra assume un certo valore ($P(X|Y)$).\
+Chiamiamo __product rule__ $P(A, B) = P(A|B)P(B) = P(B|A)P(A)$ \
+Chiamiamo __bayes rule__ $P(A|B) = \frac{P(B|A)P(A)}{P(B)}$, $P(A|B, C) = \frac{P(B|A, C)P(A|C)}{P(B|C)}$ \
 
-La __regola di Bayes__ è fondamentale in quanto ci permette di calcolare la probabilità di una causa data un effetto e può essere scritta anche in una forma non vista a statistica: $P(A|B) = \alpha P(B|A)P(A)$ dove $\alpha$ è una costante di normalizzazione (che riporta la probabilità fra 0 e 1).
+La __regola di Bayes__ è fondamentale in quanto ci permette di calcolare la probabilità di una causa data un effetto e può essere scritta anche in una forma non vista a statistica: $P(A|B) = \alpha P(B|A)P(A)$ dove $\alpha$ è una costante di normalizzazione (che riporta la probabilità fra 0 e 1).\
+Generalmente $P(A|B)$ in questo contesto è chiamata __posterior probability__, $P(B|A)$ è chiamata __likelihood__, $P(B)$ è chiamata __prior probability__.\
+Applicando consecutivamente la regola di Bayes si ricava la così detta __chain rule__ $P(A, B, C) = P(A|B, C)P(B|C)P(C)$ o più in generale $P(x_1, x_2, \dots, x_n) = P(x_n|x_1, x_2, \dots, x_{n-1})P(x_1, x_2, \dots, x_{n-1}) = P(x_n|x_1, x_2, \dots, x_{n-1})P(x_{n-1}|x_1, x_2, \dots, x_{n-2})P(x_1, x_2, \dots, x_{n-2}) = \dots = \prod_{i=1}^{n} P(x_i|x_1, x_2, \dots, x_{i-1})$ 
+> __Nota__: $P(A|B) = \frac{P(B|A)P(A)}{P(B)}$ ovvero $posterior \propto likelihood \times prior$, se aggiungiamo una nuova conoscienza, una nuova osservazione $P(A|B,C) = \frac{P(C|A,B)P(A|B)}{P(C|B)}$ ovvero $new posterior \propto likelihood \times old posterior$.
 
-- _conditional independence_: $P(A, B|C) = P(A|C)P(B|C)$, $P(A|B, C) = P(A|C)$ e $P(B|A, C) = P(B|C)$
+Si parla di __probabilità congiunta__ (_full join distribution_) per indicare la probabilità che due o più variabili aleatorie assumano determinati valori contemporaneamente ($P(A, B)$).
+
+Data la propabilità congiunta possiamo determinare la probabilità a priori tramite il processo di __marginalizzazione__ ovvero sommando la probabilità congiunta di tutte le variabili facendo variare il valore delle variabile non di interesse ($P(A) = \sum_{b} P(A, B=b)$) oppure sfruttando la probabilità condizionata ($P(A) = \sum_{b} P(A|B=b)P(B=b)$).
+
+Chiamiamo __indipedenti__ due variabili aleatorie la cui probabilità congiunta è uguale al prodotto delle probabilità a priori ($P(A, B) = P(A)P(B)$) e si scrive $A \perp B$.\
+Chiamiamo __conditional independence__ $P(A, B|C) = P(A|C)P(B|C)$, $P(A|B, C) = P(A|C)$ e $P(B|A, C) = P(B|C)$ e si scrive $A \perp B | C$.
 
 Al contrario dell'interpretazione classica della probabilità condizionata, in cui $P(A|B)$ è la probabilità che A sia vero dato che B è vero, in cui spesso dato che B è vero viene interpretato come un fatto noto, osservato; per le reti bayesiane che vedremo a breve $P(A = a | B = b)$ è da interpretare come la probabilità che A sia in un certo stato sotto la condizione che B sia in un certo stato, indipendentemente dal fatto che B sia stato osservato o meno. E la relazione fra probabilità condizionata e probabilità congiunta è che la prima è uguale alla seconda normalizzata.
 
 L'indipendenza invece è la proprità per cui la probabilità di un evento non dipende da un altro evento ovvero conoscere o meno il secondo non fa variare la probabilità condizionata (del primo rispetto al secondo).
 
 Per la risoluzione di problemi in cui non si ha certezza ma un gradi di incertezza si usano generalmente metodi che si appoggiano a grafi che possono essere orientati (come nel caso delle ___bayesian network___) o non orientati (come nel caso delle ___markov network___), in entrambi i casi i nodi rappresentano variabili casuali e gli archi rappresentano le __dipendenze__ probabilistiche fra le variabili.
+
+E' utile rappresentare le probabilità citate come tabelle, questo comporterebbe ridurre il processo di inverenza a semplici moltiplicazioni matriciali. Tuttavia per rappresentare la probabilità congiunta di $n$ variabili aleatorie binarie servirebbero $O(2^n)$ parametri, il che è impraticabile per un numero alto di variabili. Per questo motivo si usano i grafi probabilistici.
 ___
+
 
 #### Bayesian Network 
 ![](https://miro.medium.com/v2/resize:fit:1204/1*9OsQV0PqM2juaOtGqoRISw.jpeg)
@@ -1082,23 +1101,12 @@ Un ___Bayesian Network___ (o ___belief network___) è un grafo diretto aciclico 
 Possiamo calcolare la probabilità di pioggia data l'erba bagnata ma l'assenza di nuvole con la formula che segue: $P(x_1, x_2, \dots, x_n) = \prod_{i=1}^{n} P(x_i|parents(X_i))$ dove $parents(x_i)$ sono i genitori del nodo $X_i$ e $x_i$ è il valore del nodo $X_i$.\
 Nel nostro caso $P(wet, rain, \neg cloud) = P(wet|rain)P(rain|\neg cloud)P(\neg cloud)$.
 
-Spiegato come funziona un ___bayesian network___ dobbiamo vedere come costruirlo in modo che la distribuzione congiunta sia una buona rappresentazione del mondo.\
-Dalla formula appena vista possiamo derivarne un'altra utile ad identificare relazioni di _indipendenza condizionata_ che può guidare la costruzione topologica del grafo. $P(x_1, x_2, \dots, x_n) = P(x_n|x_1, x_2, \dots, x_{n-1})P(x_1, x_2, \dots, x_{n-1}) = P(x_n|x_1, x_2, \dots, x_{n-1})P(x_{n-1}|x_1, x_2, \dots, x_{n-2})P(x_1, x_2, \dots, x_{n-2}) = \dots = \prod_{i=1}^{n} P(x_i|x_1, x_2, \dots, x_{i-1})$. Questa formula è detta ___Chain Rule___.\
-Più in generale $P(X_i|X_{i-1}, X_{i-2}, \dots, X_1) = P(X_i|parents(X_i))$ soddisfatta ordinando i nodi in modo che i genitori di un nodo siano sempre prima di quel nodo.\
-Quello che la fomula ci comunica è che il bayesian network è una rappresentazione corretta solo se ogni nodo è indipendente condizionatamente dal predecessore nell'ordine topologico del grafo. Ed è una condizione raggiungibile identificando i nodi, ordinandoli (anche casualmente ma conviene che cause precedano gli effetti) e per ogni nodo scegliendo un un subset di nodi genitori che soddisfino la chain rule, unendo i nodi con un arco diretto e infine scrivendo la CPD del nodo.
-
-Un'altra caratteristica fondamentale è che il bayesian network non ha probabilità ridondanti, ovvero è consistente. E inoltre può essere ulteriormente compattato permettendo di gestire un numero alto di variabili. Ad esempio: supponiamo che ciascuna delle $n$ variabili abbia $k$ genitori, allora dovranno essere memorizzate $n \cdot 2^k$ probabilità condizionate. Se invece memorizziamo le probabilità congiunte bastano $2 \cdot n$ probabilità. Questa compattezza è raggiungibile solo a patto di scegliere un buon ordinamento dei nodi (poichè un ordinamento sbagliato implica più collegamenti e quindi più probabilità da definire). <!--TODO--> clarify
-
 Dalla semantica del bayesian network possiamo derivare alcune proprietà dell'indipendenza condizionata. Abbiamo già visto che le variabili sono condizionatamente indipendenti dal predecessore, ma possiamo anche dire che le variabili sono condizionatamente indipendenti dai __non-discendenti__ dato il genitore ovvero che _wet_ è indipendente da _cloud_ dato _rain_. In altre parole possiamo vedere la sematica di un bayesian network senza dover definire la distribuzione congiunta completa come prodotto di probabilità condizionate ma basta definire alcune proprietà di indipendenza condizionata e da quelle derivare la distribuzione congiunta.\
 Diretatmente derivante dalla proprietà dalla proprietà di non-discendenza possiamo dire che una variabile è condizionatamente indipendente da tutti i nodi del grafo dati i suoi genitori, figli e fratelli (genitori dei figli); detta ___local Markov property___. 
 
-Un'altra domanda a cui potremmo essere interessati trovare una risposta è se un insieme di nodi $A$ è indipendente da un insieme di nodi $B$ dato un insieme di nodi $C$. Questa domanda è risolvibile con la ___d-separation___, una procedura che ci permette di determinare se due insiemi di nodi sono indipendenti condizionatamente dato un terzo insieme di nodi. La procedura è la seguente:
-- consideriamo solo il sottografo di predecessori e nodi stessi di $A$, $B$ e $C$
-- aggiungiamo archi diretti per ciascuna coppia di nodi che condividono un figlio comune, abbiamo quindi un __moral graph__
-- eliminiamo tutti gli archi diretti per archi indiretti
-- se per un qualsiasi percorso da un nodo di $A$ ad un nodo di $B$ passa per un nodo di $C$ allora $A$ e $B$ sono condizionatamente indipendenti dato $C$ e si dice che $C$ _d-separa_ $A$ e $B$.
+L'idea che rende più potente un BN è proprio che sono specificate nel grafo le relazioni di indipendenza condizionata fra le variabili. Questo permette di rappresentare la distribuzione congiunta in modo più compatto e di fare inferenza in modo più efficiente, senza occupare spazio per tutte le probabilità congiunte. Questo tuttavia, sfortunatamente non significa che le variabili che 'condizionano', genitori, non abbiano alcuna influenza, infatti ad esempio per $P(x_1|x_2) = P(x_2|x_3)P(x_3) \cancel{\implies} P(x_2|x_1,x_3) = P(x_2|x_3)$.
 
-In genere è utile distinguere 4 casi:
+##### Collisioni
 - caso 1 (connessione consecutiva):
 
 ![](./images/bayesian_network_case_1.png)
@@ -1112,25 +1120,34 @@ anche detta _evidence blocus propagaion_.
 ![](./images/bayesian_network_case_2.png)
 
 $P(A | B, C) = P(A | B)$\
-$A \perp_D C | B$
+$A \perp_D C | B$\
+la marginalizzazione rispetto a B rende A e C indipendenti mentre il condizionamento su B rende A e C dipendenti. \
+Questa e la precedente rete come la sua simmetrica, rappresentano tutti le stesse ipotesi di indipendenza.
+
 
 - caso 3 (connessione convergente):
 
 ![](./images/bayesian_network_case_3.png)
 
 $P(A, C) = \sum_B P(A, B, C) = \sum_B P(B | A, C) P(A) P(C) = P(A) P(C) \sum_B P(B | A, C) = P(A) P(C)$\
-anche detta _collider_.
+anche detta _collider_. \
+Al contrario la marginalizzazione rispetto a B rende A e C indipendenti mentre il condizionamento su B rende A e C dipendenti.
 
 - caso 4:
 
 ![](./images/bayesian_network_case_4.png)
 
-evidence su un discendente di un collider permette la propagazione.
+evidence su un discendente di un collider permette la propagazione.\
+Il condizionamento su D rende A e C indipendenti.
 
-- .
+##### D-separation
 
-> con $\perp_D$ si indica $X \perp_D Y | Z$ se per ogni cammino non orientato tra $X$ e $Y$ è _bloccato_ da $Z$  \
-> con __bloccato__ si indica la proprietà di un percorso che rispetti almeno una delle seguenti condizioni: il percorso contiene un nodo in $Z$ che non è un ___collider___ per il percorso (caso 1 e 2); esiste un collider per il percorso non in $Z$ e nessuno dei discendenti del collider è in $Z$ (caso 3 e 4).
+Dato un BN con $X,Y$ e $Z$ insiemi di vertici disgiunti, $X$ e $Y$ si dicono __d-connected__ se esiste un cammino non orientato $\rho$ tra un vertice in $X$ e un vertice in $Y$ che per ogni _collider_ $C$ in $\rho$ è in $Z$ o un discendente di $C$ è in $Z$ e nessun non collider in $\rho$ è in $Z$.\
+Mentre si dice che $X$ e $Y$ sono __d-separated__ con $\perp_D$ se non sono __d-connected__.
+
+Con $\perp_D$ si indica $X \perp_D Y | Z$ se per ogni cammino non orientato tra $X$ e $Y$ è _bloccato_ da $Z$  \
+con __bloccato__ si indica la proprietà di un percorso che rispetti almeno una delle seguenti condizioni: il percorso contiene un nodo in $Z$ che non è un ___collider___ per il percorso (caso 1 e 2); esiste un collider per il percorso non in $Z$ e nessuno dei discendenti del collider è in $Z$ (caso 3 e 4).\
+se tutti i percorsi sono bloccati allora $X$ e $Y$ sono __d-separated__ da $Z$.
 
 <details>
     <summary><b>Example</b>: D-separation </summary>
@@ -1142,21 +1159,245 @@ Asia $\perp_D$ Smoker $|$ X-ray ? no, ci sono due cammini da Asia a Smoker, uno 
 
 </details>
 
-##### Theorem
-Fattorizzazione di un bayesian network: $P(X_1, X_2, \dots, X_n) = \prod_{i=1}^{n} P(X_i|parents(X_i)) \implies X \perp_D Y | Z \iff X \perp Y | Z$.
+##### Costruzione di una BN
 
+Si chiama __Markov equivalence__ due reti bayesiane che rappresentano le stesse ipotesi di indipendenza. Due reti bayesiane sono equivalenti se e solo se rappresentano le stesse ipotesi di indipendenza (anche se la loro struttura grafica è diversa).
+
+> __Theorem__: sia D una DAG BN (rappresentazione grafica per una famiglia di distribuzioni) per un dominio $U = (x_1, x_2, \cdots, x_n)$ dove vale la decomposizione $$P(x_1, x_2, \cdots, x_n) = \prod_i P(x_i|parents(x_i))$$ allora per ogni $X, Y, Z \subseteq U$ cioè $P(X|Y,Z) = P(X|Z)$ se e solo se $X \perp_D Y | Z$.
+
+Il teorema permette di mettere in relazione il grafo con l'effetiva distribuzione probabilistica. 
+
+<details>
+    <summary><b>Example</b>: Costruzione di una BN </summary>
+
+Supponiamo $A, B, C$ e $D$ le nostre variabili aleatorie. \
+Supponiamo valgano $A \perp B | C,D$ e  $C \perp D | A, B$. 
+
+![](images/no_bn.png)
+
+La rappresentazione grafica di queste relazioni di indipendenza non è la seguente, infatti essa rispetta la prima condizione ma non la seconda. Di fatto, non esiste una BN in grado di soddisfare entrambe le condizioni, tuttavia è possibile costruire un __Markov network__ che le soddisfi (come vedremo in seguito).
+
+</details>
+
+##### Approfondimenti
 
 Avere una CSP di dimensioni $O(2^k)$ è comunque un problema, e non tiene conto del fatto che nella vita reale le variabili assumono spesso distribuzioni note. In questi casi basterebbe identificare la distribuzione, definirne i parametri (che sono costanti, sempre gli stessi) e poi usare la distribuzione per calcolare la probabilità di un evento. Uno dei pattern che occorre spesso ed è facile da risolvere è quello di ___deterministic nodes___ ovvero nodi i cui valori dipendono interamente dai genitori (eg. il nodo "nord-americano" dipende da "messicano", "canadese", "statunitense"). Un altro pattern comune e risolvibile facilmente è quello di ___context-specific independence___ ovvero nodi che sono indipendenti condizionatamente da alcuni parenti dati i valori di altri nodi (eg. la gravità del "danno" subito dalla tua macchina dipende dal fatto se è una "4x4" e dal fatto se è avvenuto un "incidente", ma se non è avvenuto un "incidente" il "danno" sarà nullo e indipendente dal fatto che sia una "4x4" o meno). Questo pattern può essere risolto facilmente con un if-then-else nella CPD del nodo. L'ultimo pattern notevole è il ___noisy-OR___ ovvero il valore di un nodo figlio dipende dall'unione dei genitori la cui propabilità di causare il nodo figlio è incerta (eg. il nodo "febbre" è vero se e solo se valgono "influenza" o "malaria" o "tubercolosi"). Questo pattern sottointende due principali assunzioni: tutte le cause sono elencate (spesso viene aggiunto un così detto __leak node__ che vale per i miscellanei) e assume che le cause siano indipendenti tra loro. La CPT può essere scritta come $P(x_i|parents(X_i)) = 1 - \prod_{j:X_j = true} (1 - P(x_i|\neg x_1, \neg x_2, \cdots, x_j, \cdots, x_n))$. Ovvero bastano $O(k)$ parametri per definire la CPT di un nodo con $k$ genitori.
 
-Nell'esempio del danno abbiamo anticipato un problema, le variabili possono esserze continue ed assumero quindi infiniti valori, in questo caso si ricorre alla discretizzazione. Un'altro approccio possibile che non è sempre percorribile è usare variabili continue e distribuzioni continue note (eg. la distribuzione normale). Grafi con sia nodi continui che discreti sono detti ___hybrid bayesian network___. Per questo tipo di grafi dobbiamo specificare due nuovi tipi di distribuzioni: la ditribuzione condizionata per una variabile continua dati genitori discreti e la distribuzione condizionata per una variabile discreta dati genitori continui. In questi casi, una scelta comune è usare la distribuzione gaussiana lineare ovvero una distribuzione gaussiana la cui media è una funzione lineare dei genitori e la varianza è costante. Un grafo con solo nodi continui che assumono questa distribuzione ha una distribuzione congiunta che è una gaussiana multivariata su tutte le variabili. Quando nodi con distribuzioni discrete vengono aggiunti come genitori (non come figli) di nodi con distribuzioni continue il grafo assume una distribuzione gaussiana condizionata dai valori delle variabili discrete. <!-- TODO --> to complete.
+Nell'esempio del danno abbiamo anticipato un problema, le variabili possono esserze continue ed assumero quindi infiniti valori, in questo caso si ricorre alla discretizzazione. Un'altro approccio possibile che non è sempre percorribile è usare variabili continue e distribuzioni continue note (eg. la distribuzione normale). Grafi con sia nodi continui che discreti sono detti ___hybrid bayesian network___. Per questo tipo di grafi dobbiamo specificare due nuovi tipi di distribuzioni: la ditribuzione condizionata per una variabile continua dati genitori discreti e la distribuzione condizionata per una variabile discreta dati genitori continui. In questi casi, una scelta comune è usare la distribuzione gaussiana lineare ovvero una distribuzione gaussiana la cui media è una funzione lineare dei genitori e la varianza è costante. Un grafo con solo nodi continui che assumono questa distribuzione ha una distribuzione congiunta che è una gaussiana multivariata su tutte le variabili. Quando nodi con distribuzioni discrete vengono aggiunti come genitori (non come figli) di nodi con distribuzioni continue il grafo assume una distribuzione gaussiana condizionata dai valori delle variabili discrete. 
 ___
 
 #### Markov Network
+Le reti di Markov sono modelli matematici che descrivono la transizione di un sistema attraverso una sequenza di stati discreti, dove la probabilità di transizione da uno stato all'altro dipende solo dallo stato corrente.\
 I bayesian network corrispondono ad una tipica fattorizzazione della probabilità congiunta, dove ciascuno dei fattori è una distribuzione a sua volta. \
 Una fattorizzazione alternativa è $P(X_1, X_2, X_3) = \frac{1}{Z} \phi(X_1, X_2) \phi(X_2, X_3)$ dove $\phi$ è detta ___potential function___ ed una funzione non negativa (una distribuzione è un caso particolare di potential function che somma a 1) e $Z$ è una costante di normalizzazione detta ___partition function___. 
 
-Per un set di variabili $X = \{X_1, X_2, \dots, X_n\}$ un __Markov Network__ è definito come una produttoria di potenziali su un sottoinsiememe $X_C \subseteq X$ ovvero $P(X) = \frac{1}{Z} \prod_{c \in C} \phi_C(X_c)$. Graficamenteviene espresso come un grafo indiretto dove $X_c$ sono le clique massimali. Questo tipo di network ha diverse proprietà, fra le più importanti è la __proprietà globale di Markov__: per un insieme disgiunto di variabili $(A, B, S)$ con $S$ insieme di variabili che separa $A$ da $B$ allora $A$ e $B$ sono condizionatamente indipendenti dato $S$. 
+Per un set di variabili $X = \{X_1, X_2, \dots, X_n\}$ un __Markov Network__ è definito come una produttoria di potenziali su un sottoinsiememe $X_c \subseteq X$ ovvero $P(X) = \frac{1}{Z} \prod_{c \in C} \phi_C(X_c)$. Graficamenteviene espresso come un grafo indiretto dove $X_c$ sono le clique massimali. 
 
+<details>
+    <summary> <b>Example</b>: Markov Network factorization </summary>
+
+![](./images/markov_network_factorization.png)
+
+1. $\phi(a,b,c)\phi(b,c,d)$
+2. $\phi(a,b)\phi(b,c)\phi(a,c)\phi(c,d)$
+3. $\phi(a,b,g)\phi(b,c,g)\phi(c,d,g)\phi(d,e,g)\phi(e,f,g)\phi(a,f,g)$
+
+</details>
+
+Questo tipo di network ha diverse proprietà, fra le più importanti è la __proprietà globale di Markov__: per un insieme disgiunto di variabili $(A, B, S)$ con $S$ insieme di variabili che separa $A$ da $B$ allora $A$ e $B$ sono condizionatamente indipendenti dato $S$ (nell'esempio sopra nel grafo 3 vale $X_A \perp X_C | X_G$, $X_A \perp X_D | X_G$ ecc.). Questa proprietà deriva direttamente dalla definizione di separazione e dalla global markov property. 
+
+Un'altra proprietà importante è la proprietà di separazione: un sottoinsieme $S$ separa un sottoinsieme $A$ da un sottoinsieme $B$ (con $A$ e $B$ disgiunti) se ogni cammino non orientato fra un nodo in $A$ e un nodo in $B$ è bloccato da (passa attraverso) $S$. Se $S$ è vuoto allora $A$ e $B$ sono condizionatamente indipendenti ovvero non c'è alcun cammino fra $A$ e $B$.
+
+#TODO not clear
+Un ultimo teorema che se vogliamo ha a che fare con le proprietà di un Markov Network è il teorema di __Hammersley-Clifford__.
+> __Theorem__: se una distribuzione di probabilità congiunta soddisfa la regola di Markov locale rispetto ad un grafo aciclico diretto (DAG), allora la distribuzione può essere rappresentata come un Markov Network. Viceversa, se una distribuzione di probabilità congiunta può essere rappresentata come un Markov Network allora soddisfa la regola di Markov locale rispetto ad un grafo aciclico diretto.
+
+##### Mappe di indipendenza
+Il passaggio da rete bayesiana a rete markoviana è semplice e sempre possibile, basta identificare i fattori per esempio $p(a|b)p(b|c)p(c) = \phi(a, b)\phi(b, c)$ con $\phi(a, b) = p(a|b)$ e $\phi(b, c) = p(b|c)p(c)$ e $Z = 1$. Tuttavia il grafo associato ha solitamente link in più rispetto al grafo bayesiano il che vuol dire che c'è perdita di informazioni (si perdono alcune indipendenze fra variabili). Ad esempio $p(c|a, b)p(a)p(b) = \phi(a, b, c)$ si  perde l'indipendenza fra $a$ e $b$. 
+
+__Indipendence map__ (I-map): \
+Dato un grafo $G$ e una distribuzione $P$. $G$ è un I-map di $P$ se per ogni $A \perp B | S$ in $G$ allora $A \perp B | S$ in $P$ con $A, B, S$ sottoinsiemi qualsiasi di $G$.
+
+__Dependence map__ (D-map): \
+$A \perp B | S \implies A \perp_G B | S$ 
+
+__Perfect map__: \
+$A \perp B | S \iff A \perp_G B | S$ 
+
+__Trivial map__: \
+Per una I-map la mappa triviale è un grafo completo.\
+Per una D-map la mappa triviale è un grafo vuoto.
+
+Questo ci permette di trarre nuove proprietà.\
+- In una I-map tutte le indipendenze condizionate tra le variabili nel grafo sono consistenti con l'assenza di archi diretti tra nodi adiacenti.
+- In una D-map sono rappresentate tutte le dipendenze tra varibili ma non necessariamente le indipendenze condizionate.
+
+>__Theorem__: se $G$ è una I-map di $P$ allora $P$ può fattorizzare come $P = \frac{1}{Z} \prod_{c \in C} \phi_C(X_c)$ per qualche $\phi_C > 0$, viceversa: se $P$ può fattorizzare come $P = \frac{1}{Z} \prod_{c \in C} \phi_C(X_c)$ allora $G$ è una I-map di $P$.
+___
+
+#### Junction Tree Algorithm (JTA)
+
+L'algoritmo di inferenza classico che prevede l'eliminazione di variabili è efficiente per risolvere semplici _queries_ ma se vogliamo calcolare la probabilità a posteriori per tutte le variabili del grafo allora l'algoritmo diventa inefficiente. Un modo per risolvere questo problema è quello di trasformare il grafo in un grafo ad albero e poi risolvere l'algoritmo di eliminazione di variabili su questo grafo. Questa operazione è detta ___clustering___ metre il grafo risultante è detto ___jointree___. Le variabili agregate formano un ___meganode___ e diversi meganodi possono condividere alcune variabili questo porta a definire un diverso algoritmo di inferenza.
+
+L'algoritmo JTA viene utilizzato su grafi probabilistici, in particolare reti bayesiane, per fare inferenza, in molti casi, infatti, ci troviamo ad analizzare grafi associati a distribuzioni di probabilità che presentano connessioni multiple dove non è facile fare inderenza. L'algoritmo permette di raggruppare le variabili in cluster e di trasformare il grafo in un grafo ad albero (junction tree) in cui l'inferenza è più semplice (ci sono meno distribuzioni congiunte).
+
+Consideriamo un esempio: $p(a,b,c,d) = p(a|b)p(b|c)p(c|d)p(d) = \frac{p(a,b)}{p(b)}\frac{p(b,c)}{p(c)}\frac{p(c,d)}{p(d)}p(d) = \frac{p(a,b)p(b,c)p(c,d)}{p(b)p(c)}$. \
+In pratica quello che suggerisce l'esempio è che possiamo riscrivere una distribuzione (il markov network indicato da $p(a|b)p(b|c)p(c|d)p(d) = \phi(a,b,c)\phi(b,c,d)$) come il prodotto di tre distribuzioni marginali divise per l'intersezione delle marginali ( $p(b)$ e $p(c)$ ). 
+
+Quindi possiamo disegnare un ___clique graph___ ovvero un grafo i cui nodi sono dei potenziali $\phi_1(X^1), \cdots, \phi_n(X^n)$ definiti su un insieme di variabili $X^i$ e per le clique adiacenti vale che l'intersezione delle variabili delle clique $X^s = X^i \cap X^j$ è detta ___separator___ e corrisponde al potenziale $\phi_s(X^s)$. $$ \text{Una clique graph è rappresentata da una funzione del tipo : } \frac{\prod_{i=1}^{n} \phi_i(X^i)}{\prod_{s=1}^{m} \phi_s(X^s)}$$
+
+Vediamo ora l'inferenza su un junction tree.\
+L'inferenza in generale per problemi probabilistici di questo tipo è un problema np-hard. 
+
+Come abbiamo detto le caratteristiche fondamentali di un junction tree sono:
+- nodi sono sottoinsieme di variabili
+- per ogni variabile $X$ esiste almeno un nodo che la contiene e che contiene tutti i parenti di $X$ (ovvero i nodi da cui dipende)
+- per ogni nodo e separatore con $n$ variabili sono date le tabelle di $2^n$ valori (una per ogni possibile combinazione di valori delle variabili se variabili binarie)
+- deve essere mantenuta la __running intersection property__ ovvero : Sia $T$ un albero di cluster su $G$, con $V_T$ i suoi vertici e $E_T$ i suoi bordi. $T$ ha la proprietà questa proprietà se, ogni volta che $X \in C_i$ e $X \in C_j$, allora $X$ è anche in ogni cluster nel percorso (unico) in $T$ tra $Ci$ e $Cj$.
+
+<details>
+    <summary><b>Example</b>: Junction Tree </summary>
+
+![](./images/no_junction_tree.png)
+
+- contiene ogni variabile? si
+- mantiene le famiglie? si
+- mantiene la running intersection property? no, non c'è garanzia che i valori della tabella associata a TEL e TS siano coerenti per T.
+
+![](./images/junction_tree_1.png)
+
+il processo per la creazione del junction tree corrispondente al grafo sopra prevede:
+1. trasformare il grafo in un grafo non orientato
+2. _moralizzare_ il grafo (ovvero aggiungere un arco fra i genitori di uno stesso nodo)
+3. triangolazione del grafo (aggiungere archi in modo da rendere il grafo triangolare)
+4. costruzione del junction tree
+(descritto meglio successivamente)
+
+![](./images/junction_tree_2.png)
+
+![](./images/junction_tree_3.png)
+
+>__Nota__: quando i cluster diventano troppo grandi le operazioni su questi divengono pesanti. Infatti la costruzione del junction tree è un problema np-complete.
+
+</details>
+
+Abbiamo poi detto che ad ogni nodo corrisponde una tabella, vediamo ora come inizializzarla. \
+1. Assegniamo a tutti gli elementi di ogni tabella il valore 1 (anche per i separatori).\
+2. Per tutti i cluster con variabili e parenti (fondamentalmente tutti i nodi non separatori) e moltiplichiamo tutti i valori per ciascun elemento della tabella per la probabilità condizionata (CPT) di ogni variabile dato il valore dei genitori. Ad esempio per SBL avremo $1*P(S)*P(B|S)*P(L|S)$.
+3. Si scambiano le informazioni tra nodi adiacenti, questa operazione è detta __absorbtion__. Ad esempio supponiamo di scambiare un messaggio tra XY e XZ, marginaliziamo su XY rispetto a X (facciamo variare Y) e aggiorniamo XZ con la probabilità calcolata diviso per la probabilità del separatore X (che all'inizio è 1) mentre la nuova probabilità del separatore sarà la marginalizzazione stessa. Se facciamo questa operazione in entrambe le direzioni si ottiene un __link consistente__.
+
+Vediamo nel dettaglio la propagazione di informazioni del punto 3.\
+La definizione di un Junction tree ci ha permesso di trasformare il grafo in una sorta di albero, dobbiamo solo definire una radice. Possiamo scegliere un nodo qualsiasi e questo ci permetterà di identificare le foglie dell'albero. La propagazione di informazioni avviene prima dalle foglie alla radice scelta, si parla in questo caso di __collect evidence__ e poi dalla radice alle foglie, si parla in questo caso di __distribute evidence__.\
+Da questo punto in poi l'infereza è un operazione estremamente semplice, asserisco le probabilità di un evento per le variabili osservate, eseguo la propagazione di informazioni e marginalizzo rispetto alla variabile che voglio sapere (ovunque questa appaia). 
+
+#TODO clarify (doesn't seems that useful/seems repetitive)
+Dato un junction tree e una funzione definita come il prodotto di potenziali, un'assegnazione valida di potenziali di clique del junction tree, le cui variabili possono contenerle in modo tale che il prodotto dei potenziali della clique diviso per il potenziale del separatore sia uguale alla funzione, è detta ___consistent__.\
+Ovvero possiamo elencare tutti i potenziali e ordinare arbitrariamente le clique del JT. Per ogni potenziale si cerca la clique le cui variabili contengono le variabili del potenziale. Viene determinato il potenziale su di ogni clique come il prodotto dei potenziali delle clique. Associamo tutti i potenziali dei separatori all'unità.
+
+##### Triangulation
+Quando viene eliminata una variabile da un grafo, vengono aggiunti dei link tra tutti i vicini della variabile eliminata, l'algoritmo di __triangulation__ consiste nel far si che non ci siano extra link non necessari a seguito di questa eliminazione.\
+Un modo intuitivo di pensare alla triangolazione è quello di eliminare inizialmente i nodi ___simplicial___ ovvero nodi che hanno un vicino che è un insieme completo o meglio i nodi che se rimossi non introducono nuovi link e quindi nuovi cicli. Questo processo può essere ripetuto fino a quando non ci sono più nodi simpliciali, l'operazione è detta ___Greedy variable elimination___.\
+Possiamo poi procedere con la ___Perfect elimination order___ ovvero un ordinamento dei nodi tale che ogni nodo $v_i$ eliminato lascia un sottografo completo. 
+
+
+Poichè la trinagolazione è un problema piuttosto costoso, che permette però di semplificare l'inferenza, ha senso prima verificare che il grafo non sia già triangolare. Questo può essere fatto con l'algoritmo che segue.
+
+```python
+for each node v in G:
+    v.label = 1
+    for i in range(2, G.n):
+        x = G.higest_degree_node()
+        x.label = i
+        for each y in G.adj(x):
+            for each z in G.adj(x):
+                if y != z and y.label and z.label and (z not in G.adj(y) or y not in G.adj(z)):
+                    return "fail"
+    return "success"
+```
+___
+
+#### Hidden Markov Model
+
+Abbiamo sino ad ora considerato modelli in cui le inferenze probabilistiche sono fatte su variabili che non cambiano il loro stato. Nel mondo reale però sono più comuni casi in cui le variabili cambiano il loro stato nel tempo. Considerimo quindi modelli a tempo discreto, inoltre supporremo che l'insieme di variabili osservabili non cambi nel tempo. \
+Tra i vari modelli possibili consideriamo in particolare quello degli __hidden Markov network__.\
+E' importaten specificare il motivo di __hidden__, gli stati sono indentificabili solo attraverso le osservazioni in modo probabilisitco, non certo, per tanto si parla di "entità nascoste". In particolare per un un hidden __Markov__ network deve valere:
+- la catena ha un numero di stati finito
+- gli stati evolvono secondo una catena di Markov
+- ogni stato genera un event con una certa distribuzione di probabilità che dopende solo dallo stato precedente
+- l'evento è osservabile ma lo stato no
+Gli ___HMN___ sono utili per il riconoscimento in tempo reale di discorsi o scrittura ecc.
+
+![alt text](image.png)
+
+Agli hmn sono associati un certo numero di problemi canonici risolvibili con algoritmi diversi:
+- dati i parametri calcolare una certa sequenza di uscita, algoritmo di __forward__.
+- dati i parametri calcolare la sequenza più probabile, algoritmo di __Viterbi__.
+- data una sequenza in uscita determinare i paramentri, algoritmo di __Baum-Welch__?.
+
+Chiamiamo $X_t$ l'isieme di variabili al tempo t (non osservabili). \
+Chiamiamo $E_t$ l'insieme di variabili osservabili al tempo t e $E_t = e_t$ l'osservazione delle variabili osservabili al tempo t. \
+Usiamo la notazione $X_{a:b}$ per indicare l'insieme di variabili $X_a, X_{a+1}, \dots, X_b$. \
+
+Introduciamo poi il concetto di distribuzione di transizione ovvero la probabilità di transizione da uno stato nascosto all'altro, cioè indica le probabilità condizionate di passare da uno stato all'altro nello step temporale successivo.\
+Il modello di transizione stabilisce la probabilità $P(X_t | X_{0:t-1})$. Tuttavia è spesso corretto e sempre utile svolgere l'inferenza sotto l'__assunzione di Markov__ ovvero $P(X_t | X_{0:t-1}) = P(X_t | X_{a:t-1})$. Questa assunzione afferma sostanzialmente che la probabilità di un evento al tempo t dipende solo da un numero finito e fissato di eventi passati. Processi che rispettano tale assunzione sono detti ___Markov processes___ o ___Markov chains___.\
+Il più semplice modello di transizione è il ___first-order Markov chain___ ovvero $P(X_t | X_{0:t-1}) = P(X_t | X_{t-1})$ per il quale vale che la probabilità di un evento al tempo t dipende solo dall'evento al tempo t-1.\
+
+Rimane tuttavia il problema che ci sono infiniti valori assumibili da t e quindi infinite distribuzioni congiunte da definire. Per risolvere questo problema si assume che i cambiamenti nel modello siano causati da processi ___time-homogeneous___ ovvero che fondamentalmente le leggi che governano questi cambiamenti siano le stesse in ogni istante di tempo.
+
+Le probabilità di transizione vengono organizzate in una matrice di dimensione $||D_X|| \times ||D_X||$
+
+La distribuzione di emissione invece misura le probabilità delle diverse osservazioni che possono essere generate da ciascuno stato nascosto del modello. In altre parole indica la probabilità di osservare una certa emissione quando il sistema è in uno specifico stato nascosto. Sia $D_E$ l'insieme delle possibili osservazioni (o simboli emessi), per il modello dei sensori si assume che la probabilità di osservare un evento sia condizionata solo dall'evento stesso e non da eventi passati ovvero $P(E_t | X_t, E_{0:t-1}) = P(E_t | X_t)$. Questa assunzione è detta ___sensor Markov assumption___.
+
+Le probabilità di emissione vengono organizzate in una matrice di dimensione $||D_E|| \times ||D_X||$.
+
+> __Nota__: le probabilità espresse indicano i parametri del modello, nello specifico i 'pesi' degli archi della catena di stati nel grafo. Nel primo caso gli archi fra variabili nascoste, ovvero lo stato nascosto del modello, nel secondo gli archi tra variabili nascoste e osservate (generalmente indicati con $a_{ij}$ e $b_{ij}$)
+
+L'ultima cosa che ci manca da definire è la probabilità iniziale ovvero $P(X_0)$. Questa probabilità è detta ___initial state probability___.
+
+$P(X_{0:t}, E_{0:t}) = P(X_0)\prod_{t=1}^{T} P(X_t | X_{t-1})P(E_t | X_t)$
+
+Possiamo quindi calcolare la distribuzione congiunta per determinare la probabilità di una certa sequenza di stati e osservazioni di lunghezza $T$: $P(X_{1:T}, E_{1:T}) = P(E_1|X_1)P(X_1)\prod_{t=2}^{T} P(X_t | X_{t-1})P(E_t | X_t)$
+
+##### Filtering
+
+Nel contesto degli HMM il termine si riferice al processo di stima della distribuzione di probabilità dello stato corrente, dato l'insieme delle osservazioni passate fino a un certo punto nel tempo. Quindi il filtering si occupa di calcolare la distribuzione di probabilità dello stato nascosto al temp o corrente avendo a disposizione solo le informazioni delle osservazioni e degli stati precedenti sino a quel momento.
+
+<details>
+    <summary><b>Insight</b>: Semirings (fatti a lezione ma non è chiaro il motivo) </summary>
+
+In matematica, in particolare nella teoria dei gruppi esiste la definzione di __semiring__ ovvero un insieme con due operazioni binarie (addizione e moltiplicazione) che soddisfano le proprietà di un semigruppo e in cui la moltiplicazione è distributiva rispetto all'addizione. Questa definizione è utile per definire un algoritmo di inferenza su un network.
+
+esempi di semirings
+| Domain | $+$ operator | invariante per $+$ | $\times$ operator | invariante per $\times$ |
+|---|---|---|---|---|
+| $\mathbb{N^0}$ | sum | 0 | product | 1 |
+| $\mathbb{R^+}$ | max | 0 | product | 1 |
+| $\{true, false\}$ | or | false | and | true |
+
+Nel secondo caso si parla in particolare di semiring di max-plus.
+
+x variabili nascoste, e variabili osservate fino a t.\
+calcoliamo la distribuzione congiunta (per la marginale basta normalizzare) $p(x_t, e_{1:t-1}) = \sum_{x_{t-1}} p(x_t, x_{t-1}, e_{1:t-1}, e_t) = \sum p(e_t | \cancel{e_{1:t-1}}, x_t, x_{t-1})p(x_t | \cancel{e_{1:t-1}}, x_{t-1})p(e_{1:t-1}, x_{t-1}) = \sum_{x_{t-1}} p(e_t | x_{t})p(x_{t}, x_{t-1})p(x_{t-1}, e_{1:t-1})$.\
+La cancellazione dipende dall'indipendenza condizionale del modello.\
+Definiamo $\alpha(x_t) = p(x_t, e_{1:t})$. Data questa funzione è possibile definire la così detta _"alpha recursion"_ ovvero $\alpha(x_t) = p(e_t | x_t)\sum_{x_{t-1}} \alpha(x_{t-1})p(x_t|x_{t-1})$.\
+Il primo termine moltiplicativo è detto __corrector__ e il secondo __predictor__.\
+Inoltre vale $\alpha(x_1) = p(x_1,e_1)$.\
+$\alpha$ è anche detta __funzione di filtraggio__, e dobbiamo interpretare la ricorsione come una propagazione in avanti della funzione di filtraggio di un passo temporale che rivela una nuova distribuzione a priori per il tempo $t$. Questa propagazione viene poi corretta e modulata dalle nuove osservazioni. Siccome la funzione di filtraggio ha tutti termini minori di 1, e l'operazione consiste in un prodotto la funzione può portare a valori molto piccoli il che ci porta ad usare più frequentemente $\log \alpha$. \
+La normalizzazione ci porta ad una distribuzione a posteriori filtrata $p(x_t, e_{1:t}) \propto \alpha(x_t)$ (normalizzando non serve più lavorare in logaritmi) il che ci porta a $p(x_t | e_{1:t}) \propto \sum_{x_{t-1}} p(e_t | x_t)p(x_t | x_{t-1})p(x_{t-1} | e_{1:t-1})$.
+
+</details>
+
+##### Parallel Smoothing
+
+Concetto associato al processo di retrodizione (o "_smoothing_") il quale mira a stimare la distribuzione di probabilitò degli stati passati dati gli stati futuri e le oesservazioni. Si parla di ___paralle smoothing___ quando si effettua la retrodizione su più traiettorie contemporaneamnete. Questo significa anzichè effettuare la retrodizione su una singola sequenza di osservazioni, si stima la distribuzione passata per diverse sequenze indipendenti nello stesso momento.
+
+##### Likelihood
+
+In un HMN il termine ___likelihood___ si riferisce alla probabilità di osservare una specifica sequenza di osservazioni, dato il modello e  i suoi parametri. La likelijood quindi rappresenta quanto è probabile che il modello generi la sequenza di osservazioni che è stata effettivamente osservata.\
+Tale probabilità è spesso indicata con $P(E|\lambda)$ con $\lambda$ i parametri del modello. E' possibile calcolare il valore della likelihood andando a sommare tute le possibili sequenze di stati nascosti e le relative sequenze di osservazioni pesate dalle probabilità associate al modello: $P(E|\lambda)=\sum P(E, X| \lambda)$
+L'obbiettivo durante l'addestramento di un HMN è spesso massimizzare la likelihood, vale a dire i parametri $\lambda$ che rendono più probabile la sequenza di osservazioni effettivamente osservata. Questo processo può coinvolgere algoritmi di ottimizzazzzione come l'algoritmo di _Baum-Welch_ ossia una variante dell'algoritmo di _Expectation-Maximization_ (EM). 
+
+___
 Un esempio classico ed esemplificativo è quello della __markov chain__ nel quale vale la proprietà che ogni nodo precedente ad un nodo dato è indipendente da ogni nodo successivo ad un nodo dato dato il nodo dato: $x_{i-1} \perp x_{i+1} | x_i$. Questa proprietà deriva direttamente dalla definizione di separazione e dalla local markov property.
 
 <details>
@@ -1184,67 +1425,6 @@ $P(X_t = 2, X_{t+1} = 2) = \frac{1}{Z} \phi(X_t, X_{t+1}) = \frac{1}{21} \phi(2,
 $P(X_t = 2) = \sum_{X_{t+1}} P(X_t, X_{t+1}) = \frac{1}{21} \sum_{X_{t+1}} \phi(X_t, X_{t+1}) = \frac{1}{21} (0 + 5 + 2) = \frac{7}{21} = \frac{1}{3}$\
 $P(X_t = 2| X_{t+1} = 2) = P(X_t = 2, X_{t+1} = 2) / P(X_{t+1} = 2) = \frac{15}{21}$ (per la regola del prodotto)
 </details>
-
-Il passaggio da rete bayesiana a rete markoviana è semplice e sempre possibile, basta identificare i fattori per esempio $p(a|b)p(b|c)p(c) = \phi(a, b)\phi(b, c)$ con $\phi(a, b) = p(a|b)$ e $\phi(b, c) = p(b|c)p(c)$ e $Z = 1$. Tuttavia il grafo associato ha solitamente link in più rispetto al grafo bayesiano il che vuol dire che c'è perdita di informazioni (si perdono alcune indipendenze fra variabili). Ad esempio $p(c|a, b)p(a)p(b) = \phi(a, b, c)$ si  perde l'indipendenza fra $a$ e $b$. 
-
-__Indipendence map__ (I-map): \
-Dato un grafo $G$ e una distribuzione $P$. $G$ è un I-map di $P$ se per ogni $A \perp B | S$ in $G$ allora $A \perp B | S$ in $P$ con $A, B, S$ sottoinsiemi qualsiasi di $G$.
-
-__D-map__: \
-$A \perp B | S \implies A \perp_G B | S$ 
-
-__Perfect map__: \
-$A \perp B | S \iff A \perp_G B | S$ 
-
-__Trivial map__: \
-Per una I-map la mappa triviale è un grafo completo.\
-Per una D-map la mappa triviale è un grafo vuoto.
-
-##### Theorem
-
-se $G$ è una I-map di $P$ allora $P$ può fattorizzare come $P = \frac{1}{Z} \prod_{c \in C} \phi_C(X_c)$ per qualche $\phi_C > 0$, viceversa: se $P$ può fattorizzare come $P = \frac{1}{Z} \prod_{c \in C} \phi_C(X_c)$ allora $G$ è una I-map di $P$.
-___
-
-#### Jointree
-
-L'algoritmo di inferenza classico che prevede l'eliminazione di variabili è efficiente per risolvere semplici _queries_ ma se vogliamo calcolare la probabilità a posteriori per tutte le variabili del grafo allora l'algoritmo diventa inefficiente. Un modo per risolvere questo problema è quello di trasformare il grafo in un grafo ad albero e poi risolvere l'algoritmo di eliminazione di variabili su questo grafo. Questa operazione è detta ___clustering___ metre il grafo risultante è detto ___jointree___. Le variabili agregate formano un ___meganode___ e diversi meganodi possono condividere alcune variabili questo porta a definire un diverso algoritmo di inferenza (quello non su jointree non funziona in presenza di meganodi che condividano variabili).\
-L'algoritmo è fondamentalmente un algoritmo di propagazione di vincoli dove questi vincoli assicurano che meganodi vicini concordino con la probabilità a posteriori delle variabili condivise. L'algoritmo è lineare nel numero di nodi del jointree ma è sempre NP-hard.
-
-
-___
-
-#### Dynamic probabilistic network
-
-Abbiamo sino ad ora considerato modelli in cui le inferenze probabilistiche sono fatte su variabili che non cambiano il loro stato. Nel mondo reale però sono più comuni casi in cui le variabili cambiano il loro stato nel tempo. Considerimo quindi modelli a tempo discreto, inoltre supporremo che l'insieme di variabili osservabili non cambi nel tempo. \
-Chiamiamo $X_t$ l'isieme di variabili al tempo t (non osservabili). \
-Chiamiamo $E_t$ l'insieme di variabili osservabili al tempo t e $E_t = e_t$ l'osservazione delle variabili osservabili al tempo t. \
-Usiamo la notazione $X_{a:b}$ per indicare l'insieme di variabili $X_a, X_{a+1}, \dots, X_b$. \
-
-Il modello di transizione stabilisce la probabilità $P(X_t | X_{0:t-1})$. Tuttavia è spesso corretto e sempre utile svolgere l'inferenza sotto l'__assunzione di Markov__ ovvero $P(X_t | X_{0:t-1}) = P(X_t | X_{a:t-1})$. Questa assunzione afferma sostanzialmente che la probabilità di un evento al tempo t dipende solo da un numero finito e fissato di eventi passati. Processi che rispettano tale assunzione sono detti ___Markov processes___ o ___Markov chains___.\
-Il più semplice modello di transizione è il ___first-order Markov chain___ ovvero $P(X_t | X_{0:t-1}) = P(X_t | X_{t-1})$ per il quale vale che la probabilità di un evento al tempo t dipende solo dall'evento al tempo t-1.\
-
-Rimane tuttavia il problema che ci sono infiniti valori assumibili da t e quindi infinite distribuzioni congiunte da definire. Per risolvere questo problema si assume che i cambiamenti nel modello siano causati da processi ___time-homogeneous___ ovvero che fondamentalmente le leggi che governano questi cambiamenti siano le stesse in ogni istante di tempo. 
-
-Per il modello dei sensori si assume che la probabilità di osservare un evento sia condizionata solo dall'evento stesso e non da eventi passati ovvero $P(E_t | X_t, E_{0:t-1}) = P(E_t | X_t)$. Questa assunzione è detta ___sensor Markov assumption___.
-
-L'ultima cosa che ci manca da definire è la probabilità iniziale ovvero $P(X_0)$. Questa probabilità è detta ___initial state probability___.
-
-$P(X_{0:t}, E_{0:t}) = P(X_0)\prod_{t=1}^{T} P(X_t | X_{t-1})P(E_t | X_t)$
-
-Per aumentare la precisione del modello possiamo o aggiungere variabili o aumentare l'ordine del modello. Vediamo ora un ___hidden Markov model___ (HMM) che è un modello a tempo discreto il cui processo è descritto da una singola discreta variabile aleatoria. Tramite la tecnica di clustering descritta precedentemente è sempre possibile ricondurci ad un modello di questo tipo. Un HMM ha per definizione un unica variabile aleatoria discreta che può quindi assumere un singolo valore (che dovrebbe rappresentare nella sua interezza lo stato del modello), questa restrizione non è però necessaria per le variabili osservate che essendo sempre tali per ipotesi non necessitano di essere tracciate da una distribuzione. 
-
-Il modo più semplice di definire una funzione di transizione per un HMM è tramite una matrice $T = S \times S$ dove $S$ è il numero di stati del modello. La matrice $T$ è detta ___transition matrix___ e contiene $P(X_t | X_{t-1})$. \
-La probabilità di osservare un evento dato uno stato è invece definita da una matrice $O_t = S \times S$ ed è una matrice diagonale. La matrice $O_t$ è detta ___observation matrix___. \
-Questo ci permette di definire una _forward equation_ e una _backward equation_ svolgendo semplici operazioni matriciali:
-- _forward equation_: $f_{1:t+1} = \alpha O_{t+1} T f_{1:t}$
-- _backward equation_: $b_{k+1:t} = T O_{k+1} b_{k+2:t}$
-
-L'algoritmo ha complessità, per una sequenza t, di $O(S^2t)$ (temporale) e $O(St)$ (spaziale).\ 
-Ma le qualità dell'HMM sono nelle ottimizzazioni che si possono fare per ridurre la complessità dell'algoritmo. E' infatti possibile ridurre la complessità spaziale a $O(S)$ ottenibile memorizzando i risultati delle forward equation e utilizzandole per calcolare le backward equation. Un' altro modo è quello di propagare contemporaneamente e nella stessa direzione sia la forward equation che la backward equation (ad esempio riformulando la forward equation come $f_{1:t} = \alpha' O^{-1}_{t+1} T^T f_{1:t+1}$). Ci sono due problematiche principali: la matrice di transizione deve essere invertibile e ogni osservazione deve essere possibile in ogni stato (la matrice di osservazione non deve avere zeri sulla diagonale, deve essere anch'essa invertibile).\
-
-Un'altro motivo per cui l'HMM si rivela utile è quello dell'online smoothing dato un lag costante $d$. L'online smoothing è il problema di calcolare la probabilità a posteriori di uno stato al tempo t dato tutte le osservazioni fino al tempo t-d. Per ogni slice temporale dobbiamo calcolare $\alpha f_{1:t-d} \times b_{t-d+1:t}$, per l'istante successivo satà invece $\alpha f_{1:t-d+1} \times b_{t-d+2:t+1}$ e così via. 
-
-
 
 ___
 
