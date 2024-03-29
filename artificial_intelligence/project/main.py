@@ -1,3 +1,4 @@
+import random
 class Node:
     def __init__(self, value, left=None, right=None):
         self.value = value
@@ -54,6 +55,7 @@ def validate_bnf(tokens):
     
     return True  
 
+
 # Shuting yard algorithm
 def setup_tree(sentence):
     tokens = sentence.split()
@@ -100,7 +102,6 @@ def str_to_bnf(sentence):
 
     return make_tree()
 
-    
 def print_tree(root):
     if not root:
         return
@@ -229,6 +230,49 @@ def bnf_to_cnf(root):
     update_parents(root)
     distribute_or_over_and(root)
 
+def generate_random_bnf(number_of_variables, number_of_repetitions, operators_prob=[0.1,0.3,0.3,0.2,0.1]):
+    #generate variables name
+    variables = ["x_"+str(i+1) for i in range(number_of_variables)]
+
+    variables_repeated = variables.copy()
+    for _ in range(number_of_repetitions):
+        variables_repeated.append(random.choice(variables))
+    random.shuffle(variables_repeated)
+ 
+    def generate_bnf(_variables):
+        if not _variables:
+            return ""
+        
+        if _variables and len(_variables) == 1:
+            #choose between variable and variable negation
+            return random.choice([_variables[0], "! " + _variables[0]])
+        
+        operator = random.choices(["!", "&", "|", "=>", "<=>"], operators_prob)[0]
+        if operator == "!":
+            return operator + " " + generate_bnf(_variables)  
+    
+        left = generate_bnf(_variables[:len(_variables)//2])
+        right = generate_bnf(_variables[len(_variables)//2:])
+        return "( " + left + " " + operator + " " + right + " )"
+    
+    return generate_bnf(variables_repeated)
+
+def cnf_to_str(root):
+    if not root:
+        return ""
+    if not root.left:
+        return root.value
+    if root.value == "!":
+        return root.value + " " + cnf_to_str(root.left)
+    if root.value == "&":
+        left_str = cnf_to_str(root.left)
+        right_str = cnf_to_str(root.right)
+        if root.left.value == "|":
+            left_str = "( " + left_str + " )"
+        if root.right.value == "|":
+            right_str = "( " + right_str + " )"
+        return left_str + " " + root.value + " " + right_str
+    return cnf_to_str(root.left) + " " +  root.value + " " + cnf_to_str(root.right)
 
 test_case = "( A & B ) |  C & D"
 print(test_case)
@@ -239,3 +283,7 @@ print()
 bnf_to_cnf(tree)
 print_tree(tree)
 print()
+
+print(cnf_to_str(tree))
+
+print(generate_random_bnf(3, 3))
