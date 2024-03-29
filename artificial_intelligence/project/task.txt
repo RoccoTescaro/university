@@ -1,0 +1,22 @@
+B003725 Intelligenza Artificiale (2023/24)
+Studente: Rocco Tescaro — <2024-03-25 Mon>
+Elaborato assegnato per l’esame finale
+Istruzioni
+Il lavoro sarà oggetto di discussione durante l’esame orale e dovrà essere sottomesso almeno 48 ore prima dell’esame, includendo:
+1. Sorgenti e materiale sviluppato in autonomia (senza includere datasets o librerie sviluppate da altri: basta fornire un link);
+2. Un file README che spieghi il ruolo di ciascun file sorgente e la sequenza di comandi che permette di riprodurre i risultati sottomessi.
+3. Una breve relazione (massimo 4 pagine in formato pdf) che descriva il lavoro e analizzi i risultati sperimentali. Non è necessario
+ripetere in dettaglio i contenuti del libro di testo o di eventuali articoli, è invece necessario che vengano fornite informazioni
+sufficienti a riprodurre il metodo utilizzato ed i risultati ottenuti. Eventuali porzioni riprese da altre fonti devono essere evidenziate
+con le relative citazioni.
+La sottomissione va effettuata preferibilmente creando un repository privato su codeberg con Project name “Nome Cognome” e con-
+dividendolo con l’utente ai-unifi (da project information->members->invite members). In alternativa, è accettabile inviare
+per email a ai.unifi@pm.me un singolo file zip (di dimensioni non superiori ad 1MB); tale file deve contenere solo i sorgenti e la
+relazione in pdf (senza altri files binari).
+
+Forma normale congiuntiva
+In questo esercizio si generalizza e implementa (in un linguaggio di programmazione a scelta) la procedura descritta nella
+sezione 7.5.2 di R&N 2021 per convertire una generica formula in logica proposizionale in forma normale congiuntiva
+(CNF). Il programma deve accettare una stringa nel linguaggio descritto nella figura 7.7 del libro, e produrre in output la
+corrispondente formula in CNF. Per il parsing è perfettamente accettabile usare strumenti preesistenti come ad esempio
+PyParsing per Python.
