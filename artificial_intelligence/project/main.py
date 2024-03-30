@@ -225,8 +225,6 @@ def bnf_to_cnf(root):
     #Move negation inwards
     move_neagation_inward(root)
     #Disribute | over &
-    print_tree(tree)
-    print()
     update_parents(root)
     distribute_or_over_and(root)
 
@@ -274,16 +272,44 @@ def cnf_to_str(root):
         return left_str + " " + root.value + " " + right_str
     return cnf_to_str(root.left) + " " +  root.value + " " + cnf_to_str(root.right)
 
-test_case = "( A & B ) |  C & D"
-print(test_case)
-print(validate_bnf(test_case.split()))
-tree = str_to_bnf(test_case)
-print_tree(tree)
-print()
-bnf_to_cnf(tree)
-print_tree(tree)
-print()
 
-print(cnf_to_str(tree))
+def test(n_test, n_variables, n_repetitions, invalid=False):
+    for i in range(n_test):
+        test_case = generate_random_bnf(n_variables, n_repetitions)
+        tokens = test_case.split()
+        if invalid:
+            random_operator = random.choice(["!", "&", "|", "=>", "<=>"]) 
+            random_index = random.randint(0, len(tokens)-1)          
+            while tokens[random_index] in operators:
+                random_index = random.randint(0, len(tokens)-1)
+            tokens[random_index] = random_operator
+            if validate_bnf(tokens):
+                print("Invalid test case not detected")
+                print(" ".join(tokens))
+                return
+        else:
+            if not validate_bnf(tokens):
+                print("Invalid test case detected")
+                print(test_case)
+                return
+            
+            tree = str_to_bnf(test_case)
+            bnf_to_cnf(tree)
+            print(cnf_to_str(tree))   
 
-print(generate_random_bnf(3, 3))
+
+def test_string(test_case):
+    tokens = test_case.split()
+    if not validate_bnf(tokens):
+        print("Invalid test case detected")
+        print(test_case)
+        return
+        
+    tree = str_to_bnf(test_case)
+    bnf_to_cnf(tree)
+    print(cnf_to_str(tree))
+
+
+# test(100, 3, 2)
+# test(100, 3, 2, invalid=True)
+# test_string("( A & B ) | ( C & D )")
