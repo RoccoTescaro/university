@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.26 (TeX Live 2024/Arch Linux) (preloaded format=pdflatex 2024.3.25)  30 MAR 2024 16:00
+This is pdfTeX, Version 3.141592653-2.6-1.40.26 (TeX Live 2024/Arch Linux) (preloaded format=pdflatex 2024.3.25)  30 MAR 2024 19:37
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
@@ -197,27 +197,27 @@ Package caption Info: End \AtBeginDocument code.
 <bnf.png, id=1, 443.40656pt x 191.9672pt>
 File: bnf.png Graphic file (type png)
 <use bnf.png>
-Package pdftex.def Info: bnf.png  used on input line 58.
+Package pdftex.def Info: bnf.png  used on input line 56.
 (pdftex.def)             Requested size: 345.0pt x 149.3735pt.
 LaTeX Font Info:    External font `cmex10' loaded for size
-(Font)              <7> on input line 61.
+(Font)              <7> on input line 60.
 LaTeX Font Info:    External font `cmex10' loaded for size
-(Font)              <5> on input line 61.
+(Font)              <5> on input line 60.
  [1
 
 {/var/lib/texmf/fonts/map/pdftex/updmap/pdftex.map} <./bnf.png (PNG copy)>]
 <cnf.png, id=13, 525.46312pt x 292.84406pt>
 File: cnf.png Graphic file (type png)
 <use cnf.png>
-Package pdftex.def Info: cnf.png  used on input line 69.
+Package pdftex.def Info: cnf.png  used on input line 68.
 (pdftex.def)             Requested size: 345.0pt x 192.27673pt.
  [2 <./cnf.png (PNG copy)>]
 LaTeX Font Info:    External font `cmex10' loaded for size
-(Font)              <8> on input line 116.
+(Font)              <8> on input line 115.
 LaTeX Font Info:    External font `cmex10' loaded for size
-(Font)              <6> on input line 116.
+(Font)              <6> on input line 115.
  [3{/usr/share/texmf-dist/fonts/enc/dvips/cm-super/cm-super-ts1.enc}]
-Underfull \hbox (badness 10000) in alignment at lines 157--157
+Underfull \hbox (badness 10000) in alignment at lines 156--156
 [][][][][] 
  []
 
@@ -236,7 +236,7 @@ Here is how much of TeX's memory you used:
  1141 hyphenation exceptions out of 8191
  57i,9n,65p,807b,341s stack positions out of 10000i,1000n,20000p,200000b,200000s
 </usr/share/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx10.pfb></usr/share/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx12.pfb></usr/share/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx8.pfb></usr/share/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx9.pfb></usr/share/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi10.pfb></usr/share/texmf-dist/fonts/type1/public/amsfonts/cm/cmr10.pfb></usr/share/texmf-dist/fonts/type1/public/amsfonts/cm/cmr12.pfb></usr/share/texmf-dist/fonts/type1/public/amsfonts/cm/cmr8.pfb></usr/share/texmf-dist/fonts/type1/public/amsfonts/cm/cmr9.pfb></usr/share/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy10.pfb></usr/share/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy8.pfb></usr/share/texmf-dist/fonts/type1/public/cm-super/sfrm1000.pfb>
-Output written on report.pdf (4 pages, 255296 bytes).
+Output written on report.pdf (4 pages, 255377 bytes).
 PDF statistics:
  80 PDF objects out of 1000 (max. 8388607)
  47 compressed objects within 1 object stream

@@ -46,11 +46,9 @@ In questo esercizio si generalizza e implementa (in un linguaggio di programmazi
 
 \section*{Introduzione} 
 
-Come dichiarato nella sezione precedente, l'obbiettivo di questo progetto è quello di implementare un algoritmo che converta una formula in logica proposizionale, nello specifico da Backus-Naur Form (BNF) a Conjunctive Normal Form (CNF).
-
-Si deve inoltre implementare un sistema di verifica della correttezza della sintassi della formula in BNF, in modo da garantire che l'algoritmo di conversione possa operare correttamente. Non direttamente richiesto, è stato implementato anche un sistema di generazione casuale di formule in BNF, per testare l'algoritmo di conversione.
-
-In seguito riportata la formalizzazione del metalinguaggio di una BNF in "Artificial Intelligence: A Modern Approach (R\&N 2021)":
+Come dichiarato nella sezione precedente, l'obbiettivo di questo progetto è quello di implementare un algoritmo che converta una formula in logica proposizionale, nello specifico dalla Backus-Naur Form (BNF) dichiarata a seguito, a Conjunctive Normal Form (CNF).
+Si deve inoltre implementare un sistema di verifica della correttezza della sintassi della formula in BNF, in modo da garantire che l'algoritmo di conversione possa operare correttamente. Anche se non obiettivo principale del progetto, è stato implementato anche un sistema di generazione casuale di formule in BNF, per testare l'algoritmo di conversione.
+La formalizzazione in metalinguaggio BNF presente in "Artificial Intelligence: A Modern Approach (R\&N 2021)":
 
 \begin{figure}[htbp]
     \caption{\textbf{BNF Syntax}}
@@ -58,6 +56,7 @@ In seguito riportata la formalizzazione del metalinguaggio di una BNF in "Artifi
     \includegraphics[width=\linewidth]{bnf}
 \end{figure}
 
+A seguito faremo riferimento impropriamente alle formule che rispettino la sintassi dichiarata precedentemente come bnf.
 E' necessario precisare che per le Atomic Sentences non è stata limitata la scelta dei simboli ma il programma accetta qualsiasi stringa alfanumerica che non contenga spazi e non concida con altri operatori, inoltre per semplificare la scrittura delle formule gli operatori di negazione, congiunzione, disgiunzione, implicazione e doppia implicazione sono stati sostituiti con i simboli '!', '\&', '$|$', '$=>$' e '$<=>$' rispettivamente.
 Poichè non è l'obbiettivo del progetto, e al fine di esemplificare il partizionamento delle stringhe, ogni operatore è stato distanziato da uno spazio.
 Per le formule in CNF sono state prese le medesime scelte. 

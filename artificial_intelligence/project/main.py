@@ -24,6 +24,9 @@ operators = {
 }
 
 def validate_bnf(tokens):
+    if len(tokens) == 0:
+        return False
+
     if len(tokens) == 1 and tokens[0] not in operators:
         return True
     
