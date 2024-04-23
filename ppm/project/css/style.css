@@ -1,0 +1,128 @@
+header
+{
+    font-family: "Marr Sans Condensed", DINCondensed-Bold, "Roboto Condensed", "Arial Narrow", sans-serif;
+    background-color: #ffffff;
+    color: #2a303b;
+}
+
+@media (min-width: 1024px) {
+    #Language 
+    {
+        height: 2.9rem;
+        align-items: center;
+        display: flex;
+        justify-content: center;
+    }
+}
+
+#Title
+{
+    max-width: 72.6rem;
+    height: 6rem;
+    position: relative;
+}
+
+#Journal
+{
+    height: 3.4rem;
+    margin-right: 1rem;
+}
+
+#TitleLeft a
+{
+    flex-direction: column;
+    line-height: 1rem;
+    /*margin-left: 5.67rem;*/
+    height: 3.4rem;
+    padding-top: 0.63rem;
+    font-weight: 500;
+    font-size: 0.82rem;
+    color: #717b8e;
+}
+
+#TitleLeft a:hover
+{
+    text-decoration: underline;
+}
+
+#Logo
+{
+    max-width: 253.75px;
+}
+
+#SingInLine
+{
+    font-size: 0.882rem;
+    font-weight: 500;
+    margin-bottom: 1.764rem;
+}
+
+#connecter
+{
+    padding: .5rem 0;
+}
+
+#abonner-btn
+{
+    background: #ffc700;
+    padding: .44rem 1rem;
+    font-size: 0.756rem;
+    font-weight: 500;
+    line-height: 1;
+    height: 1.89rem;
+    border-radius: 0.189rem;
+}
+
+#abonner-btn:hover
+{
+    background: #eab002;
+}
+
+.n-link
+{
+    color: #d5d8dc;
+    text-decoration: none;
+    cursor: default;
+}
+
+.n-link:hover
+{
+    color: #4488cc;
+    text-decoration: none;
+}
+
+.n-link.fw-bold
+{
+    color: #2a303b;
+    text-decoration: none;
+}
+
+.n-link.fw-bold:hover
+{
+    color: #2a303b;
+    text-decoration: none;
+}
+
+.lang
+{
+    margin-right: .5rem;
+    line-height: 1;
+    font-size: 0.72rem !important;
+    font-weight: 500 !important;
+    letter-spacing: .03rem;
+}
+
+.spacer
+{
+    display: inline;
+    background-color: #d5d8dc;
+    width: 0.063rem;
+    margin-right: .5rem;
+    height: 35%;
+}
+
+.navbar
+{
+    height: 3.654rem;
+    border-top: .252rem solid #026b9c;
+}
