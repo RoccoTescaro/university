@@ -420,3 +420,96 @@ header
 {
     background-color: #f5f6f8;
 }
+
+.title-filler
+{
+    color: #2a303b;
+    font-family: 'The Antiqua B', Georgia, Droid-serif, serif;
+    font-weight: 800;
+    text-decoration: none;
+    line-height: 1;
+}
+
+.title-filler:hover
+{
+    color: #2a303b;
+    text-decoration: underline solid 1px;
+}
+
+.title-filler:after
+{
+    content: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam sit amet magna et elit volutpat tempor.';
+}
+
+
+.article-filler
+{
+    color: #2a303b;
+    font-family: 'Marr Sans', Arial, Roboto, sans-serif;
+    font-weight: 400;
+    text-decoration: none;
+    font-size: 1.07rem;
+    line-height: 1.41;
+}
+
+.article-filler:after
+{
+    content: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec tempor venenatis libero ut accumsan. Etiam nec molestie tortor. Nullam dignissim metus urna, nec maximus felis consequat vitae. Nulla id venenatis lectus, vitae facilisis mauris. Fusce in dolor sed nisl ornare congue nec eu augue. Ut eu diam posuere, rhoncus ipsum eu, rhoncus dui. Vestibulum vel facilisis orci.';
+}
+
+.small-text-title
+{
+    font-size:0.8rem;
+    font-family: 'Marr Sans', Arial, Roboto, sans-serif;
+    font-weight: 800;
+}
+
+.small-text-filler
+{
+    color: #2a303b;
+    font-family: 'Marr Sans', Arial, Roboto, sans-serif;
+    font-weight: 400;
+    text-decoration: none;
+    font-size: 0.95rem;
+    line-height: 1.41;
+    background-color:#f4f9fb;
+}
+
+.small-text-filler:after
+{
+    content: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec tempor venenatis libero ut accumsan. Etiam nec molestie tortor.';
+}
+
+figcaption
+{
+    text-align: right;
+    text-transform: uppercase;
+    font-family: 'Marr Sans', Arial, Roboto, sans-serif;
+    font-weight: 400;
+    line-height: 1;
+    font-size: 0.6rem;
+}
+
+figcaption:after
+{
+    content: 'Lorem ipsum / AFP';
+}
+
+.image-filler
+{
+    content: url('https://placehold.co/600x400');
+}
+
+#ImageUnder
+{
+    position: absolute;
+    z-index: 0;
+}
+
+#TextOnTop
+{
+    width: 87.5%;
+    background-color: #ffffff; 
+    left: 50%;
+    z-index: 2;
+}
