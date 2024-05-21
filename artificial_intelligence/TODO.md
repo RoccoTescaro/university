@@ -73,3 +73,8 @@ papers: [proxy-auth.unifi.it:8888]
 - lecture 18
 - [ ] 14.2.3
 
+# preparation
+
+[ ] riguardare depth first pseudocode
+[ ] riguardare dimostrazione A* consistente = ottimo
+[ ] riguardare hmn

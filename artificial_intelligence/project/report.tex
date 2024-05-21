@@ -47,7 +47,7 @@ In questo esercizio si generalizza e implementa (in un linguaggio di programmazi
 \section*{Introduzione} 
 
 Come dichiarato nella sezione precedente, l'obbiettivo di questo progetto è quello di implementare un algoritmo che converta una formula in logica proposizionale, nello specifico dalla Backus-Naur Form (BNF) dichiarata a seguito, a Conjunctive Normal Form (CNF).
-Si deve inoltre implementare un sistema di verifica della correttezza della sintassi della formula in BNF, in modo da garantire che l'algoritmo di conversione possa operare correttamente. Anche se non obiettivo principale del progetto, è stato implementato anche un sistema di generazione casuale di formule in BNF, per testare l'algoritmo di conversione.
+Si deve inoltre implementare un sistema di verifica della correttezza della sintassi della formula nella BNF seguente, in modo da garantire che l'algoritmo di conversione possa operare correttamente. Anche se non obiettivo principale del progetto, è stato implementato anche un sistema di generazione casuale di formule in BNF, per testare l'algoritmo di conversione.
 La formalizzazione in metalinguaggio BNF presente in "Artificial Intelligence: A Modern Approach (R\&N 2021)":
 
 \begin{figure}[htbp]
@@ -56,18 +56,11 @@ La formalizzazione in metalinguaggio BNF presente in "Artificial Intelligence: A
     \includegraphics[width=\linewidth]{bnf}
 \end{figure}
 
-A seguito faremo riferimento impropriamente alle formule che rispettino la sintassi dichiarata precedentemente come bnf.
-E' necessario precisare che per le Atomic Sentences non è stata limitata la scelta dei simboli ma il programma accetta qualsiasi stringa alfanumerica che non contenga spazi e non concida con altri operatori, inoltre per semplificare la scrittura delle formule gli operatori di negazione, congiunzione, disgiunzione, implicazione e doppia implicazione sono stati sostituiti con i simboli '!', '\&', '$|$', '$=>$' e '$<=>$' rispettivamente.
+A seguito faremo riferimento impropriamente alle formule coerenti con tale sintassi come bnf (sia nel codice che in questo report).
+E' necessario precisare che per le Atomic Sentences non è stata limitata la scelta dei simboli ma il programma accetta qualsiasi stringa alfanumerica che non contenga spazi e non concida con altri operatori, inoltre per semplificare la scrittura delle formule gli operatori di negazione, congiunzione, disgiunzione, implicazione e doppia implicazione sono stati sostituiti con i simboli '!', '\&', '$|$', '$=>$' e '$<=>$' rispettivamente (in accordo con i simboli adottati da alcuni linguaggi di programmazione).
 Poichè non è l'obbiettivo del progetto, e al fine di esemplificare il partizionamento delle stringhe, ogni operatore è stato distanziato da uno spazio.
 Per le formule in CNF sono state prese le medesime scelte. 
 Per quanto riguarda invece la procedura descritta nel capitolo 7.5.2 di R\&N 2021, essa è stata implementata seguendo i passaggi descritti nel libro, senza quindi apportare ottimizzazioni o modifiche, adottando però una struttura dati che permettesse di eseguire ugualmente le operazioni in modo efficiente.
-
-\begin{figure}[htbp]
-    \caption{\textbf{CNF Conversion}}
-    \centering
-    \includegraphics[width=\linewidth]{cnf}
-\end{figure}
-
 
 \section*{Implementazione}  
 
@@ -85,13 +78,13 @@ Una volta validata una stringa è necessario convertirla in una struttura dati s
 
 \vspace{0.5cm}
 
-La struttura dati scelta per rappresentare la formula è un albero binario, noto come \textbf{Expression Tree}. In un Expression Tree, ogni nodo interno rappresenta un operatore logico e i suoi figli rappresentano gli operandi, che possono essere a loro volta formule o "Atomic Sentence" (le foglie dell'albero). Ogni nodo ha quattro attributi: il simbolo dell'operatore, il figlio sinistro, il figlio destro e il genitore. Per gli operatori unari, come la negazione, il figlio destro è nullo. Per le atomic sentence, il simbolo dell'operatore è il simbolo della variabile e i figli sono nulli.
+La struttura dati scelta per rappresentare la formula è un albero binario, noto come \textbf{Expression Tree}. In un Expression Tree, ogni nodo interno rappresenta un operatore logico e i suoi figli rappresentano gli operandi, che possono essere a loro volta formule o "Atomic Sentence" (le foglie dell'albero). Ogni nodo ha tre attributi: il simbolo dell'operatore, il figlio sinistro e il figlio destro. Per gli operatori unari, come la negazione, il figlio destro è nullo. Per le atomic sentence, il simbolo dell'operatore è il simbolo della variabile e i figli sono nulli.
 
 L'algoritmo di costruzione dell'albero è ricorsivo e opera in tre fasi:
 
 \begin{itemize}
     \item \textbf{Tokenizzazione}: la stringa che rappresenta la formula viene convertita in una lista di token.
-    \item \textbf{Ordinamento}: i token vengono ordinati secondo l'algoritmo di \textbf{shouting yard}, che rispetta le precedenze degli operatori.
+    \item \textbf{Ordinamento}: i token vengono ordinati secondo l'algoritmo di \textbf{shouting yard} sviluppato da Dijkstra, che rispetta le precedenze degli operatori.
     \item \textbf{Costruzione dell'albero}: l'albero viene costruito ricorsivamente a partire dal token con la precedenza più bassa, procedendo verso i token con precedenza più alta.
 \end{itemize}
 
@@ -104,10 +97,9 @@ L'algoritmo di costruzione dell'albero è ricorsivo e opera in tre fasi:
 
 \vspace{0.5cm}
 
-\noindent Una volta costruito l'albero è possibile procedere con la conversione in CNF. L'algoritmo di conversione ripercorre, come già detto, i passaggi descritti nel libro (vedi sezione precedente).
-Ciascuno di questi sottopassaggi è implementato con un attraversamento preorder dell'albero con una leggera variazione per l'ultimo passaggio, in cui l'attraversamento è sempre preorder ma, in caso si fossero effettuate le modifiche, e si verificasse una situazione favorevole con il nodo genitore, l'algoritmo ritorna al nodo genitore e ripete il passaggio.
-Per questo motivo la complessià dell'algoritmo è equivalente a circa 4 volte la complessità di un attraversamento preorder dell'albero ovvero O(n) con n il numero di nodi (nel nostro caso operatori più variabili). Poichè non particolarmente utile al resto del codice la proprietà genitore di ciascun nodo non è stata mantenuta durante le varie operazioni (anche se sarebbe stato possibile) e questo porta ad un ulteriore attraversamente, in questo caso inorder, per ristabilire la proprietà prima di poter effettuare l'ultimo passaggio.
-Poichè abbiamo adottato una struttura ad albero è stata infine implementata un'ulterio funzione che stampa l'albero semplificando le parentesi (altrimenti aggiunte per ogni operazione binaria) e mostrando così la formula in un'effettiva CNF.
+\noindent Una volta costruito l'albero è possibile procedere con la conversione in CNF. L'algoritmo di conversione ripercorre, come già detto, i passaggi descritti nel libro: rimozione delle doppie implicazioni (sostituendo con implicazioni), rimozioni delle implicazioni, applicazione delle leggi di De Morgan e eliminazione delle doppie negazioni, applicazione della proprietà distributiva della disgiunzione.
+Ciascuno di questi sottopassaggi è implementato con un attraversamento preorder dell'albero ad eccezione dell'ultimo passaggio, in cui l'attraversamento eseguito sia in preorder che postorder portando la complessità dell'algoritmo a $O(n^2)$. Ci sono soluzioni note per il problema che operano in tempo lineare ma che non sono state implementate.
+Poichè abbiamo adottato una struttura ad albero è stata infine implementata un'ulteriore funzione che stampa l'albero semplificando le parentesi (altrimenti aggiunte per ogni operazione binaria) e mostrando così la formula in un'effettiva CNF.
 
 \vspace{0.5cm}
 
@@ -133,12 +125,9 @@ L'algoritmo di conversione in CNF è stato testato con successo su un set di for
 
 - Migliorare il sistema di parsing togliendo la regola implicita che impone la presenza di spazi tra gli operatori.
 
-- Mantenere l'attributo "parent" durante le varie operazioni.
-
 - Implementare l'algoritmo in un linguaggio di programmazione specifico per ottimizzare le prestazioni.
 
 - Eseguire test più approfonditi per identificare eventuali errori non rilevati nei test precedenti.
-
 
 \vfill
 \noindent\makebox[\linewidth]{\rule{\textwidth}{0.01pt}}

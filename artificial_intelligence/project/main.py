@@ -2,7 +2,6 @@ import random
 class Node:
     def __init__(self, value, left=None, right=None):
         self.value = value
-        self.parent = None
         self.left = left
         self.right = right
 
@@ -166,59 +165,46 @@ def move_neagation_inward(root):
     move_neagation_inward(root.left)
     move_neagation_inward(root.right)
 
-def update_parents(root):
-    if not root:
-        return
-
-    if root.left:
-        root.left.parent = root
-        update_parents(root.left)
-    if root.right:
-        root.right.parent = root
-        update_parents(root.right)
-
 def distribute_or_over_and(root):
     if not root:
         return
     
+    distribute_or_over_and(root.left)
+    distribute_or_over_and(root.right)
+
     if root.value == "|":
-        if root.left.value == "&":
+        if root.left.value == "&" and root.right.value == "&":
+            temp_ll = root.left.left
+            temp_lr = root.left.right
+            temp_rl = root.right.left
+            temp_rr = root.right.right
+            root.value = "&"
+            root.left = operators["&"]((operators["|"](temp_ll, temp_rl)), (operators["|"](temp_ll, temp_rr)))
+            root.right = operators["&"]((operators["|"](temp_lr, temp_rl)), (operators["|"](temp_lr, temp_rr)))
+            distribute_or_over_and(root.left)
+            distribute_or_over_and(root.right)
+
+
+        elif root.left.value == "&":
             temp_ll = root.left.left
             temp_lr = root.left.right
             temp_r = root.right
             root.value = "&"
             root.left = operators["|"](temp_ll, temp_r)
             root.right = operators["|"](temp_lr, temp_r)
-            
-            #update parents            
-            root.left.left.parent = root.left
-            root.left.right.parent = root.left
-            root.right.left.parent = root.right
-            root.right.right.parent = root.right
+            distribute_or_over_and(root.left)
 
-            if root.parent and root.parent.value == "|":
-                distribute_or_over_and(root.parent)
-        
-        if root.right.value == "&":
+        elif root.right.value == "&":
             temp_rl = root.right.left
             temp_rr = root.right.right
             temp_l = root.left
             root.value = "&"
-            root.left = operators["|"](temp_rl, temp_l)
-            root.right = operators["|"](temp_rr, temp_l)
+            root.left = operators["|"](temp_l, temp_rl)
+            root.right = operators["|"](temp_l, temp_rr)
+            distribute_or_over_and(root.right)
 
-            #update parents
-            root.left.left.parent = root.left
-            root.left.right.parent = root.left
-            root.right.left.parent = root.right
-            root.right.right.parent = root.right
-
-            if root.parent and root.parent.value == "|":
-                distribute_or_over_and(root.parent)
-    
-    distribute_or_over_and(root.left)
-    distribute_or_over_and(root.right)
-
+    #distribute_or_over_and(root.left)
+    #distribute_or_over_and(root.right)
 
 def bnf_to_cnf(root):
     #Remove <=> operator
@@ -228,7 +214,6 @@ def bnf_to_cnf(root):
     #Move negation inwards
     move_neagation_inward(root)
     #Disribute | over &
-    update_parents(root)
     distribute_or_over_and(root)
 
 def generate_random_bnf(number_of_variables, number_of_repetitions, operators_prob=[0.1,0.3,0.3,0.2,0.1]):
@@ -295,10 +280,12 @@ def test(n_test, n_variables, n_repetitions, invalid=False):
                 print("Invalid test case detected")
                 print(test_case)
                 return
-            
+                        
             tree = str_to_bnf(test_case)
+            print(test_case)
             bnf_to_cnf(tree)
             print(cnf_to_str(tree))   
+            print()
 
 
 def test_string(test_case):
@@ -313,6 +300,19 @@ def test_string(test_case):
     print(cnf_to_str(tree))
 
 
-# test(100, 3, 2)
-# test(100, 3, 2, invalid=True)
-# test_string("( A & B ) | ( C & D )")
+
+if __name__ == '__main__':
+    type_of_test = input("Enter 1 for random test or 2 for custom test: ")
+    if type_of_test == "1":
+        n_test = int(input("Enter number of tests: "))
+        n_variables = int(input("Enter number of variables: "))
+        n_repetitions = int(input("Enter number of repetitions: "))
+        valid_test = input("Enter 1 for valid tests or 2 for invalid tests: ")
+        test(n_test, n_variables, n_repetitions, valid_test=="2")
+    else:
+        test_case = input("Enter test case: ")
+        test_string(test_case)
+
+
+
+
