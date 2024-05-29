@@ -76,5 +76,5 @@ papers: [proxy-auth.unifi.it:8888]
 # preparation
 
 [ ] riguardare depth first pseudocode
-[ ] riguardare dimostrazione A* consistente = ottimo
+[x] riguardare dimostrazione A* consistente = ottimo
 [ ] riguardare hmn

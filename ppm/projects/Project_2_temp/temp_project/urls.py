@@ -21,3 +21,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include('pages.urls')),
 ]
+
+admin.site.site_title = "Scandicci Scacchi Gestore Eventi Admin Portal"
+admin.site.site_header = "Scandicci Scacchi Gestore Eventi Admin"
+admin.site.index_title = "Benvenuto nel portale di amministrazione del Gestore Eventi Scandicci Scacchi"

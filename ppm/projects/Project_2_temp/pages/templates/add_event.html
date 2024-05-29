@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+
+{% block title %}
+    
+    Nuovo Evento
+
+{% endblock %}
+
+
+{% block content %}
+
+    <h1>Aggiungi un Nuovo Evento</h1>
+
+    {% if submitted %}
+
+        <div class="alert alert-success" role="alert">
+            Evento aggiunto con successo!
+        </div>
+
+    {% else %}
+
+        <form action="" method=POST class="container d-flex flex-column w-75 mt-4">
+            {% csrf_token %}
+
+            {{ form.as_p }}
+
+            <div class="w-100 text-end">
+                <input type="submit" class="btn btn-primary" value="Salva">
+            </div>
+        </form>
+
+    {% endif %}
+
+{% endblock %}
