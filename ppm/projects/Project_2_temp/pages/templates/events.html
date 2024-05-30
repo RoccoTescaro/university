@@ -15,11 +15,14 @@
 
         <input class="form-control me-2" type="search" placeholder="Event" aria-label="Search" name="searched_event">
         <button class="btn btn-outline-secondary my-2 me-2 my-sm-0" type="submit">Search</button>
+        
+        {% if user.is_authenticated and user.is_staff %}
         <a class="btn border-success rounded p-1 px-2" href="{%url 'add_event' %}">
             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="#198754" class="bi bi-plus" viewBox="0 0 16 16">
                 <path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4"/>
             </svg>
         </a>
+        {% endif %}
     </form>
 
     <div class="mt-4">
@@ -34,18 +37,44 @@
                     <div class="d-flex flex-column h-100">
                         <div class="d-flex flex-row">
                             <h5 class="d-flex card-title w-75 m-0"> <a href="{%url 'event' event.id %}" class="text-decoration-none">{{ event.name }}</a> </h5>
+                           
+                            {% if user.is_authenticated %}
+                           
+                            {% if user == event.manager %}
+
                             <div class="d-flex w-25 m-0 justify-content-end">
                                 <a class="btn border-warning rounded p-1 px-2 me-2" href="{%url 'update_event' event.id %}">
                                     <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="#ffc107" class="bi bi-pencil" viewBox="0 0 16 16">
                                         <path d="M12.146.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1 0 .708l-10 10a.5.5 0 0 1-.168.11l-5 2a.5.5 0 0 1-.65-.65l2-5a.5.5 0 0 1 .11-.168zM11.207 2.5 13.5 4.793 14.793 3.5 12.5 1.207zm1.586 3L10.5 3.207 4 9.707V10h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.293zm-9.761 5.175-.106.106-1.528 3.821 3.821-1.528.106-.106A.5.5 0 0 1 5 12.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.468-.325"/>
                                     </svg>
                                 </a>
-                                <a class="btn border-danger rounded p-1 px-2" href="{%url 'delete_event' event.id %}">
+                                <a class="btn border-danger rounded p-1 px-2" href="{% url 'delete_event' event.id %}">
                                     <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="#dc3545" class="bi bi-x-lg" viewBox="0 0 16 16">
                                         <path d="M2.146 2.854a.5.5 0 1 1 .708-.708L8 7.293l5.146-5.147a.5.5 0 0 1 .708.708L8.707 8l5.147 5.146a.5.5 0 0 1-.708.708L8 8.707l-5.146 5.147a.5.5 0 0 1-.708-.708L7.293 8z"/>
                                     </svg>
                                 </a>
                             </div>
+
+                            {% elif user not in event.attendees.all %}
+
+                                <div class="d-flex w-25 m-0 justify-content-end">
+                                    <a class="btn border-primary rounded p-1 px-2 text-primary" href="{% url 'join_event' event.id %}">
+                                        Iscriviti
+                                    </a>
+                                </div>
+                                    
+                            {% else %}
+
+                                <div class="d-flex w-25 m-0 justify-content-end">
+                                    <a class="btn border-danger rounded p-1 px-2 text-danger" href="{% url 'leave_event' event.id %}">
+                                        Abbandona
+                                    </a>
+                                </div>
+
+                            {% endif %}
+
+                            {% endif %}
+
                         </div>
                         <h6 class="card-subtitle mb-2 text-muted">
                             <strong>Data:</strong> {{ event.date }} </br>

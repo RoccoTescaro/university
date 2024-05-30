@@ -8,12 +8,6 @@ class VenueAdmin(admin.ModelAdmin):
     list_display = ('name', 'address', 'phone')
     fields = (('name', 'address'), 'zip_code', ('phone', 'web', 'email'))
 
-@admin.register(models.MyUser)
-class MyUserAdmin(admin.ModelAdmin):
-    search_fields = ('last_name', 'first_name')
-    ordering = ('first_name', 'last_name')
-    list_display = ('first_name', 'last_name', 'email')
-
 @admin.register(models.Event)
 class EventAdmin(admin.ModelAdmin):
     search_fields = ('name',)

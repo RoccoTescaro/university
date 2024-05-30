@@ -13,11 +13,13 @@
 
     {% if submitted %}
 
-        <div class="alert alert-success" role="alert">
+        <!--<div class="alert alert-success" role="alert">
             Evento aggiunto con successo!
-        </div>
+        </div>-->
 
     {% else %}
+
+        {% if user.is_authenticated and user.is_staff %}
 
         <form action="" method=POST class="container d-flex flex-column w-75 mt-4">
             {% csrf_token %}
@@ -25,9 +27,20 @@
             {{ form.as_p }}
 
             <div class="w-100 text-end">
-                <input type="submit" class="btn btn-primary" value="Salva">
+                <input type="submit" class="btn btn-secondary" value="Salva">
             </div>
         </form>
+
+        {% else %}
+
+        <div class="alert alert-danger" role="alert">
+            Devi essere autenticato per aggiungere un evento!
+        </div>
+
+        Vai alla pagina di autenticazione:
+        <a href="{% url 'login' %}"> Login  </a>
+
+        {% endif %}        
 
     {% endif %}
 

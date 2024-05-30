@@ -1,23 +1,11 @@
 from django.shortcuts import render
 from django.http import HttpResponseRedirect
+from django.contrib import messages
 from . import models
 from . import forms
 
-# this function is not needed but shows how default values work in python
-def __f():
-    return "default data to show on base url"
-
-def homeView(request, url_data = __f()):
-    data = "test data from view"
-
-    #here we can still do some logic if we want
-
-    return render(request, 
-                  'home.html', 
-                  {
-                    'data': data,
-                    'url_data': url_data,
-                  })
+def homeView(request):
+    return render(request, 'home.html', { })
 
 
 def eventsView(request):
@@ -27,6 +15,24 @@ def eventsView(request):
                   'events.html',
                   {
                       'events': events,                    
+                  })
+
+def managedEventsView(request):
+    events = models.Event.objects.filter(manager=request.user)
+
+    return render(request,
+                  'events.html',
+                  {
+                      'events': events,
+                  })
+
+def attendedEventsView(request):
+    events = models.Event.objects.filter(attendees=request.user)
+
+    return render(request,
+                  'events.html',
+                  {
+                      'events': events,
                   })
 
 def eventView(request, event_id):
@@ -45,7 +51,8 @@ def addEventView(request):
         form = forms.EventForm(request.POST)
         if form.is_valid():
             form.save()
-            return HttpResponseRedirect('/add_event?submitted=True')
+            messages.success(request, 'Event added successfully')
+            return HttpResponseRedirect('/events')
     else:
         form = forms.EventForm()
         if 'submitted' in request.GET:
@@ -57,6 +64,39 @@ def addEventView(request):
                       'form': form,
                       'submitted': submitted,
                   })
+
+def joinEventView(request, event_id):
+    event = models.Event.objects.get(pk=event_id)
+
+    if not request.user.is_authenticated:
+        messages.error(request, 'You need to login to join an event')
+        return HttpResponseRedirect('/login')
+
+    if request.user in event.attendees.all():
+        messages.error(request, 'You are already attending this event')
+        return HttpResponseRedirect('/events')
+    
+    event.attendees.add(request.user)
+    event.save()
+
+    return HttpResponseRedirect('/events')
+
+def leaveEventView(request, event_id):
+    event = models.Event.objects.get(pk=event_id)
+
+    if not request.user.is_authenticated:
+        messages.error(request, 'You need to login to leave an event')
+        return HttpResponseRedirect('/login')
+
+
+    if request.user not in event.attendees.all():
+        messages.error(request, 'You are not attending this event')
+        return HttpResponseRedirect('/events')
+    
+    event.attendees.remove(request.user)
+    event.save()
+
+    return HttpResponseRedirect('/events')
 
 def updateEventView(request, event_id):
     event = models.Event.objects.get(pk=event_id)
@@ -78,7 +118,15 @@ def updateEventView(request, event_id):
 
 def deleteEventView(request, event_id):
     event = models.Event.objects.get(pk=event_id)
-    event.delete()
+
+    if not request.user.is_authenticated:
+        messages.error(request, 'You need to login to delete an event')
+        return HttpResponseRedirect('/login')
+
+    if request.user == event.manager:
+        event.delete()
+    else:
+        messages.error(request, 'You are not authorized to delete this event')
 
     return HttpResponseRedirect('/events')
 
@@ -93,11 +141,7 @@ def searchEventView(request):
                     })
     else:
         return render(request,
-                  'home.html',
-                  {
-                      'data': '',
-                      'url_data': '',                    
-                  })
+                  'home.html', { })
 
 
 def venuesView(request):
@@ -125,7 +169,8 @@ def addVenueView(request):
         form = forms.VenueForm(request.POST)
         if form.is_valid():
             form.save()
-            return HttpResponseRedirect('/add_venue?submitted=True')
+            messages.success(request, 'Venue added successfully')
+            return HttpResponseRedirect('/venues')
     else:
         form = forms.VenueForm()
         if 'submitted' in request.GET:
@@ -158,6 +203,23 @@ def updateVenueView(request, venue_id):
 
 def deleteVenueView(request, venue_id):
     venue = models.Venue.objects.get(pk=venue_id)
+
+    if not request.user.is_authenticated or not request.user.is_staff:
+        messages.error(request, 'You need to login to staff member delete a venue')
+        return HttpResponseRedirect('/login')
+
     venue.delete()
 
     return HttpResponseRedirect('/venues')
+
+def searchVenueView(request):
+    if request.method == 'POST':
+        searched_venue = request.POST['searched_venue']
+        venues = models.Venue.objects.filter(name__contains=searched_venue)
+        return render(request,
+                    'venues.html',
+                    {
+                        'venues': venues,
+                    })
+    else:
+        return render(request, 'home.html', { })

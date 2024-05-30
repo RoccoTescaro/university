@@ -10,6 +10,21 @@
 
     <h1>Luoghi</h1>
 
+    <form class="form-inline d-flex flex-row mb-3" method=POST action="{% url 'search_venue' %}">
+        {% csrf_token %}
+
+        <input class="form-control me-2" type="search" placeholder="Venue" aria-label="Search" name="searched_venue">
+        <button class="btn btn-outline-secondary my-2 me-2 my-sm-0" type="submit">Search</button>
+        
+        {% if user.is_authenticated and user.is_staff %}
+        <a class="btn border-success rounded p-1 px-2" href="{%url 'add_venue' %}">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="#198754" class="bi bi-plus" viewBox="0 0 16 16">
+                <path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4"/>
+            </svg>
+        </a>
+        {% endif %}
+    </form>
+
     <table class="table table-hover mt-4">
 
         {% for venue in venues %}
@@ -21,6 +36,9 @@
                 </br>
                 {{ venue.address }} 
             </td>
+
+            {% if user.is_authenticated and user.is_staff %}
+
             <td class="text-end">
                 <a class="btn border-warning rounded p-2" href="{%url 'update_venue' venue.id %}">
                     <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="#ffc107" class="bi bi-pencil" viewBox="0 0 16 16">
@@ -33,6 +51,8 @@
                     </svg>
                 </a>
             </td>
+
+            {% endif %}
         </tr>        
         {% endfor %}
     

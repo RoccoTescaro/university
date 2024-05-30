@@ -33,6 +33,49 @@
                min-height: 100vh;
                min-width: 100vw;
             }
+
+            .alert 
+            {
+                position: relative;
+                opacity: 1;
+                visibility: visible;
+                transform: translateX(0px);
+                transition: visibility 0s, opacity 250ms, transform 250ms;
+            }
+
+            .alert.hide 
+            {
+                position: relative;
+                opacity: 0;
+                visibility: hidden;
+                transform: translateX(-10px); 
+                transition: visibility 0s 250ms, opacity 250ms, transform 250ms;
+            }
+
+            .alert-error
+            {
+                background-color: #f8d7da;
+                border-color: #f1aeb5;
+            }
+
+            .dropdown-menu
+            {
+                background-color: #212529;
+                transform: translateX(-25%);
+            }
+
+            .dropdown-item
+            {
+                background-color: #212529;
+                color: rgba(255, 255, 255, 0.55);
+            }
+
+            .dropdown-item:hover
+            {
+                background-color: #212529;
+                color: rgba(255, 255, 255, 0.75);
+            }
+
         </style>
 
     </head>
@@ -41,7 +84,25 @@
 
        {% include 'navbar.html' %}
 
-        <div class="container bg-body my-5 py-5" >
+       {% if messages %}
+
+            <div class="container position-absolute z-3 center mx-auto start-0 end-0">
+
+                {% for message in messages %}
+
+                    <div class="alert alert-{{ message.tags }} vanishing-alert alert-dismissible fade show z-3" role="alert" >
+                        {{ message }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+
+                {% endfor %}
+
+            </div>
+
+        {% endif %}
+
+
+        <div class="shadow rounded container bg-body my-5 py-5 overflow-scroll" style="height: 82vh;">
 
             {% block content %}
 
@@ -51,5 +112,16 @@
 
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
         
+        <script>
+            var m = document.getElementsByClassName("vanishing-alert");  // Return an array
+            
+            setTimeout(function(){
+               if (m && m.length) {
+                   m[0].classList.add('hide');
+               }
+            }, 4000);
+        
+        </script>
+            
 
     </body> 

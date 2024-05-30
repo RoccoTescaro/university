@@ -10,6 +10,17 @@
 
     <h1>Home</h1>
 
+
+    <h3>Welcome to the home page 
+        {% if user.is_authenticated %} 
+            {{ username }}
+        {% endif %}
+        !
+    </h3>
+
+    </br>
+
+
     <form class="form-inline d-flex flex-row mb-3" method=POST action="{% url 'search_event' %}">
         {% csrf_token %}
 
@@ -17,9 +28,7 @@
         <button class="btn btn-outline-secondary my-2 my-sm-0" type="submit">Search</button>
     </form>
 
-    <p>Welcome to the home page!</p>
-    <p> {{ data }} </p>
-    <p> {{ url_data }} </p>
+   
 
 {% endblock %}
 

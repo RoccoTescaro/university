@@ -20,6 +20,8 @@ from django.urls import path, include
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include('pages.urls')),
+    path('members/', include('django.contrib.auth.urls')),
+    path('members/', include('members.urls')),
 ]
 
 admin.site.site_title = "Scandicci Scacchi Gestore Eventi Admin Portal"
